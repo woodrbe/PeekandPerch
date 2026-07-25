@@ -1,0 +1,6 @@
+{
+  "name": "Peep & Perch - Whimsical Backyard Bird Club",
+  "description": "A playful backyard bird discovery club, 3D character generator, and birdwatcher journal for home aviaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
