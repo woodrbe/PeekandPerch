@@ -1,8 +1,10 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { BirdSighting } from '../types';
 import { Plus, Eye, Feather } from 'lucide-react';
 
-import cardinalCharacter from '../assets/images/cardinal_character_1785015411958.jpg';
+import cardinalAnimated from '../assets/images/cardinal animated.mp4';
+import { TransparentVideo } from './TransparentVideo';
 import goldfinchCharacter from '../assets/images/goldfinch_character_1785015425426.jpg';
 import cardinalMascot from '../assets/images/red_cardinal_mascot_1784995985664.jpg';
 import goldfinchMascot from '../assets/images/yellow_goldfinch_mascot_1784995995465.jpg';
@@ -74,12 +76,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           
           {/* LEFT COLUMN: Golden (Goldfinch) Character - Isolated blending on background, no wording */}
           <div className="md:col-span-3 flex items-center justify-center order-2 md:order-1">
-            <div className="relative w-full max-w-[280px] hover:scale-105 transition-transform duration-500">
-              <img
+            <div className="relative w-full max-w-[280px]">
+              <motion.img
                 src={goldfinchCharacter}
                 alt="American Goldfinch Character"
                 referrerPolicy="no-referrer"
-                className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-md"
+                className="w-full h-auto object-contain mix-blend-multiply"
+                style={{ transformOrigin: '50% 22%', perspective: 800 }}
+                animate={{
+                  rotate: [-6, 7, -3, 6, -6],
+                  rotateY: [-12, 12, -6, 10, -12],
+                  x: [-2, 2, -1, 2, -2],
+                }}
+                transition={{
+                  duration: 6.5,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut",
+                }}
               />
             </div>
           </div>
@@ -129,12 +143,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* RIGHT COLUMN: Cardinal Character - Isolated blending on background, no wording */}
           <div className="md:col-span-3 flex items-center justify-center order-3">
-            <div className="relative w-full max-w-[280px] hover:scale-105 transition-transform duration-500">
-              <img
-                src={cardinalCharacter}
-                alt="Northern Cardinal Character"
-                referrerPolicy="no-referrer"
-                className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-md"
+            <div className="relative w-full max-w-[280px]">
+              <TransparentVideo
+                src={cardinalAnimated}
+                className="w-full h-auto max-w-[280px] mx-auto"
               />
             </div>
           </div>
