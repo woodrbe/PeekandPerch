@@ -12,7 +12,7 @@ import { GardenAnalytics } from './components/GardenAnalytics';
 import { Footer } from './components/Footer';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'gallery' | 'species' | 'analytics'>('gallery');
+  const [activeTab, setActiveTab] = useState<'home' | 'gallery' | 'species' | 'analytics'>('home');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Sightings state with localStorage persistence
@@ -81,38 +81,89 @@ export default function App() {
     }
   };
 
+  const scrollToActiveSection = (tab: 'home' | 'gallery' | 'species' | 'analytics') => {
+    if (tab === 'home') {
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+        const topEl = document.getElementById('app-top');
+        if (topEl) {
+          topEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch {
+        window.scrollTo(0, 0);
+      }
+      return;
+    }
+
+    const sectionMap: Record<string, string> = {
+      gallery: 'gallery-section',
+      species: 'species-section',
+      analytics: 'analytics-section',
+    };
+    const targetId = sectionMap[tab];
+
+    const doScroll = () => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const yOffset = -85;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    };
+
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 80);
+  };
+
+  const handleGoHome = () => {
+    setActiveTab('home');
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      const topEl = document.getElementById('app-top');
+      if (topEl) {
+        topEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    } catch {
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleTabChange = (tab: 'home' | 'gallery' | 'species' | 'analytics') => {
+    setActiveTab(tab);
+    scrollToActiveSection(tab);
+  };
+
+  useEffect(() => {
+    scrollToActiveSection(activeTab);
+  }, [activeTab]);
+
   const inspectedSpeciesObj = inspectedSighting 
     ? BACKYARD_SPECIES.find((sp) => sp.name === inspectedSighting.speciesName || sp.id === inspectedSighting.speciesId)
     : undefined;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-900 font-sans selection:bg-amber-300 selection:text-stone-900 flex flex-col justify-between">
+    <div id="app-top" className="min-h-screen bg-sky-50/20 text-stone-900 font-pixar-body selection:bg-amber-300 selection:text-stone-900 flex flex-col justify-between">
       
       {/* NAVBAR */}
       <Navbar
         activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          window.scrollTo({ top: 300, behavior: 'smooth' });
-        }}
+        onTabChange={handleTabChange}
+        onGoHome={handleGoHome}
         onOpenLogModal={() => setIsLogModalOpen(true)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
       />
 
       {/* HERO SECTION */}
       <HeroSection
         onOpenLogModal={() => setIsLogModalOpen(true)}
-        onExploreGallery={() => {
-          setActiveTab('gallery');
-          const el = document.getElementById('gallery-section');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
+        onExploreGallery={() => handleTabChange('gallery')}
       />
 
       {/* MAIN CONTENT WORKSPACE */}
       <main className="flex-1">
-        {activeTab === 'gallery' && (
+        {(activeTab === 'home' || activeTab === 'gallery') && (
           <SightingsGallery
             sightings={sightings}
             onSelectSighting={(s) => setInspectedSighting(s)}
@@ -141,10 +192,7 @@ export default function App() {
 
       {/* FOOTER */}
       <Footer
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onTabChange={handleTabChange}
         onOpenLogModal={() => setIsLogModalOpen(true)}
       />
 

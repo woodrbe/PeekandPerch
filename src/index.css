@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@layer utilities {
+  .font-pixar-title {
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+  }
+  .font-pixar-sub {
+    font-family: 'Fredoka', 'Nunito', sans-serif;
+  }
+  .font-pixar-body {
+    font-family: 'Nunito', sans-serif;
+  }
+}
+

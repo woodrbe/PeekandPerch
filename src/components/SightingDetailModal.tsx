@@ -31,13 +31,13 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200 flex flex-col md:flex-row max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fade-in font-pixar-body">
+      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[90vh]">
         
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-stone-900/80 text-white hover:bg-stone-900 transition"
+          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-stone-900/80 text-white hover:bg-stone-900 transition cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
@@ -55,7 +55,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           {onPrevSighting && (
             <button
               onClick={onPrevSighting}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition"
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition cursor-pointer"
               title="Previous photo"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -65,7 +65,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           {onNextSighting && (
             <button
               onClick={onNextSighting}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition cursor-pointer"
               title="Next photo"
             >
               <ChevronRight className="w-5 h-5" />
@@ -75,8 +75,8 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           {/* Star Favorite Badge */}
           <button
             onClick={() => onToggleFavorite(sighting.id)}
-            className={`absolute top-4 left-4 p-2.5 rounded-full backdrop-blur-md transition ${
-              sighting.isFavorite ? 'bg-rose-500 text-white shadow-lg' : 'bg-white/80 text-stone-800'
+            className={`absolute top-4 left-4 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer ${
+              sighting.isFavorite ? 'bg-rose-500 text-white shadow-lg scale-110' : 'bg-white/80 text-stone-800 hover:bg-white'
             }`}
           >
             <Star className={`w-4 h-4 ${sighting.isFavorite ? 'fill-white' : ''}`} />
@@ -90,66 +90,66 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
             
             {/* Species Header */}
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5 font-pixar-sub font-bold">
+                <span className="text-xs text-amber-950 bg-amber-200 px-3 py-1 rounded-full border border-amber-300">
                   {sighting.location}
                 </span>
-                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                <span className="text-xs text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                   x{sighting.count} spotted
                 </span>
               </div>
 
-              <h2 className="text-2xl font-black text-stone-900">
+              <h2 className="font-pixar-title text-3xl text-stone-900">
                 {sighting.speciesName}
               </h2>
 
               {speciesObj?.scientificName && (
-                <p className="text-xs italic text-stone-500 font-serif">
+                <p className="text-xs font-pixar-sub font-bold text-sky-700">
                   {speciesObj.scientificName}
                 </p>
               )}
             </div>
 
             {/* Time & Observer Metadata */}
-            <div className="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 space-y-2 text-xs">
-              <div className="flex items-center justify-between text-stone-600">
-                <span className="flex items-center gap-1 font-mono">
+            <div className="bg-stone-50 p-4 rounded-2xl border-2 border-stone-200 space-y-2 text-xs font-pixar-sub font-semibold">
+              <div className="flex items-center justify-between text-stone-700">
+                <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-amber-600" />
                   {sighting.date} at {sighting.time}
                 </span>
-                <span className="flex items-center gap-1 font-semibold text-stone-800">
+                <span className="flex items-center gap-1 font-bold text-stone-900">
                   <User className="w-3.5 h-3.5 text-stone-400" />
                   {sighting.spottedBy}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-stone-600 border-t border-stone-200/60 pt-2">
+              <div className="flex items-center justify-between text-stone-600 border-t-2 border-stone-200/60 pt-2">
                 <span>Behavior: <strong className="text-stone-900">{sighting.behavior}</strong></span>
-                <span>{sighting.weather}</span>
+                <span className="text-sky-700 font-bold">{sighting.weather}</span>
               </div>
             </div>
 
             {/* Field Observation Notes */}
             <div className="space-y-1">
-              <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wider font-mono">
-                Field Observation Notes
+              <h4 className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider">
+                FIELD OBSERVATION NOTES
               </h4>
-              <p className="text-xs text-stone-700 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/80 leading-relaxed italic">
+              <p className="text-xs font-pixar-body font-semibold text-stone-800 bg-amber-50/80 p-3.5 rounded-2xl border-2 border-amber-200/80 leading-relaxed italic">
                 "{sighting.notes}"
               </p>
             </div>
 
             {/* Species Favorite Treat & Call */}
             {speciesObj && (
-              <div className="space-y-2 text-xs pt-2 border-t border-stone-100">
+              <div className="space-y-2 text-xs pt-2 border-t-2 border-stone-100 font-pixar-sub">
                 <div>
-                  <span className="font-bold text-stone-800">Favorite Backyard Treat: </span>
-                  <span className="text-stone-600">{speciesObj.favoriteFood}</span>
+                  <span className="font-bold text-stone-900">Favorite Backyard Treat: </span>
+                  <span className="text-stone-700 font-semibold">{speciesObj.favoriteFood}</span>
                 </div>
 
                 <div>
-                  <span className="font-bold text-stone-800">Song / Call: </span>
-                  <span className="text-stone-600">{speciesObj.callDescription}</span>
+                  <span className="font-bold text-stone-900">Song / Call: </span>
+                  <span className="text-stone-700 font-semibold">{speciesObj.callDescription}</span>
                 </div>
               </div>
             )}
@@ -157,10 +157,10 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           </div>
 
           {/* Action Footer */}
-          <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+          <div className="pt-4 border-t-2 border-stone-100 flex items-center justify-between font-pixar-sub">
             <button
               onClick={handleDelete}
-              className="px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-full text-xs font-bold text-rose-600 hover:bg-rose-50 transition flex items-center gap-1.5 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Delete Record</span>
@@ -168,7 +168,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition"
+              className="px-6 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-pixar-title text-xs transition cursor-pointer"
             >
               Close Lightbox
             </button>

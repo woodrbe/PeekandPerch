@@ -52,27 +52,27 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   });
 
   return (
-    <section id="gallery-section" className="py-12 bg-[#FAF9F6] border-b border-stone-200">
+    <section id="gallery-section" className="py-12 bg-sky-50/40 border-b-2 border-sky-100 font-pixar-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* TOP HEADER */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-2 border border-amber-300">
-              <Sparkles className="w-3.5 h-3.5 fill-amber-400" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 text-amber-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-amber-200/80 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
               <span>Backyard Photo Memory Journal</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight">
-              Garden Bird Sightings Log 📷
+            <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
+              WHO DROPPED BY 📷
             </h2>
-            <p className="text-stone-600 text-sm sm:text-base mt-1 max-w-xl">
+            <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
               Actual photograph memories of birds visiting backyard feeders, birdbaths, and flower gardens.
             </p>
           </div>
 
           <button
             onClick={onOpenLogModal}
-            className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition border border-amber-600/30 cursor-pointer self-start md:self-auto"
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 border-b-3 border-amber-700 cursor-pointer self-start md:self-auto hover:scale-105 transition-all"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Log New Sighting</span>
@@ -80,19 +80,19 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
         </div>
 
         {/* CONTROLS & FILTERS BAR */}
-        <div className="bg-white p-4 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+        <div className="bg-white p-5 rounded-3xl border-2 border-sky-100 shadow-md shadow-sky-900/5 space-y-4">
           
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Search by species, notes, or observer..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs font-medium rounded-2xl bg-stone-50 border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-stone-900"
+                className="w-full pl-10 pr-4 py-2.5 text-xs font-pixar-body font-semibold rounded-full bg-stone-50 border-2 border-stone-200 focus:outline-none focus:bg-white focus:border-sky-400 focus:ring-2 focus:ring-sky-200 text-stone-900 transition-all placeholder:text-stone-400"
               />
             </div>
 
@@ -100,9 +100,9 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setOnlyFavorites(!onlyFavorites)}
-                className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-full text-xs font-pixar-sub font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                   onlyFavorites
-                    ? 'bg-rose-500 text-white shadow-xs'
+                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30 border-b-2 border-rose-700 scale-102'
                     : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
                 }`}
               >
@@ -110,12 +110,12 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 <span>Favorites Only</span>
               </button>
 
-              <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
+              <div className="flex items-center gap-2 text-xs font-pixar-sub font-bold text-stone-600">
                 <span>Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-stone-100 border border-stone-200 text-stone-800 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none"
+                  className="bg-stone-100 border-2 border-stone-200 text-stone-800 text-xs font-pixar-sub font-bold rounded-full px-4 py-2 focus:outline-none focus:border-sky-400 cursor-pointer"
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -127,19 +127,19 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
           </div>
 
           {/* Backyard Feeding Location Filter Pills */}
-          <div className="space-y-2 pt-2 border-t border-stone-100">
-            <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider font-mono">
-              Backyard Spot:
+          <div className="space-y-2 pt-3 border-t-2 border-stone-100">
+            <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider block">
+              BACKYARD SPOT:
             </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               {locations.map((loc) => (
                 <button
                   key={loc}
                   onClick={() => setSelectedLocation(loc)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all whitespace-nowrap cursor-pointer ${
                     selectedLocation === loc
-                      ? 'bg-stone-900 text-white shadow-xs'
-                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                      ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-102 border-b-2 border-sky-700'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200 hover:scale-102'
                   }`}
                 >
                   {loc}
@@ -152,10 +152,10 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
 
         {/* BIRD SIGHTINGS PHOTO GRID */}
         {filteredSightings.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-stone-200 space-y-3">
-            <div className="text-4xl">🪶</div>
-            <h3 className="text-lg font-bold text-stone-900">No Backyard Bird Sightings Found</h3>
-            <p className="text-xs text-stone-500 max-w-sm mx-auto">
+          <div className="bg-white rounded-3xl p-12 text-center border-2 border-sky-100 shadow-md space-y-3 font-pixar-sub">
+            <div className="text-5xl animate-bounce">🪶</div>
+            <h3 className="text-xl font-pixar-title text-stone-900">NO SIGHTINGS FOUND</h3>
+            <p className="text-xs font-semibold text-stone-500 max-w-sm mx-auto">
               Try adjusting your search query or location filter to reveal saved bird photo memories!
             </p>
             <button
@@ -165,7 +165,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 setOnlyFavorites(false);
                 onSearchChange('');
               }}
-              className="px-4 py-2 rounded-xl bg-amber-100 text-amber-900 text-xs font-bold hover:bg-amber-200 transition"
+              className="px-5 py-2.5 rounded-full bg-amber-100 text-amber-950 text-xs font-pixar-title hover:bg-amber-200 transition cursor-pointer border border-amber-300"
             >
               Reset Filters
             </button>
@@ -176,16 +176,16 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
               <div
                 key={s.id}
                 onClick={() => onSelectSighting(s)}
-                className="group bg-white rounded-3xl p-4 border border-stone-200/90 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between hover:-translate-y-1"
+                className="group bg-white rounded-3xl p-4 border-2 border-stone-100 hover:border-sky-300 shadow-md hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 cursor-pointer flex flex-col justify-between hover:-translate-y-1.5"
               >
                 <div>
                   {/* Real Bird Photograph Container */}
-                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
+                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-100 border-2 border-stone-100">
                     <img
                       src={s.imageUrl}
                       alt={s.speciesName}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                     />
 
                     {/* Star Favorite Button */}
@@ -194,67 +194,67 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         e.stopPropagation();
                         onToggleFavoriteSighting(s.id);
                       }}
-                      className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md shadow-md transition ${
+                      className={`absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer ${
                         s.isFavorite 
-                          ? 'bg-rose-500 text-white' 
-                          : 'bg-white/80 text-stone-600 hover:bg-white hover:text-rose-500'
+                          ? 'bg-rose-500 text-white scale-110 ring-2 ring-white' 
+                          : 'bg-white/80 text-stone-600 hover:bg-white hover:text-rose-500 hover:scale-110'
                       }`}
                       title={s.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     >
-                      <Star className={`w-3.5 h-3.5 ${s.isFavorite ? 'fill-white' : ''}`} />
+                      <Star className={`w-4 h-4 ${s.isFavorite ? 'fill-white' : ''}`} />
                     </button>
 
                     {/* Backyard Location Badge */}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-stone-900/80 text-white text-[10px] font-bold backdrop-blur-xs flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-amber-400" />
+                    <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-stone-900/85 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
+                      <MapPin className="w-3.5 h-3.5 text-amber-400" />
                       <span>{s.location}</span>
                     </div>
 
                     {/* Quick Inspect Photo Overlay */}
                     <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">
-                      <span className="px-4 py-2 rounded-full bg-white text-stone-900 font-bold text-xs shadow-lg flex items-center gap-1.5 hover:bg-amber-400 transition">
-                        <Eye className="w-3.5 h-3.5" />
+                      <span className="px-5 py-2.5 rounded-full bg-white text-stone-900 font-pixar-title text-xs shadow-xl flex items-center gap-2 hover:bg-amber-400 transition transform scale-95 group-hover:scale-100 duration-200">
+                        <Eye className="w-4 h-4 text-stone-900" />
                         <span>Inspect Photo</span>
                       </span>
                     </div>
                   </div>
 
                   {/* Sighting Details */}
-                  <div className="mt-3.5 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-black text-lg text-stone-900 group-hover:text-amber-700 transition">
+                  <div className="mt-4 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-pixar-title text-xl text-stone-900 group-hover:text-sky-600 transition-colors">
                         {s.speciesName}
                       </h3>
-                      <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+                      <span className="text-[11px] font-pixar-title uppercase tracking-wide text-amber-950 bg-gradient-to-r from-amber-200 to-amber-300 px-3 py-1 rounded-full border border-amber-400/60 shadow-2xs shrink-0">
                         x{s.count} {s.count === 1 ? 'bird' : 'birds'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs font-mono text-stone-500">
+                    <div className="flex items-center gap-2 text-xs font-pixar-sub font-bold text-stone-500">
                       <span>Behavior: <strong className="text-stone-800">{s.behavior}</strong></span>
                       {s.temperature && (
                         <>
                           <span>•</span>
-                          <span>{s.temperature}</span>
+                          <span className="text-sky-700 font-extrabold">{s.temperature}</span>
                         </>
                       )}
                     </div>
 
-                    <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed pt-1">
+                    <p className="text-xs font-pixar-body font-semibold text-stone-600 line-clamp-2 leading-relaxed pt-1">
                       "{s.notes}"
                     </p>
                   </div>
                 </div>
 
                 {/* Card Footer */}
-                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                  <div className="flex items-center gap-1 font-mono">
-                    <Calendar className="w-3.5 h-3.5 text-stone-400" />
+                <div className="mt-4 pt-3 border-t-2 border-stone-100 flex items-center justify-between text-[11px] font-pixar-sub font-semibold text-stone-500">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-amber-500" />
                     <span>{s.date} at {s.time}</span>
                   </div>
 
-                  <span className="font-semibold text-stone-800">
-                    Spotted by {s.spottedBy}
+                  <span className="font-bold text-stone-800 bg-stone-100 px-2.5 py-0.5 rounded-full">
+                    By {s.spottedBy}
                   </span>
                 </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Eye, Feather } from 'lucide-react';
+import { Eye, Feather } from 'lucide-react';
 
 import cardinalAnimated from '../assets/images/cardinal animated.mp4';
 import goldenAnimated from '../assets/images/golden animated.mp4';
@@ -116,41 +116,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* CENTER COLUMN: Hero Headline & Start Creating Pill Button */}
           <div className="md:col-span-6 text-center space-y-6 order-1 md:order-2 px-2 sm:px-4">
             
-            {/* Main Headline styled like the reference sample animation website */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-stone-900 leading-[1.12]">
-              Your backyard into
-              <br />
-              <span className="font-bold text-stone-900 inline-flex items-center justify-center gap-1">
-                Bird Magic
-                <span className="text-amber-500 font-serif italic text-3xl sm:text-5xl -mt-2">✦</span>
-              </span>
+            {/* Main Headline styled like the reference Pixar style */}
+            <h1 className="font-pixar-title text-4xl sm:text-5xl md:text-6xl tracking-wide text-stone-900 leading-[1.12] drop-shadow-xs text-center">
+              <div>MEET THE</div>
+              <div className="text-sky-500 relative inline-block">
+                BACKYARD FLOCK
+                <span className="absolute left-full ml-2 top-0 text-amber-400 font-pixar-sub text-3xl sm:text-5xl animate-bounce pointer-events-none select-none">✦</span>
+              </div>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-stone-500 text-sm sm:text-base md:text-lg max-w-md mx-auto font-normal leading-relaxed">
-              Log, track, and discover backyard feathered visitors in a few clicks.
+            <p className="font-pixar-sub text-stone-600 text-base sm:text-lg md:text-xl max-w-xl mx-auto font-semibold leading-relaxed">
+              Look who's stopping by for a snack, track your favorite feathered regulars, and get to know the quirky characters living right outside your window.
             </p>
 
-            {/* Centered Pill Button matching reference "Start Creating" button design */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={onOpenLogModal}
-                className="group relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white text-stone-900 font-semibold text-sm border border-stone-200/90 shadow-md shadow-stone-200/80 hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden"
-              >
-                {/* Subtle rainbow gradient ring glow behind button */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400 rounded-full opacity-40 group-hover:opacity-100 transition duration-500 blur-xs -z-10" />
-                <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-stone-950 transition-colors">
-                  <Plus className="w-4 h-4 text-stone-800 group-hover:text-stone-950" />
-                </div>
-                <span>Start Logging</span>
-              </button>
-
+            {/* Centered Pill Button matching Pixar style */}
+            <div className="pt-3 flex items-center justify-center">
               <button
                 onClick={onExploreGallery}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition cursor-pointer"
+                className="px-7 py-3.5 rounded-full bg-sky-100 hover:bg-sky-200 active:translate-y-0.5 text-sky-900 font-pixar-sub font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border-b-2 border-sky-300 shadow-md hover:scale-105"
               >
-                <Eye className="w-3.5 h-3.5 text-stone-500" />
-                <span>Browse Gallery</span>
+                <Eye className="w-4 h-4 text-sky-600" />
+                <span>See Who Dropped By</span>
               </button>
             </div>
 
@@ -170,49 +157,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         </div>
 
-        {/* SECONDARY ROW: Full Backyard Avian Roster */}
-        <div className="mt-16 pt-8 border-t border-stone-100">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2 text-xs font-bold text-stone-800 uppercase tracking-wider font-mono">
-              <Feather className="w-4 h-4 text-amber-600" />
-              <span>Backyard Bird Club Characters</span>
-            </div>
-            <button
-              onClick={onExploreGallery}
-              className="text-xs font-bold text-amber-800 hover:text-amber-900 hover:underline cursor-pointer flex items-center gap-1"
-            >
-              <span>Explore All Sightings</span>
-              <span>→</span>
-            </button>
-          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-            {ALL_CHARACTERS.map((char) => (
-              <div
-                key={char.id}
-                onClick={onExploreGallery}
-                className="group bg-stone-50 hover:bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer flex items-center gap-3"
-              >
-                <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-200 shrink-0 border border-stone-300">
-                  <img
-                    src={char.image}
-                    alt={char.name}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-bold text-xs text-stone-900 group-hover:text-amber-700 truncate">
-                    {char.name}
-                  </h4>
-                  <p className="text-[10px] text-stone-500 truncate">
-                    {char.species}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
       </div>
     </section>

@@ -1,109 +1,112 @@
 import React, { useState } from 'react';
-import { Feather, BookOpen, BarChart3, Plus, Search, Menu, X } from 'lucide-react';
+import { Feather, BookOpen, BarChart3, Plus, Menu, X, Home } from 'lucide-react';
 
 interface NavbarProps {
-  activeTab: 'gallery' | 'species' | 'analytics';
-  onTabChange: (tab: 'gallery' | 'species' | 'analytics') => void;
+  activeTab: 'home' | 'gallery' | 'species' | 'analytics';
+  onTabChange: (tab: 'home' | 'gallery' | 'species' | 'analytics') => void;
+  onGoHome: () => void;
   onOpenLogModal: () => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onTabChange,
+  onGoHome,
   onOpenLogModal,
-  searchQuery,
-  onSearchChange,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b-2 border-sky-100 shadow-md shadow-sky-900/5 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Whimsical Logo - Peep & Perch */}
+          {/* Pixar-inspired Logo */}
           <div 
-            onClick={() => onTabChange('gallery')}
+            onClick={onGoHome}
             className="flex items-center gap-3 cursor-pointer group select-none"
+            title="Go to Home / Top"
           >
-            <div className="w-11 h-11 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center text-2xl shadow-sm group-hover:scale-105 group-hover:rotate-3 transition-transform duration-200 border border-amber-500/30">
+            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-stone-950 flex items-center justify-center text-2xl shadow-md shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border-2 border-white ring-2 ring-amber-400/40">
               🐦
+              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-sky-500 border border-white"></span>
+              </span>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-sans text-xl sm:text-2xl font-black tracking-tight text-stone-900">
-                  Peep & Perch
-                </span>
-                <span className="hidden sm:inline-block text-[10px] font-mono font-bold uppercase tracking-widest text-amber-900 bg-amber-200/90 px-2 py-0.5 rounded-full border border-amber-300">
-                  Backyard Aviary 🏡
+                <span className="font-pixar-title text-2xl sm:text-3xl tracking-wide text-stone-900 drop-shadow-xs group-hover:text-sky-600 transition-colors">
+                  PEEP <span className="text-amber-500">&amp;</span> PERCH
                 </span>
               </div>
-              <p className="text-[11px] font-medium text-stone-500 hidden sm:block">
-                Home Backyard Bird Tracker & Field Log
+              <p className="text-[11px] font-pixar-sub font-semibold text-stone-500 hidden sm:block tracking-wide">
+                See who is dropping by for a snack
               </p>
             </div>
           </div>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-stone-200/60 p-1.5 rounded-2xl border border-stone-300/50">
+          {/* Pixar-style Nav Tabs */}
+          <nav className="hidden md:flex items-center gap-1.5 bg-stone-100/90 p-1.5 rounded-full border-2 border-stone-200/80 shadow-inner">
+            <button
+              onClick={onGoHome}
+              className={`px-3.5 py-2.5 rounded-full text-xs font-pixar-sub font-bold tracking-wide transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'home'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-105 border-b-2 border-sky-700'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 hover:scale-102'
+              }`}
+              title="Home / Back to top"
+            >
+              <Home className={`w-4 h-4 ${activeTab === 'home' ? 'text-amber-300' : 'text-sky-500'}`} />
+              <span>Home</span>
+            </button>
+
             <button
               onClick={() => onTabChange('gallery')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-4.5 py-2.5 rounded-full text-xs font-pixar-sub font-bold tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'gallery'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/50'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-105 border-b-2 border-sky-700'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 hover:scale-102'
               }`}
             >
-              <Feather className="w-4 h-4 text-amber-600" />
-              <span>Sightings Log</span>
+              <Feather className={`w-4 h-4 ${activeTab === 'gallery' ? 'text-amber-300' : 'text-amber-500'}`} />
+              <span>Who Dropped By</span>
             </button>
 
             <button
               onClick={() => onTabChange('species')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-4.5 py-2.5 rounded-full text-xs font-pixar-sub font-bold tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'species'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/50'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-105 border-b-2 border-sky-700'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 hover:scale-102'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-sky-600" />
-              <span>Field Guide</span>
+              <BookOpen className={`w-4 h-4 ${activeTab === 'species' ? 'text-amber-300' : 'text-sky-500'}`} />
+              <span>Meet the Locals</span>
             </button>
 
             <button
               onClick={() => onTabChange('analytics')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-4.5 py-2.5 rounded-full text-xs font-pixar-sub font-bold tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === 'analytics'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/50'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-105 border-b-2 border-sky-700'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/80 hover:scale-102'
               }`}
             >
-              <BarChart3 className="w-4 h-4 text-indigo-600" />
-              <span>Yard Stats</span>
+              <BarChart3 className={`w-4 h-4 ${activeTab === 'analytics' ? 'text-amber-300' : 'text-indigo-500'}`} />
+              <span>Flock Trends</span>
             </button>
           </nav>
 
-          {/* Quick Actions & Log Button */}
+          {/* Quick Actions & Pixar CTA */}
           <div className="flex items-center gap-3">
             
-            {/* Quick Search Bar */}
-            <div className="relative hidden lg:block w-48">
-              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search bird or note..."
-                className="w-full pl-8 pr-3 py-1.5 text-xs font-medium rounded-xl bg-white border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-400 text-stone-900"
-              />
-            </div>
-
-            {/* Log Bird Sighting CTA */}
+            {/* Chunky Pixar Log Button */}
             <button
               onClick={onOpenLogModal}
-              className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-stone-950 font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-amber-500/20 transition-all border border-amber-600/30 cursor-pointer"
+              className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:translate-y-0.5 active:border-b-0 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-amber-500/30 transition-all border-b-3 border-amber-700 cursor-pointer hover:scale-105"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Log Sighting</span>
@@ -112,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200"
+              className="md:hidden p-2.5 rounded-2xl bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -123,46 +126,46 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-amber-200 space-y-2 animate-fade-in">
+          <div className="md:hidden py-4 border-t-2 border-sky-100 space-y-2 animate-fade-in font-pixar-sub">
             <button
-              onClick={() => { onTabChange('gallery'); setMobileMenuOpen(false); }}
-              className={`w-full p-3 rounded-xl text-left text-xs font-bold flex items-center gap-2 ${
-                activeTab === 'gallery' ? 'bg-amber-100 text-amber-950 font-black' : 'text-stone-700'
+              onClick={() => { onGoHome(); setMobileMenuOpen(false); }}
+              className={`w-full p-3 rounded-2xl text-left text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'home' ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' : 'text-stone-700 hover:bg-stone-100'
               }`}
             >
-              <Feather className="w-4 h-4 text-amber-600" />
-              <span>Sightings Log</span>
+              <Home className={`w-4 h-4 ${activeTab === 'home' ? 'text-amber-300' : 'text-sky-500'}`} />
+              <span>Home</span>
+            </button>
+
+            <button
+              onClick={() => { onTabChange('gallery'); setMobileMenuOpen(false); }}
+              className={`w-full p-3 rounded-2xl text-left text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'gallery' ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' : 'text-stone-700 hover:bg-stone-100'
+              }`}
+            >
+              <Feather className="w-4 h-4" />
+              <span>Who Dropped By</span>
             </button>
 
             <button
               onClick={() => { onTabChange('species'); setMobileMenuOpen(false); }}
-              className={`w-full p-3 rounded-xl text-left text-xs font-bold flex items-center gap-2 ${
-                activeTab === 'species' ? 'bg-amber-100 text-amber-950 font-black' : 'text-stone-700'
+              className={`w-full p-3 rounded-2xl text-left text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'species' ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' : 'text-stone-700 hover:bg-stone-100'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-sky-600" />
-              <span>Field Guide</span>
+              <BookOpen className="w-4 h-4" />
+              <span>Meet the Locals</span>
             </button>
 
             <button
               onClick={() => { onTabChange('analytics'); setMobileMenuOpen(false); }}
-              className={`w-full p-3 rounded-xl text-left text-xs font-bold flex items-center gap-2 ${
-                activeTab === 'analytics' ? 'bg-amber-100 text-amber-950 font-black' : 'text-stone-700'
+              className={`w-full p-3 rounded-2xl text-left text-xs font-bold flex items-center gap-2 transition-all ${
+                activeTab === 'analytics' ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' : 'text-stone-700 hover:bg-stone-100'
               }`}
             >
-              <BarChart3 className="w-4 h-4 text-indigo-600" />
-              <span>Yard Stats</span>
+              <BarChart3 className="w-4 h-4" />
+              <span>Flock Trends</span>
             </button>
-
-            <div className="pt-2">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search bird or note..."
-                className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-stone-300"
-              />
-            </div>
           </div>
         )}
 
@@ -170,3 +173,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+

@@ -61,33 +61,33 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-stone-200 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in overflow-y-auto font-pixar-body">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-sky-100 my-8">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition"
+          className="absolute top-5 right-5 p-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition cursor-pointer"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center text-xl shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-stone-950 flex items-center justify-center text-2xl shadow-md shadow-amber-500/20 border-2 border-white ring-2 ring-amber-300/40">
             📸
           </div>
           <div>
-            <h3 className="text-xl font-extrabold text-stone-900">
-              Log Backyard Bird Sighting
+            <h3 className="font-pixar-title text-2xl text-stone-900">
+              LOG BACKYARD BIRD SIGHTING
             </h3>
-            <p className="text-xs text-stone-500">
-              Record a feathered visitor seen in your home garden or feeder.
+            <p className="font-pixar-sub font-semibold text-xs text-stone-500">
+              Record a feathered visitor seen in your home garden or feeder!
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 font-pixar-sub">
           
           {/* Species Selection */}
           <div>
@@ -97,7 +97,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
             <select
               value={selectedSpeciesId}
               onChange={(e) => setSelectedSpeciesId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-stone-900 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200 cursor-pointer"
             >
               {BACKYARD_SPECIES.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -119,23 +119,23 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
                 value={customSpeciesName}
                 onChange={(e) => setCustomSpeciesName(e.target.value)}
                 placeholder="e.g. Downy Woodpecker or Mourning Dove"
-                className="w-full px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-semibold focus:outline-none focus:border-sky-400"
               />
             </div>
           )}
 
           {/* Photo Preview */}
-          <div className="flex items-center gap-3 bg-amber-50 p-3 rounded-2xl border border-amber-200/80">
+          <div className="flex items-center gap-3 bg-amber-50 p-3.5 rounded-2xl border-2 border-amber-200/80">
             <img
               src={selectedSpeciesObj.imageUrl}
               alt={selectedSpeciesObj.name}
               referrerPolicy="no-referrer"
-              className="w-14 h-14 rounded-xl object-cover border border-amber-300 shadow-xs"
+              className="w-14 h-14 rounded-2xl object-cover border-2 border-amber-300 shadow-xs"
             />
             <div className="text-xs">
-              <span className="font-bold text-stone-900 block">{selectedSpeciesObj.name}</span>
-              <span className="text-stone-500 text-[11px] block">{selectedSpeciesObj.favoriteFood}</span>
-              <span className="text-emerald-800 text-[10px] font-mono font-semibold">Photo Attached ✓</span>
+              <span className="font-pixar-title text-stone-900 text-sm block">{selectedSpeciesObj.name}</span>
+              <span className="text-stone-600 text-[11px] block font-semibold">{selectedSpeciesObj.favoriteFood}</span>
+              <span className="text-emerald-800 text-[10px] font-bold">Photo Attached ✓</span>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
               <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value as GardenLocation)}
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold text-stone-900"
+                className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-stone-900 cursor-pointer"
               >
                 <option value="Tube Feeder">Tube Feeder 🌻</option>
                 <option value="Birdbath">Birdbath ⛲</option>
@@ -167,7 +167,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
               <select
                 value={behavior}
                 onChange={(e) => setBehavior(e.target.value as BehaviorType)}
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold text-stone-900"
+                className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-stone-900 cursor-pointer"
               >
                 <option value="Feeder Snack">Feeder Snack 🌽</option>
                 <option value="Water Bathing">Water Bathing 💦</option>
@@ -187,7 +187,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-2.5 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium"
+                className="w-full px-3 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold"
               />
             </div>
 
@@ -198,7 +198,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 placeholder="08:30 AM"
-                className="w-full px-2.5 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium"
+                className="w-full px-3 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold"
               />
             </div>
 
@@ -210,7 +210,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
                 max="50"
                 value={count}
                 onChange={(e) => setCount(Number(e.target.value))}
-                className="w-full px-2.5 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold"
+                className="w-full px-3 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-center"
               />
             </div>
           </div>
@@ -224,18 +224,18 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
                 value={spottedBy}
                 onChange={(e) => setSpottedBy(e.target.value)}
                 placeholder="Your Name / Family Member"
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium"
+                className="w-full px-4 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-semibold"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-stone-700 mb-1">Weather & Temp</label>
+              <label className="block text-[11px] font-bold text-stone-700 mb-1">Weather &amp; Temp</label>
               <input
                 type="text"
                 value={weather}
                 onChange={(e) => setWeather(e.target.value)}
                 placeholder="Sunny, 72°F"
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium"
+                className="w-full px-4 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-semibold"
               />
             </div>
           </div>
@@ -249,14 +249,14 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="What did you observe? (e.g. chirping loudly, bathing in fountain water, eating sunflower seeds...)"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-400"
+              placeholder="What did you observe? (e.g. chirping loudly, bathing in fountain water...)"
+              className="w-full px-4 py-3 rounded-2xl bg-stone-50 border-2 border-stone-200 text-xs font-pixar-body font-semibold focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition cursor-pointer"
+            className="w-full py-3.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 border-b-3 border-amber-700 cursor-pointer transition-all hover:scale-102"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Save Sighting to Garden Journal</span>
