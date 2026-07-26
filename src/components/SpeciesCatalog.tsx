@@ -5,7 +5,7 @@ import { BookOpen, Sparkles, Plus, Eye, Music, Heart, Volume2 } from 'lucide-rea
 
 interface SpeciesCatalogProps {
   sightings: BirdSighting[];
-  onOpenLogModal: () => void;
+  onOpenLogModal?: () => void;
   onSelectSpeciesFilter?: (speciesName: string) => void;
 }
 
@@ -21,27 +21,17 @@ export const SpeciesCatalog: React.FC<SpeciesCatalogProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 text-sky-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-sky-200 shadow-xs">
-              <BookOpen className="w-3.5 h-3.5 text-sky-600" />
-              <span>Meet the Locals & Identification</span>
-            </div>
-            <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
-              MEET THE LOCALS 📖
-            </h2>
-            <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
-              Learn how to identify backyard birds, attract them with their favorite treats, and recognize their songs.
-            </p>
+        <div>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 text-sky-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-sky-200 shadow-xs">
+            <BookOpen className="w-3.5 h-3.5 text-sky-600" />
+            <span>Meet the Locals & Identification</span>
           </div>
-
-          <button
-            onClick={onOpenLogModal}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 border-b-3 border-amber-700 cursor-pointer self-start md:self-auto hover:scale-105 transition-all"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Log Sighting</span>
-          </button>
+          <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
+            MEET THE LOCALS 📖
+          </h2>
+          <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
+            Get to know the regulars! A handy guide for figuring out exactly who is eating all the seed.
+          </p>
         </div>
 
         {/* SPECIES GRID CARDS */}

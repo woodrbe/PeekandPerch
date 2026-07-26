@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Feather, BookOpen, BarChart3, Plus, Menu, X, Home } from 'lucide-react';
+import { Feather, BookOpen, BarChart3, Menu, X, Home } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: 'home' | 'gallery' | 'species' | 'analytics';
   onTabChange: (tab: 'home' | 'gallery' | 'species' | 'analytics') => void;
   onGoHome: () => void;
-  onOpenLogModal: () => void;
+  onOpenLogModal?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
 }
@@ -100,26 +100,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Quick Actions & Pixar CTA */}
+          {/* Mobile Menu Toggle */}
           <div className="flex items-center gap-3">
-            
-            {/* Chunky Pixar Log Button */}
-            <button
-              onClick={onOpenLogModal}
-              className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:translate-y-0.5 active:border-b-0 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-amber-500/30 transition-all border-b-3 border-amber-700 cursor-pointer hover:scale-105"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>Log Sighting</span>
-            </button>
-
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2.5 rounded-2xl bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-
           </div>
 
         </div>

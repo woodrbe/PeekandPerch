@@ -4,12 +4,11 @@ import { BarChart3, Feather, MapPin, Sparkles, Trophy, Sun, Calendar, Plus } fro
 
 interface GardenAnalyticsProps {
   sightings: BirdSighting[];
-  onOpenLogModal: () => void;
+  onOpenLogModal?: () => void;
 }
 
 export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
   sightings,
-  onOpenLogModal,
 }) => {
   const totalSightings = sightings.length;
   const totalBirdsCounted = sightings.reduce((acc, curr) => acc + curr.count, 0);
@@ -46,27 +45,17 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-indigo-200 shadow-xs">
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Backyard Aviary Intelligence</span>
-            </div>
-            <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
-              FLOCK TRENDS &amp; AVIARY STATS 📊
-            </h2>
-            <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
-              Insights into backyard visitor frequency, favorite feeding spots, and active observation times.
-            </p>
+        <div>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-indigo-200 shadow-xs">
+            <BarChart3 className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Backyard Aviary Intelligence</span>
           </div>
-
-          <button
-            onClick={onOpenLogModal}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 border-b-3 border-amber-700 cursor-pointer self-start md:self-auto hover:scale-105 transition-all"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Log Sighting</span>
-          </button>
+          <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
+            FLOCK TRENDS 📊
+          </h2>
+          <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
+            Who’s trending, who’s ghosting, and all the juicy numbers behind our backyard visitors
+          </p>
         </div>
 
         {/* METRIC CARDS ROW */}

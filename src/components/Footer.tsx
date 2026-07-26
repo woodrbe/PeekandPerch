@@ -44,7 +44,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenLogModal }) =
             </button>
             <button
               onClick={onOpenLogModal}
-              className="px-4 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-stone-950 font-pixar-title text-xs transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-amber-500/20 border-b-2 border-amber-700"
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-amber-500/30 transition-all border-b-2 border-amber-700 cursor-pointer hover:scale-105"
             >
               <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Log Sighting</span>
