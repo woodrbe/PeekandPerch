@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { BirdSighting } from '../types';
 import { Plus, Eye, Feather } from 'lucide-react';
 
 import cardinalAnimated from '../assets/images/cardinal animated.mp4';
@@ -12,9 +10,7 @@ import bluejayMascot from '../assets/images/blue_jay_mascot_1784996006095.jpg';
 import owlMascot from '../assets/images/wise_owl_mascot_1784996016103.jpg';
 
 interface HeroSectionProps {
-  recentSightings: BirdSighting[];
   onOpenLogModal: () => void;
-  onSelectSighting: (sighting: BirdSighting) => void;
   onExploreGallery: () => void;
 }
 
@@ -22,6 +18,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenLogModal,
   onExploreGallery,
 }) => {
+  // Alternating video playback controller state:
+  // 'golden' -> plays Golden bird video
+  // 'pause_after_golden' -> 2s pause where neither video plays
+  // 'cardinal' -> plays Cardinal bird video
+  // 'pause_after_cardinal' -> 2s pause where neither video plays
+  const [activeBird, setActiveBird] = React.useState<'golden' | 'pause_after_golden' | 'cardinal' | 'pause_after_cardinal'>('golden');
+
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (activeBird === 'pause_after_golden') {
+      timer = setTimeout(() => {
+        setActiveBird('cardinal');
+      }, 2000);
+    } else if (activeBird === 'pause_after_cardinal') {
+      timer = setTimeout(() => {
+        setActiveBird('golden');
+      }, 2000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [activeBird]);
+
+  const handleGoldenEnded = React.useCallback(() => {
+    setActiveBird('pause_after_golden');
+  }, []);
+
+  const handleCardinalEnded = React.useCallback(() => {
+    setActiveBird('pause_after_cardinal');
+  }, []);
+
   const ALL_CHARACTERS = [
     {
       id: 'cardinal-mascot',
@@ -74,11 +101,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* HERO 3-COLUMN LAYOUT: Left Character | Center Text & Button | Right Character */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[460px] py-4">
           
-          {/* LEFT COLUMN: Golden (Goldfinch) Character - Isolated blending on background, no wording */}
+          {/* LEFT COLUMN: Golden (Goldfinch) Character - Static positioning */}
           <div className="md:col-span-3 flex items-center justify-center order-2 md:order-1">
             <div className="relative w-full max-w-[280px]">
               <TransparentVideo
                 src={goldenAnimated}
+                isPlaying={activeBird === 'golden'}
+                onEnded={handleGoldenEnded}
                 className="w-full h-auto max-w-[280px] mx-auto"
               />
             </div>
@@ -127,11 +156,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           </div>
 
-          {/* RIGHT COLUMN: Cardinal Character - Isolated blending on background, no wording */}
+          {/* RIGHT COLUMN: Cardinal Character - Static positioning */}
           <div className="md:col-span-3 flex items-center justify-center order-3">
             <div className="relative w-full max-w-[280px]">
               <TransparentVideo
                 src={cardinalAnimated}
+                isPlaying={activeBird === 'cardinal'}
+                onEnded={handleCardinalEnded}
                 className="w-full h-auto max-w-[280px] mx-auto"
               />
             </div>

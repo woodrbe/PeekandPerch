@@ -4,12 +4,46 @@ interface TransparentVideoProps {
   src: string;
   className?: string;
   style?: React.CSSProperties;
+  isPlaying?: boolean;
+  onEnded?: () => void;
+  playbackRate?: number;
 }
 
-export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, className, style }) => {
+export const TransparentVideo: React.FC<TransparentVideoProps> = ({
+  src,
+  className,
+  style,
+  isPlaying = true,
+  onEnded,
+  playbackRate = 1.0,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [useCanvas, setUseCanvas] = useState(true);
+
+  const hasEndedRef = useRef<boolean>(false);
+  const onEndedRef = useRef(onEnded);
+
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+  }, [onEnded]);
+
+  // Handle controlled play/pause state updates
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      hasEndedRef.current = false;
+      video.currentTime = 0;
+      if (playbackRate !== 1.0) {
+        video.playbackRate = playbackRate;
+      }
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isPlaying, playbackRate]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -18,11 +52,37 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
 
     let animationFrameId: number;
 
+    const setupVideo = () => {
+      if (playbackRate !== 1.0) {
+        video.playbackRate = playbackRate;
+      }
+      if (isPlaying) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+
+    if (video.readyState >= 2) {
+      setupVideo();
+    } else {
+      video.addEventListener('loadeddata', setupVideo, { once: true });
+    }
+
     const renderFrame = () => {
       if (video.readyState >= 2 && video.videoWidth > 0) {
         if (canvas.width !== video.videoWidth) {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
+        }
+
+        // Check if video reached end frame
+        if (isPlaying && !hasEndedRef.current && video.duration > 0 && (video.currentTime >= video.duration - 0.15 || video.ended)) {
+          hasEndedRef.current = true;
+          video.pause();
+          if (onEndedRef.current) {
+            onEndedRef.current();
+          }
         }
 
         try {
@@ -33,6 +93,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
             const data = frame.data;
             const len = data.length;
 
+            // Key out grey / white background (r,g,b > 140 & low color tint diff)
             for (let i = 0; i < len; i += 4) {
               const r = data[i];
               const g = data[i + 1];
@@ -43,7 +104,6 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
               const minVal = Math.min(r, g, b);
               const diff = maxVal - minVal;
 
-              // Key out grey / white background (r,g,b > 140 & low color tint diff)
               if (r > 140 && g > 140 && b > 140 && diff < 40) {
                 if (r > 185 && g > 185 && b > 185) {
                   // Pure transparent
@@ -56,6 +116,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
                 }
               }
             }
+
             ctx.putImageData(frame, 0, 0);
           }
         } catch {
@@ -68,26 +129,31 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
     };
 
     const handlePlay = () => {
+      if (video && playbackRate) {
+        video.playbackRate = playbackRate;
+      }
       renderFrame();
     };
 
     video.addEventListener('play', handlePlay);
-    video.play().catch(() => {});
+    video.playbackRate = playbackRate;
+    if (isPlaying) {
+      video.play().catch(() => {});
+    }
     animationFrameId = requestAnimationFrame(renderFrame);
 
     return () => {
+      video.removeEventListener('loadeddata', setupVideo);
       video.removeEventListener('play', handlePlay);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [src]);
+  }, [src, playbackRate, isPlaying]);
 
   return (
     <div className={`relative ${className || ''}`} style={style}>
       <video
         ref={videoRef}
         src={src}
-        autoPlay
-        loop
         muted
         playsInline
         className={
@@ -100,3 +166,4 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({ src, classNa
     </div>
   );
 };
+

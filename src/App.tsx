@@ -102,9 +102,7 @@ export default function App() {
 
       {/* HERO SECTION */}
       <HeroSection
-        recentSightings={sightings}
         onOpenLogModal={() => setIsLogModalOpen(true)}
-        onSelectSighting={(s) => setInspectedSighting(s)}
         onExploreGallery={() => {
           setActiveTab('gallery');
           const el = document.getElementById('gallery-section');
