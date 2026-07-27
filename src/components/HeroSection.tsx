@@ -1,10 +1,10 @@
 import React from 'react';
 import { Eye, Feather } from 'lucide-react';
 
-import cardinalAnimated from '../assets/images/cardinal_ios_ready.mp4';
-import goldenAnimated from '../assets/images/golden_animated.mp4';
+import cardinalAnimated from '../assets/images/cardinal animated.mp4';
+import goldenAnimated from '../assets/images/golden animated.mp4';
 import { TransparentVideo } from './TransparentVideo';
-import cardinalMascot from '../assets/images/cardinal_compass_f1_1785113731087.jpg';
+import cardinalMascot from '../assets/images/red_cardinal_mascot_1784995985664.jpg';
 import goldfinchMascot from '../assets/images/yellow_goldfinch_mascot_1784995995465.jpg';
 import bluejayMascot from '../assets/images/blue_jay_mascot_1784996006095.jpg';
 import owlMascot from '../assets/images/wise_owl_mascot_1784996016103.jpg';
@@ -106,7 +106,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="relative w-full max-w-[280px]">
               <TransparentVideo
                 src={goldenAnimated}
-                poster={goldfinchMascot}
                 isPlaying={activeBird === 'golden'}
                 onEnded={handleGoldenEnded}
                 className="w-full h-auto max-w-[280px] mx-auto"
@@ -149,7 +148,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="relative w-full max-w-[280px]">
               <TransparentVideo
                 src={cardinalAnimated}
-                poster={cardinalMascot}
                 isPlaying={activeBird === 'cardinal'}
                 onEnded={handleCardinalEnded}
                 className="w-full h-auto max-w-[280px] mx-auto"

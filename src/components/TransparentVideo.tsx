@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 
 interface TransparentVideoProps {
   src: string;
-  poster?: string;
   className?: string;
   style?: React.CSSProperties;
   isPlaying?: boolean;
@@ -12,7 +11,6 @@ interface TransparentVideoProps {
 
 export const TransparentVideo: React.FC<TransparentVideoProps> = ({
   src,
-  poster,
   className,
   style,
   isPlaying = true,
@@ -21,17 +19,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Check if device is iOS / iPadOS / Touch where canvas pixel-processing can be throttled
-  const [isMobileOrTouch] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    return isIOS || isTouch;
-  });
-
-  const [useCanvas, setUseCanvas] = useState<boolean>(!isMobileOrTouch);
+  const [useCanvas, setUseCanvas] = useState<boolean>(true);
 
   const hasEndedRef = useRef<boolean>(false);
   const onEndedRef = useRef(onEnded);
@@ -40,76 +28,124 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
     onEndedRef.current = onEnded;
   }, [onEnded]);
 
-  // Helper to ensure DOM properties are explicitly set for WebKit / iOS Safari
-  const enforceVideoProps = (video: HTMLVideoElement) => {
+  // Ensure iOS / iPad Safari attributes are explicitly set on the DOM element
+  const configureVideoDOM = (video: HTMLVideoElement) => {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
-    if (playbackRate && playbackRate !== 1.0) {
-      video.playbackRate = playbackRate;
-    }
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+    video.setAttribute('preload', 'auto');
   };
 
-  const playVideo = (video: HTMLVideoElement) => {
-    enforceVideoProps(video);
+  // Safe play helper handling iPad Safari media policies
+  const safePlay = (video: HTMLVideoElement) => {
+    configureVideoDOM(video);
+    if (playbackRate !== 1.0) {
+      video.playbackRate = playbackRate;
+    }
     const promise = video.play();
     if (promise !== undefined) {
       promise.catch(() => {
-        // Autoplay policy fallback for iOS Safari if un-interacted
+        // Autoplay blocked on iPad Safari until user gesture or touch
       });
     }
   };
 
-  // User gesture interaction listener to unlock video if browser autoplay policy blocks initial attempt
+  // Listen for user touch / interaction to unlock video playback on iPadOS if initially blocked
   useEffect(() => {
-    const handleUserInteraction = () => {
+    const handleUserGesture = () => {
       const video = videoRef.current;
       if (video && isPlaying && video.paused) {
-        playVideo(video);
+        safePlay(video);
       }
     };
 
-    window.addEventListener('touchstart', handleUserInteraction, { passive: true, once: true });
-    window.addEventListener('click', handleUserInteraction, { passive: true, once: true });
-    window.addEventListener('scroll', handleUserInteraction, { passive: true, once: true });
+    window.addEventListener('touchstart', handleUserGesture, { passive: true });
+    window.addEventListener('touchend', handleUserGesture, { passive: true });
+    window.addEventListener('click', handleUserGesture, { passive: true });
+    window.addEventListener('scroll', handleUserGesture, { passive: true });
 
     return () => {
-      window.removeEventListener('touchstart', handleUserInteraction);
-      window.removeEventListener('click', handleUserInteraction);
-      window.removeEventListener('scroll', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserGesture);
+      window.removeEventListener('touchend', handleUserGesture);
+      window.removeEventListener('click', handleUserGesture);
+      window.removeEventListener('scroll', handleUserGesture);
     };
   }, [isPlaying]);
 
-  // Sync play / pause state whenever isPlaying changes
+  // Handle controlled play/pause state updates
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    enforceVideoProps(video);
+    configureVideoDOM(video);
 
     if (isPlaying) {
       hasEndedRef.current = false;
       try {
         video.currentTime = 0;
       } catch {
-        // Continue if metadata loading
+        // Ignore if metadata is still loading
       }
-      playVideo(video);
+      safePlay(video);
     } else {
       video.pause();
     }
-  }, [isPlaying, src, playbackRate]);
+  }, [isPlaying, playbackRate]);
 
-  // Handle Canvas pixel keying on Desktop browsers
   useEffect(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !useCanvas || !canvas) return;
+    if (!video) return;
+
+    configureVideoDOM(video);
 
     let animationFrameId: number;
 
+    const setupVideo = () => {
+      configureVideoDOM(video);
+      if (isPlaying) {
+        safePlay(video);
+      } else {
+        video.pause();
+      }
+    };
+
+    if (video.readyState >= 1) {
+      setupVideo();
+    }
+
+    video.addEventListener('loadedmetadata', setupVideo);
+    video.addEventListener('loadeddata', setupVideo);
+    video.addEventListener('canplay', setupVideo);
+
+    const handleEnded = () => {
+      if (isPlaying && !hasEndedRef.current) {
+        hasEndedRef.current = true;
+        video.pause();
+        if (onEndedRef.current) {
+          onEndedRef.current();
+        }
+      }
+    };
+
+    video.addEventListener('ended', handleEnded);
+
+    const handleTimeUpdate = () => {
+      if (isPlaying && !hasEndedRef.current && video.duration > 0) {
+        if (video.currentTime >= video.duration - 0.15) {
+          handleEnded();
+        }
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+
     const renderFrame = () => {
-      if (useCanvas && canvas && video.readyState >= 2 && video.videoWidth > 0) {
+      if (canvas && video.readyState >= 2 && video.videoWidth > 0) {
         if (canvas.width !== video.videoWidth) {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -123,7 +159,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
             const data = frame.data;
             const len = data.length;
 
-            // Key out white / light grey background
+            // Key out grey / white background (r,g,b > 140 & low color tint diff)
             for (let i = 0; i < len; i += 4) {
               const r = data[i];
               const g = data[i + 1];
@@ -147,7 +183,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
             ctx.putImageData(frame, 0, 0);
           }
         } catch {
-          // Fallback to CSS mix-blend-mode if canvas fails
+          // If canvas security context fails or iOS canvas memory limits error, fallback to CSS video filtering
           setUseCanvas(false);
         }
       }
@@ -155,66 +191,46 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
       animationFrameId = requestAnimationFrame(renderFrame);
     };
 
+    const handlePlay = () => {
+      configureVideoDOM(video);
+      renderFrame();
+    };
+
+    video.addEventListener('play', handlePlay);
+
+    if (isPlaying) {
+      safePlay(video);
+    }
     animationFrameId = requestAnimationFrame(renderFrame);
 
     return () => {
+      video.removeEventListener('loadedmetadata', setupVideo);
+      video.removeEventListener('loadeddata', setupVideo);
+      video.removeEventListener('canplay', setupVideo);
+      video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('play', handlePlay);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [useCanvas, isPlaying]);
-
-  const handleEnded = () => {
-    if (isPlaying && !hasEndedRef.current) {
-      hasEndedRef.current = true;
-      const video = videoRef.current;
-      if (video) video.pause();
-      if (onEndedRef.current) {
-        onEndedRef.current();
-      }
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    const video = videoRef.current;
-    if (video && isPlaying && !hasEndedRef.current && video.duration > 0) {
-      if (video.currentTime >= video.duration - 0.15) {
-        handleEnded();
-      }
-    }
-  };
+  }, [src, playbackRate, isPlaying]);
 
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden rounded-2xl ${className || ''}`} style={style}>
-      
-      {/* HTML5 Video Element - Always visible with native mix-blend-multiply */}
+    <div className={`relative ${className || ''}`} style={style}>
       <video
         ref={videoRef}
         src={src}
-        poster={poster}
         autoPlay={isPlaying}
         muted
         playsInline
         preload="auto"
-        onEnded={handleEnded}
-        onTimeUpdate={handleTimeUpdate}
-        onPlay={() => {
-          if (videoRef.current) enforceVideoProps(videoRef.current);
-        }}
         className={
           useCanvas
             ? "absolute inset-0 w-full h-full opacity-0 pointer-events-none"
-            : "w-full h-auto object-contain mix-blend-multiply relative z-10"
+            : "w-full h-auto object-contain mix-blend-multiply contrast-[1.65] brightness-[1.2] saturate-[1.1]"
         }
       />
-
-      {/* Canvas Element for desktop pixel keying if enabled */}
-      {useCanvas && (
-        <canvas
-          ref={canvasRef}
-          className="w-full h-auto object-contain relative z-10"
-        />
-      )}
+      {useCanvas && <canvas ref={canvasRef} className="w-full h-auto object-contain" />}
     </div>
   );
 };
-
 
