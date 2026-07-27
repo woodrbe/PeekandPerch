@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Feather, BookOpen, BarChart3, Menu, X, Home } from 'lucide-react';
+import logoImg from '../assets/images/cardinal_logo_1785078694540.jpg';
 
 interface NavbarProps {
   activeTab: 'home' | 'gallery' | 'species' | 'analytics';
@@ -29,12 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-3 cursor-pointer group select-none"
             title="Go to Home / Top"
           >
-            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-stone-950 flex items-center justify-center text-2xl shadow-md shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border-2 border-white ring-2 ring-amber-400/40">
-              🐦
-              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-sky-500 border border-white"></span>
-              </span>
+            <div className="relative w-12 h-12 rounded-2xl bg-white text-stone-950 flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 border-2 border-white ring-2 ring-amber-400/40 overflow-hidden">
+              <img src={logoImg} alt="Peep & Perch Cardinal Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </div>
             <div>
               <div className="flex items-center gap-2">

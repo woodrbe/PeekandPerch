@@ -1,5 +1,6 @@
 import React from 'react';
 import { Feather, Heart, Plus } from 'lucide-react';
+import logoImg from '../assets/images/cardinal_logo_1785078694540.jpg';
 
 interface FooterProps {
   onTabChange: (tab: 'home' | 'gallery' | 'species' | 'analytics') => void;
@@ -15,8 +16,8 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenLogModal }) =
           
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-stone-950 flex items-center justify-center font-bold text-2xl shadow-md shadow-amber-500/20 border-2 border-white/20">
-              🐦
+            <div className="w-12 h-12 rounded-2xl bg-white text-stone-950 flex items-center justify-center shadow-md shadow-amber-500/20 border-2 border-white/20 overflow-hidden shrink-0">
+              <img src={logoImg} alt="Peep & Perch Cardinal Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </div>
             <div>
               <div className="flex items-center gap-2">
