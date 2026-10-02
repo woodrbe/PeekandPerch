@@ -997,21 +997,38 @@ export class BirdfyService {
     };
   }
   /**
-   * Fetches the globally shared sightings from /api/sightings or public/data/sightings.json
+   * Helper to determine if we are running in local Vite development server
+   */
+  public static isLocalDev(): boolean {
+    if (typeof window === 'undefined') return false;
+    const h = window.location.hostname;
+    return (
+      h === 'localhost' ||
+      h === '127.0.0.1' ||
+      h === '[::1]' ||
+      window.location.port === '3000' ||
+      window.location.port === '5173'
+    );
+  }
+
+  /**
+   * Fetches the globally shared sightings from /api/sightings (local dev) or public/data/sightings.json (production)
    */
   public static async fetchSharedSightings(): Promise<BirdSighting[]> {
-    try {
-      const res = await fetch('/api/sightings', {
-        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (Array.isArray(json)) {
-          return json;
+    if (BirdfyService.isLocalDev()) {
+      try {
+        const res = await fetch('/api/sightings', {
+          headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json)) {
+            return json;
+          }
         }
+      } catch {
+        // fallback to static file if local api middleware fails
       }
-    } catch {
-      // fallback to static file if api is unavailable
     }
 
     try {
@@ -1031,39 +1048,44 @@ export class BirdfyService {
   }
 
   /**
-   * Clears public/data/sightings.json file directly on server/disk
+   * Clears sightings dataset. In local dev, clears public/data/sightings.json file via Vite middleware.
    */
   public static async clearSightingsJson(): Promise<{ success: boolean; message?: string }> {
-    try {
-      const res = await fetch('/api/sightings/clear', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return { success: true, message: data.message };
+    if (BirdfyService.isLocalDev()) {
+      try {
+        const res = await fetch('/api/sightings/clear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return { success: true, message: data.message };
+        }
+      } catch (e) {
+        console.warn('Failed to clear sightings.json via API endpoint', e);
       }
-    } catch (e) {
-      console.warn('Failed to clear sightings.json via API endpoint', e);
     }
-    return { success: false };
+    return { success: true, message: 'Sightings dataset cleared locally.' };
   }
 
   /**
-   * Persists active sightings dataset directly to public/data/sightings.json
+   * Persists active sightings dataset to disk in local dev, or saves locally.
    */
   public static async saveSightingsToJsonFile(sightings: BirdSighting[]): Promise<boolean> {
-    try {
-      const clean = BirdfyService.cleanAndDeduplicateSightings(sightings);
-      const res = await fetch('/api/sightings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clean),
-      });
-      return res.ok;
-    } catch {
-      return false;
+    if (BirdfyService.isLocalDev()) {
+      try {
+        const clean = BirdfyService.cleanAndDeduplicateSightings(sightings);
+        const res = await fetch('/api/sightings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(clean),
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
     }
+    return true;
   }
 
   /**

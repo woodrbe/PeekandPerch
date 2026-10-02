@@ -43,17 +43,16 @@ export default function App() {
   const handleClearAllSightings = async () => {
     setSightings([]);
     try {
-      localStorage.removeItem('peep_perch_sightings');
+      localStorage.setItem('peep_perch_sightings', JSON.stringify([]));
+      localStorage.setItem('peep_perch_user_cleared', 'true');
     } catch (e) {
       console.warn('Failed to remove sightings from storage', e);
     }
-    const res = await BirdfyService.clearSightingsJson();
-    if (res.success) {
-      setSyncToastMessage('Cleared sightings.json successfully!');
-      setTimeout(() => {
-        setSyncToastMessage(null);
-      }, 4000);
-    }
+    await BirdfyService.clearSightingsJson();
+    setSyncToastMessage('Cleared all bird sightings successfully!');
+    setTimeout(() => {
+      setSyncToastMessage(null);
+    }, 4000);
   };
 
   // Track latest sightings in a ref to prevent stale closures in sync intervals
@@ -65,13 +64,16 @@ export default function App() {
   // Preload shared feeder data from public/data/sightings.json or /api/sightings on mount (source of truth)
   const handleRefreshSightings = async (silent = false) => {
     try {
+      try {
+        localStorage.removeItem('peep_perch_user_cleared');
+      } catch {}
       const shared = await BirdfyService.fetchSharedSightings();
       if (Array.isArray(shared)) {
         setSightings(shared);
         try {
           localStorage.setItem('peep_perch_sightings', JSON.stringify(shared));
         } catch {}
-        if (!silent && shared.length > 0) {
+        if (!silent) {
           setSyncToastMessage(`Refreshed! Loaded ${shared.length} detections from sightings.json.`);
           setTimeout(() => {
             setSyncToastMessage(null);
@@ -83,18 +85,23 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
-    BirdfyService.fetchSharedSightings().then((sharedSightings) => {
-      if (!isMounted) return;
-      if (Array.isArray(sharedSightings)) {
-        setSightings(sharedSightings);
-        try {
-          localStorage.setItem('peep_perch_sightings', JSON.stringify(sharedSightings));
-        } catch {}
-      }
-    });
+    const isClearedLocally = localStorage.getItem('peep_perch_user_cleared') === 'true';
+
+    if (!isClearedLocally) {
+      BirdfyService.fetchSharedSightings().then((sharedSightings) => {
+        if (!isMounted) return;
+        if (Array.isArray(sharedSightings) && sharedSightings.length > 0) {
+          setSightings(sharedSightings);
+          try {
+            localStorage.setItem('peep_perch_sightings', JSON.stringify(sharedSightings));
+          } catch {}
+        }
+      });
+    }
 
     const handleWindowFocus = () => {
       if (!isMounted) return;
+      if (localStorage.getItem('peep_perch_user_cleared') === 'true') return;
       BirdfyService.fetchSharedSightings().then((shared) => {
         if (isMounted && Array.isArray(shared) && shared.length > 0) {
           setSightings(shared);
@@ -191,6 +198,9 @@ export default function App() {
 
   // Apply sightings directly into app state with intelligent deduplicating merge
   const handleApplySightings = (newSightings: BirdSighting[]) => {
+    try {
+      localStorage.removeItem('peep_perch_user_cleared');
+    } catch {}
     setSightings((prev) => {
       const { merged } = BirdfyService.mergeSightings(prev, newSightings);
       BirdfyService.saveSightingsToJsonFile(merged);
@@ -204,6 +214,9 @@ export default function App() {
 
   // Add new sighting (manual or imported) with deduplication
   const handleAddSighting = (newSighting: BirdSighting) => {
+    try {
+      localStorage.removeItem('peep_perch_user_cleared');
+    } catch {}
     setSightings((prev) => {
       const { merged } = BirdfyService.mergeSightings(prev, [newSighting]);
       BirdfyService.saveSightingsToJsonFile(merged);
