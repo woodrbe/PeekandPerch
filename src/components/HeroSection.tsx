@@ -4,9 +4,11 @@ import { Eye, RefreshCw } from 'lucide-react';
 import cardinalAnimated from '../assets/images/cardinal animated.mp4';
 import goldenAnimated from '../assets/images/golden animated.mp4';
 import bluejayAnimated from '../assets/images/bluejay animated.mp4';
+import turkeyAnimated from '../assets/images/turkey animated.mp4';
 import cardinalCharacter from '../assets/images/cardinal_character_1785015411958.jpg';
 import goldfinchCharacter from '../assets/images/goldfinch_character_1785015425426.jpg';
 import bluejayCharacter from '../assets/images/bluejay_character_1790964142504.jpg';
+import turkeyCharacter from '../assets/images/turkey_character_1790965409759.jpg';
 import { TransparentVideo } from './TransparentVideo';
 
 interface HeroSectionProps {
@@ -86,6 +88,24 @@ const MASCOTS: MascotBird[] = [
       tagBg: 'bg-sky-100 text-sky-900 border-sky-300',
       tagText: 'text-sky-700',
       quoteBubble: 'border-sky-200/80 bg-white/95 text-sky-950',
+    },
+  },
+  {
+    id: 'turkey',
+    name: 'Mayor Gobbles',
+    species: 'Wild Turkey',
+    badge: 'Ground Patrol Chief 🦃',
+    title: 'Under-Feeder Cleanup Specialist',
+    quote: '“Dropped seeds? No problem! Ground cleanup squad is on duty.”',
+    video: turkeyAnimated,
+    poster: turkeyCharacter,
+    theme: {
+      accentGlow: 'from-amber-600/25 via-emerald-600/10 to-transparent',
+      badgeBg: 'bg-amber-700 text-white shadow-amber-200',
+      cardBorder: 'border-amber-300/90 shadow-amber-100/50',
+      tagBg: 'bg-amber-100 text-amber-900 border-amber-300',
+      tagText: 'text-amber-800',
+      quoteBubble: 'border-amber-200/80 bg-white/95 text-amber-950',
     },
   },
 ];
