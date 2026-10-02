@@ -1,9 +1,9 @@
 [
   {
-    "id": "birdfy-scrape-1790974058481-mk72",
+    "id": "birdfy-scrape-1790974058481-9abn",
     "speciesId": "northern_cardinal__female_",
     "speciesName": "Northern Cardinal (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002204738%2Fnvc_1790974058481_1790974058614_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DzeoFhLzSEP6VCL4W63pOR52KpuOQ0AYDGZWE3XSVKMM%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002204738%2Fnvc_1790974058481_1790974058614_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DhVjcJtbjqYiziGgM4ftIY1yLbLLQKa1wejZLGn9iFwY%253D&width=600",
     "date": "2026-10-02",
     "time": "3:47 PM",
     "location": "Tube Feeder",
@@ -25,14 +25,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790971882888-3fma",
+    "id": "birdfy-scrape-1790971882888-8imt",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002201122%2Fnvc_1790971882888_1790971882888_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D8P1f8HWWxetIY85tY%252F6w5zL7DQDQhDrKwizCqu0yy70%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002201122%2Fnvc_1790971882888_1790971882888_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DKI41Kx6Lt%252Fz5tVzwmIAYl7y79qo0h%252B4r9sqvPQFp9C0%253D&width=600",
     "date": "2026-10-02",
     "time": "3:11 PM",
     "location": "Tube Feeder",
@@ -54,14 +54,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790971431794-glr6",
+    "id": "birdfy-scrape-1790971431794-40i2",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002200351%2Fnvc_1790971431794_1790971432527_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DHcS5Rz0K%252FfwwklplmZTLf8a2Dvo9nUAy7g8UlBw0e4Q%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002200351%2Fnvc_1790971431794_1790971432527_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D%252Fat7AHziV%252FctrfsaBrzS9OkzONziZfDWlolBEdJmKKs%253D&width=600",
     "date": "2026-10-02",
     "time": "3:03 PM",
     "location": "Tube Feeder",
@@ -83,14 +83,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790971273282-vyzu",
+    "id": "birdfy-scrape-1790971273282-d9uo",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002200113%2Fnvc_1790971273282_1790971273815_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D2%252Btl%252BItjQHzjI7f5q25jkhkelN5wFOGiKRCwJTuCgHM%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002200113%2Fnvc_1790971273282_1790971273815_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DV7fKGca7FlXkWG2BwXCMYB0I8JemzTylLGSYofCfe1Y%253D&width=600",
     "date": "2026-10-02",
     "time": "3:01 PM",
     "location": "Tube Feeder",
@@ -112,14 +112,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790970878507-er3g",
+    "id": "birdfy-scrape-1790970878507-sv8i",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002195438%2Fnvc_1790970878507_1790970878507_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DZ6zgbHmzBLvq830gCBAiTb6MNO%252FO3LiqtunYmaAHxFE%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002195438%2Fnvc_1790970878507_1790970878507_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dp912%252B%252FNko2DjCl3nSkGrLjJ6PScg5CnrZoer%252B9SqKf4%253D&width=600",
     "date": "2026-10-02",
     "time": "2:54 PM",
     "location": "Tube Feeder",
@@ -141,14 +141,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790970709372-f2l2",
+    "id": "birdfy-scrape-1790970709372-6c0e",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002195149%2Fnvc_1790970709372_1790970709705_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DCcb9K%252Fn8%252BA%252FwLEMFHOPPNMa0%252FEjgntsad6v0Aa2%252FtMs%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002195149%2Fnvc_1790970709372_1790970709705_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DTZoYPerxVs9Qz7iP8xayltsuCU%252FODcgoV9IIsMOHW0I%253D&width=600",
     "date": "2026-10-02",
     "time": "2:51 PM",
     "location": "Tube Feeder",
@@ -170,14 +170,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790970378960-h53h",
+    "id": "birdfy-scrape-1790970378960-iang",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002194618%2Fnvc_1790970378960_1790970379426_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DYftv9eec5gUa3IbngEEhwS3pqkxF%252BzHT13JhhSfabYk%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002194618%2Fnvc_1790970378960_1790970379426_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DG80myUB8qiXHFaO9OVp4CXUDKxc6baFzydqZYnif1Xw%253D&width=600",
     "date": "2026-10-02",
     "time": "2:46 PM",
     "location": "Tube Feeder",
@@ -199,14 +199,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790970173833-tlj3",
+    "id": "birdfy-scrape-1790970173833-6t35",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002194253%2Fnvc_1790970173833_1790970174566_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A23Z%26se%3D2026-10-05T21%253A02%253A23Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DY%252BoTY9aPX43SDViUDC5s1qbPCtpcekGaZRH8Xpy0TzU%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002194253%2Fnvc_1790970173833_1790970174566_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A15Z%26se%3D2026-10-05T21%253A06%253A15Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DNAvQqnzs8m4hiQkp6oXaM34SpyhZnvARrDL93IKheFY%253D&width=600",
     "date": "2026-10-02",
     "time": "2:42 PM",
     "location": "Tube Feeder",
@@ -228,14 +228,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790969619872-bur8",
+    "id": "birdfy-scrape-1790969619872-1opb",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002193339%2Fnvc_1790969619872_1790969620672_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DS5cq6mw0eYmcx4kjojxn%252B9aeUpYrqLQSy%252BuzHG%252B%252FHlg%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002193339%2Fnvc_1790969619872_1790969620672_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dv2hK8EZZrB0ECaHFoq3oQDmbvEDgpiwYJl46bL4J%252FVk%253D&width=600",
     "date": "2026-10-02",
     "time": "2:33 PM",
     "location": "Tube Feeder",
@@ -257,14 +257,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790969453587-pyll",
+    "id": "birdfy-scrape-1790969453587-wccs",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002193053%2Fnvc_1790969453587_1790969454120_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DJTSgqahujw%252BaYLlz%252BKDe7lyaTf4mV1JjASrpYtF6efc%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002193053%2Fnvc_1790969453587_1790969454120_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D53DGNcFVEPANx9HqyO0OlAq5Z0lKRerhGd9awu8vJsM%253D&width=600",
     "date": "2026-10-02",
     "time": "2:30 PM",
     "location": "Tube Feeder",
@@ -286,14 +286,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790969294269-n3o0",
+    "id": "birdfy-scrape-1790969294269-2w2b",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002192814%2Fnvc_1790969294269_1790969295202_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D0Qx6Du4Okx1t2QKuehiMLVKk3Bif7iA%252B%252F6xNmEyDogA%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002192814%2Fnvc_1790969294269_1790969295202_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DXs1qLyyiSvj3nwiGAfGpVtx7WmuCYee2eD%252FUW08XIVM%253D&width=600",
     "date": "2026-10-02",
     "time": "2:28 PM",
     "location": "Tube Feeder",
@@ -315,14 +315,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790969137251-yodd",
+    "id": "birdfy-scrape-1790969137251-9ytf",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002192537%2Fnvc_1790969137251_1790969137984_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DO96yMvO1x2il9mfdXosFe7eTQE6Lk226C9c9K6ibfiU%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002192537%2Fnvc_1790969137251_1790969137984_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dej6H68iHbq0QEgGFdKycwnbXfwztQfC%252BjYe1r%252FgTv4Q%253D&width=600",
     "date": "2026-10-02",
     "time": "2:25 PM",
     "location": "Tube Feeder",
@@ -344,14 +344,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790968766118-6xcf",
+    "id": "birdfy-scrape-1790968766118-aksu",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002191926%2Fnvc_1790968766118_1790968766184_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DIBGREd7BCd5XWnmfNpKn6PhIcAvVgVy37KV323Vh6zg%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002191926%2Fnvc_1790968766118_1790968766184_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DSbv6OqdossFpJyDvLH%252BYwaD7bCUj%252F7Y3D8ABGpqvJfw%253D&width=600",
     "date": "2026-10-02",
     "time": "2:19 PM",
     "location": "Tube Feeder",
@@ -373,14 +373,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790967373896-savi",
+    "id": "birdfy-scrape-1790967373896-tlkb",
     "speciesId": "tufted_titmouse",
     "speciesName": "Tufted Titmouse",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002185613%2Fnvc_1790967373896_1790967373896_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dgw9uqwgy2tKUlxjgb15lSe9BDLjKPTpljIBtVPzNkks%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002185613%2Fnvc_1790967373896_1790967373896_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Db7VMjjUDxES2Z1vW8kktIi8LYxx%252By146m3tQYJDWLZI%253D&width=600",
     "date": "2026-10-02",
     "time": "1:56 PM",
     "location": "Tube Feeder",
@@ -402,14 +402,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790966484930-l7bk",
+    "id": "birdfy-scrape-1790966484930-8ktz",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002184124%2Fnvc_1790966484930_1790966485796_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DDvaGpbgp0rDa8XsoKY17ofdls8P7MEhat5KrumnYZJs%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002184124%2Fnvc_1790966484930_1790966485796_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A17Z%26se%3D2026-10-05T21%253A06%253A17Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DJM3qTroLoMMvd93e2n9mJhYqa954sTt5j9zSM7NBOVI%253D&width=600",
     "date": "2026-10-02",
     "time": "1:41 PM",
     "location": "Tube Feeder",
@@ -431,14 +431,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790966317560-xwkj",
+    "id": "birdfy-scrape-1790966317560-1u0c",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183837%2Fnvc_1790966317560_1790966318293_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DxZbLa%252FQw8IJViTSx%252Bh21nxnb4dXvhbO3Htq05nUi8Xk%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183837%2Fnvc_1790966317560_1790966318293_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DkRQMldiev8Yy6ES5xpy01Q%252FXWnFGuWMVLBRD4uegNFg%253D&width=600",
     "date": "2026-10-02",
     "time": "1:38 PM",
     "location": "Tube Feeder",
@@ -460,14 +460,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790966154763-rfhj",
+    "id": "birdfy-scrape-1790966154763-snfl",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183554%2Fnvc_1790966154763_1790966154763_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DWvYbaszZEHz6fiF5UB%252BUhDY0bHu%252FvtETPuPtaHq1tIE%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183554%2Fnvc_1790966154763_1790966154763_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DS%252FE92a%252BTt%252FxhNGAeVp6%252F8%252BIL9op2%252BPoDvbAg%252FllbJvM%253D&width=600",
     "date": "2026-10-02",
     "time": "1:35 PM",
     "location": "Tube Feeder",
@@ -489,14 +489,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790965983846-e0pr",
+    "id": "birdfy-scrape-1790965983846-nsvt",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183303%2Fnvc_1790965983846_1790965984446_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DuA2qdhf6b5tjX9YaNWLja0r4MNS5z3Z9i7czcsMFObI%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002183303%2Fnvc_1790965983846_1790965984446_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DMV3vSC71A8H5h67g2923KYqTFJUH3DNxbGAGpqqsxHg%253D&width=600",
     "date": "2026-10-02",
     "time": "1:33 PM",
     "location": "Tube Feeder",
@@ -518,14 +518,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790962979012-wh7q",
+    "id": "birdfy-scrape-1790962979012-oo9b",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002174259%2Fnvc_1790962979012_1790962979812_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D0TCa7Mjf1dcYfZliOxf1Rt90lG12LavxaOVt4LblMS0%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002174259%2Fnvc_1790962979012_1790962979812_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DhhQ0TWayx4o0UFLNgJuDrGHDo7%252FcN6Ku8tyanUyhR8s%253D&width=600",
     "date": "2026-10-02",
     "time": "12:42 PM",
     "location": "Tube Feeder",
@@ -547,14 +547,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790961942127-rlip",
+    "id": "birdfy-scrape-1790961942127-x470",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002172542%2Fnvc_1790961942127_1790961943660_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DNmPBJsKLhfBL9IFI6KNx4jvNzJlH31J7%252BEzaOMfbOpY%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002172542%2Fnvc_1790961942127_1790961943660_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Df%252BCH9wz%252BFavTir%252FjcuBsLWJt1T6xOa4xrySFHc%252FF%252By0%253D&width=600",
     "date": "2026-10-02",
     "time": "12:25 PM",
     "location": "Tube Feeder",
@@ -576,14 +576,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790961506134-63kx",
+    "id": "birdfy-scrape-1790961506134-2ec3",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002171826%2Fnvc_1790961506134_1790961506334_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A26Z%26se%3D2026-10-05T21%253A02%253A26Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DidwQxNSlmBvLIexz%252BcLJZMCwSwLyW5TgePjSL5cH2TE%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002171826%2Fnvc_1790961506134_1790961506334_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DA4lAh3LmuwNK9ZwqAtAXkZkgakQtrgg%252FmBFEylzt46Q%253D&width=600",
     "date": "2026-10-02",
     "time": "12:18 PM",
     "location": "Tube Feeder",
@@ -605,14 +605,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790960750096-zl3x",
+    "id": "birdfy-scrape-1790960750096-iy1c",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002170550%2Fnvc_1790960750096_1790960750829_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DDDeiQUSE7dRhsE%252F4Rpp%252Brf%252B5KjudUyfud38XmawayQ0%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002170550%2Fnvc_1790960750096_1790960750829_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DVvj7bvnyyHQ%252BUHsl5HvU2AkBkD5rwgvBi9iZb9UrEaE%253D&width=600",
     "date": "2026-10-02",
     "time": "12:05 PM",
     "location": "Tube Feeder",
@@ -634,14 +634,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790960152689-8ej9",
+    "id": "birdfy-scrape-1790960152689-kizm",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002165552%2Fnvc_1790960152689_1790960153422_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dev6%252BAxjaRJN%252BMs9iTpcRylrDJ6JsPK%252BQrG3j2HBw9pM%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002165552%2Fnvc_1790960152689_1790960153422_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DYWJh1aKoPr61s09Zhookt8yRKuOQCOH3HgqyqRzeOwY%253D&width=600",
     "date": "2026-10-02",
     "time": "11:55 AM",
     "location": "Tube Feeder",
@@ -663,14 +663,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790957498486-kx0x",
+    "id": "birdfy-scrape-1790957498486-jdzg",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002161138%2Fnvc_1790957498486_1790957498952_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DQQB44KFJKsJE1UJ1hM9P%252BNtyjikBohXcEhEPk3uiwSs%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002161138%2Fnvc_1790957498486_1790957498952_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DdHu2wQqCXiqYw86EX5dR3lXZnR1IIib0G6XqlGxx6ZE%253D&width=600",
     "date": "2026-10-02",
     "time": "11:11 AM",
     "location": "Tube Feeder",
@@ -692,14 +692,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790957340038-ffsm",
+    "id": "birdfy-scrape-1790957340038-ayb1",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002160900%2Fnvc_1790957340038_1790957340838_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D1B%252BYJFji2ND107MLmfSJSCR%252BLjKrMzfsdaT3OfbLG%252Fo%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002160900%2Fnvc_1790957340038_1790957340838_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DykJ1LKixzUg58U36%252BgYRsMpveLMG4%252B777gFbXT1cIPU%253D&width=600",
     "date": "2026-10-02",
     "time": "11:09 AM",
     "location": "Tube Feeder",
@@ -721,14 +721,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790957186686-jeh4",
+    "id": "birdfy-scrape-1790957186686-r624",
     "speciesId": "house_finch__male_",
     "speciesName": "House Finch (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002160626%2Fnvc_1790957186686_1790957186686_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DgVU9Wz3m2O%252F2ZKV8sbygvUcgtNbG2MBLiH5xo86frc0%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002160626%2Fnvc_1790957186686_1790957186686_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D7jaUjeWJw0CBVHsiGbzrcWdvv0Bu39TBQAq09DwlXLk%253D&width=600",
     "date": "2026-10-02",
     "time": "11:06 AM",
     "location": "Tube Feeder",
@@ -750,14 +750,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790956569949-tm88",
+    "id": "birdfy-scrape-1790956569949-mkxi",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002155609%2Fnvc_1790956569949_1790956570482_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A27Z%26se%3D2026-10-05T21%253A02%253A27Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DiLeafy0PZyeBhWPp9DAqHyvoPgMRBMBb%252BC6UfiZemYg%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002155609%2Fnvc_1790956569949_1790956570482_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A19Z%26se%3D2026-10-05T21%253A06%253A19Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dqom8M6AAiN7R4nrZ1m5bsMI59szrRT6bt%252F3ohQqRnJI%253D&width=600",
     "date": "2026-10-02",
     "time": "10:56 AM",
     "location": "Tube Feeder",
@@ -779,14 +779,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790948625644-j3bn",
+    "id": "birdfy-scrape-1790948625644-yyco",
     "speciesId": "northern_cardinal__female_",
     "speciesName": "Northern Cardinal (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002134345%2Fnvc_1790948625644_1790948625844_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DSCtuS%252FmrsNq%252BnEpv1acRkstak5gb2hFu8egrUojV0J4%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002134345%2Fnvc_1790948625644_1790948625844_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D5Q4aHnjpBdIVqQAQs0thh2zNBwjUB2hNHVeulmCWTcA%253D&width=600",
     "date": "2026-10-02",
     "time": "8:43 AM",
     "location": "Tube Feeder",
@@ -808,14 +808,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790948008630-ygvp",
+    "id": "birdfy-scrape-1790948008630-ejvh",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002133328%2Fnvc_1790948008630_1790948009496_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DcdsNIQpwas2oGOc63DyxJaEbIs0zjrRzUIcQZ0kSTj4%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002133328%2Fnvc_1790948008630_1790948009496_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DEeGvvXrpouARWpxal34FqSr4JPNefyIa1zhx8UrkNLA%253D&width=600",
     "date": "2026-10-02",
     "time": "8:33 AM",
     "location": "Tube Feeder",
@@ -837,14 +837,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790946055514-83ut",
+    "id": "birdfy-scrape-1790946055514-69o7",
     "speciesId": "blue_jay",
     "speciesName": "Blue Jay",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002130055%2Fnvc_1790946055514_1790946056247_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DTkdhcu4Hz383%252BOxk0pXmNgJjIfGiuir8LK%252BMxTB1EcY%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002130055%2Fnvc_1790946055514_1790946056247_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dc8Zn%252BmQt01FBzimymM%252BVmCmZSBROEniUUAWnlS1CX8o%253D&width=600",
     "date": "2026-10-02",
     "time": "8:00 AM",
     "location": "Tube Feeder",
@@ -866,14 +866,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790945390596-p2ij",
+    "id": "birdfy-scrape-1790945390596-ti35",
     "speciesId": "house_finch__female_",
     "speciesName": "House Finch (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124950%2Fnvc_1790945390596_1790945390929_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D0ZY5S2Hwaq8hYlm7BPYL8QrOsWRZyoarW7OkVqtPMr4%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124950%2Fnvc_1790945390596_1790945390929_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DsjX3qcHguDl%252FqVtUqWfImavGvMDXos6QmUEN6BXouOg%253D&width=600",
     "date": "2026-10-02",
     "time": "7:49 AM",
     "location": "Tube Feeder",
@@ -895,14 +895,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790945204383-5eeb",
+    "id": "birdfy-scrape-1790945204383-h814",
     "speciesId": "red_bellied_woodpecker__male_",
     "speciesName": "Red-bellied Woodpecker (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124644%2Fnvc_1790945204383_1790945204783_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Db73Hm%252FZHgTKZSXxkyo5BLIO5xOT%252FkXzPcvpXMuBDL40%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124644%2Fnvc_1790945204383_1790945204783_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DsGVmdi%252BiIZiW25tO5Nd%252BxJqJQddrFT77edvxir7cOcA%253D&width=600",
     "date": "2026-10-02",
     "time": "7:46 AM",
     "location": "Tube Feeder",
@@ -924,14 +924,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790945001511-zlii",
+    "id": "birdfy-scrape-1790945001511-85tl",
     "speciesId": "northern_cardinal__female_",
     "speciesName": "Northern Cardinal (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124321%2Fnvc_1790945001511_1790945001644_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dgjj4kndqSwE%252FArYOB6uhBrKpwCg9gcX4Cs%252BvQxqEf%252FM%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002124321%2Fnvc_1790945001511_1790945001644_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D7Kt9RYaoHHEzMJ0iH9bhzByBoWeTKf%252BoyAhHWMPaFP8%253D&width=600",
     "date": "2026-10-02",
     "time": "7:43 AM",
     "location": "Tube Feeder",
@@ -953,14 +953,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790944466726-07ij",
+    "id": "birdfy-scrape-1790944466726-w1x5",
     "speciesId": "red_bellied_woodpecker__female_",
     "speciesName": "Red-bellied Woodpecker (Female)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002123426%2Fnvc_1790944466726_1790944466859_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DHvKQ578QHSxH1Jtv%252BVD%252BsP%252BAJvl46nLpVITpSmfgn%252FA%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002123426%2Fnvc_1790944466726_1790944466859_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Dt1yMIYt76WOjoQnXtxSS%252Fh4vdW%252BFYHuIcHFpLLvGymc%253D&width=600",
     "date": "2026-10-02",
     "time": "7:34 AM",
     "location": "Tube Feeder",
@@ -982,14 +982,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790944287877-kce2",
+    "id": "birdfy-scrape-1790944287877-4nhb",
     "speciesId": "blue_jay",
     "speciesName": "Blue Jay",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002123127%2Fnvc_1790944287877_1790944288743_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3D3FDK%252FBjgPXxgAFM%252BJEx%252BfVJlvFdaM52UOpTldwBSfgw%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002123127%2Fnvc_1790944287877_1790944288743_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A21Z%26se%3D2026-10-05T21%253A06%253A21Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DNA4hqsCuOnvHZ3zdUuvDcMEcTeENEuJ6aZ3wLgnNBH4%253D&width=600",
     "date": "2026-10-02",
     "time": "7:31 AM",
     "location": "Tube Feeder",
@@ -1011,14 +1011,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790942181639-kcpd",
+    "id": "birdfy-scrape-1790942181639-6m4q",
     "speciesId": "northern_cardinal__male_",
     "speciesName": "Northern Cardinal (Male)",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002115621%2Fnvc_1790942181639_1790942182439_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3Di6k%252BLI9s8lG7B%252BcuoylP2vA3oMpQMlegniwmFwyITm8%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002115621%2Fnvc_1790942181639_1790942182439_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A22Z%26se%3D2026-10-05T21%253A06%253A22Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DBEWuQ735LaZqKaSGpu0Q2JzqNPky2EKqNd10EjZbBwE%253D&width=600",
     "date": "2026-10-02",
     "time": "6:56 AM",
     "location": "Tube Feeder",
@@ -1040,14 +1040,14 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   },
   {
-    "id": "birdfy-scrape-1790941776268-9cea",
+    "id": "birdfy-scrape-1790941776268-2i1z",
     "speciesId": "tufted_titmouse",
     "speciesName": "Tufted Titmouse",
-    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002114936%2Fnvc_1790941776268_1790941779268_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A02%253A28Z%26se%3D2026-10-05T21%253A02%253A28Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DXIuJBnY8Jbu%252BLrsR9RaNJKIz5249FuLdnqvY9UBU4cs%253D&width=600",
+    "imageUrl": "https://netvue-thumbnail-scus-f4gnfdb7gub3fbb6.a01.azurefd.net/v1/thumbnail?url=https%3A%2F%2Fnvs0storage0scus.blob.core.windows.net%2Fnvs-pic-30-southcentralus-ue1%2F09b2ed07c6704af5%2F447G561042901276%2F20261002114936%2Fnvc_1790941776268_1790941779268_1920_1080_0.jpeg%3Fsp%3Dr%26st%3D2026-10-02T21%253A06%253A22Z%26se%3D2026-10-05T21%253A06%253A22Z%26sv%3D2024-11-04%26sr%3Db%26sig%3DPYWTxyuUoi%252Fk0zKIv4viT9HNFd4ZaoNSz34fqvDjgXU%253D&width=600",
     "date": "2026-10-02",
     "time": "6:49 AM",
     "location": "Tube Feeder",
@@ -1069,7 +1069,7 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-02T21:02:32.215Z"
+      "rawPIRTimestamp": "2026-10-02T21:06:25.394Z"
     }
   }
 ]
