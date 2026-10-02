@@ -305,7 +305,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
   }, [useCanvas, drawKeyedFrame, canvasHasFrame]);
 
   return (
-    <div className={`relative flex items-center justify-center ${className || ''}`} style={style}>
+    <div className={`relative flex items-center justify-center pointer-events-none ${className || ''}`} style={style}>
       
       {/* Fallback Image: Displayed if video completely fails to load */}
       {hasVideoError && poster && (

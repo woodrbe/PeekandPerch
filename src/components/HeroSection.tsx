@@ -154,7 +154,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className={`w-full max-w-[280px] sm:max-w-[300px] md:max-w-[310px] bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-3xl border ${currentMascot.theme.cardBorder} shadow-xl relative transition-all duration-300 hover:shadow-2xl`}>
               
               {/* Card Header: Mascot Badge and Switch Bird Button */}
-              <div className="flex items-center justify-between gap-2 pb-1.5">
+              <div className="flex items-center justify-between gap-2 pb-1.5 relative z-20">
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-pixar-sub font-bold ${currentMascot.theme.tagBg}`}>
                   {currentMascot.badge}
                 </span>
@@ -162,7 +162,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 {/* Quick Shuffle button */}
                 <button
                   onClick={handleShuffleMascot}
-                  className="inline-flex items-center gap-1 text-[11px] font-pixar-sub font-semibold text-stone-500 hover:text-stone-900 bg-stone-100 hover:bg-stone-200/80 px-2 py-0.5 rounded-full transition-colors cursor-pointer"
+                  className="relative z-30 inline-flex items-center gap-1 text-[11px] font-pixar-sub font-semibold text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200/90 active:scale-95 px-2.5 py-1 rounded-full transition-all cursor-pointer pointer-events-auto shadow-xs"
                   title="Switch to another mascot bird"
                 >
                   <RefreshCw className="w-3 h-3 text-stone-500" />
@@ -171,7 +171,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               {/* The Pixar Bird: Transparent video playing continuously in loop - uncropped full body */}
-              <div className="relative w-full h-[240px] sm:h-[260px] md:h-[285px] mx-auto flex items-center justify-center my-0.5">
+              <div className="relative w-full h-[240px] sm:h-[260px] md:h-[285px] mx-auto flex items-center justify-center my-0.5 pointer-events-none">
                 {/* Soft circular background glow behind mascot */}
                 <div 
                   className={`absolute inset-2 rounded-full bg-radial ${currentMascot.theme.accentGlow} blur-xl pointer-events-none`}
@@ -200,7 +200,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               {/* Mascot Info & Personality Quote */}
-              <div className="space-y-1.5 text-center pt-1">
+              <div className="space-y-1.5 text-center pt-1 relative z-20">
                 <div>
                   <h3 className="font-pixar-title text-lg sm:text-xl text-stone-900 tracking-wide leading-tight">
                     {currentMascot.name}
