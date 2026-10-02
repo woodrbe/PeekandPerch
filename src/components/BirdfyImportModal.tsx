@@ -40,7 +40,154 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
     return BirdfyService.parseRawBirdfyWebEvents(rawScraperText);
   }, [rawScraperText]);
 
-  const scraperBookmarkletCode = `(async () => { const toast = document.createElement('div'); toast.id = 'birdfy-peek-toast'; toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;background:#0284c7;color:#fff;padding:14px 24px;border-radius:999px;font-family:system-ui,-apple-system,sans-serif;font-size:14px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,0.35);border:2px solid #fff;display:flex;align-items:center;gap:10px;transition:all 0.3s ease;'; toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed to load ALL birds on page...</span>'; document.body.appendChild(toast); const scrollTargets = [window, document.documentElement, document.body, ...Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]'))].filter(Boolean); const doScroll = () => { window.scrollBy(0, 1500); scrollTargets.forEach(t => { try { if (t.scrollBy) t.scrollBy(0, 1500); if (t.scrollTop !== undefined) t.scrollTop += 1500; } catch(e){} }); const loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter(b => /load more|view more|more events/i.test(b.textContent || '')); loadBtns.forEach(b => { try { b.click(); } catch(e){} }); }; let lastCount = 0; let stagnantRounds = 0; for (let step = 1; step <= 25; step++) { doScroll(); await new Promise(r => setTimeout(r, 380)); const currentCards = document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length; toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed... Found <b>' + currentCards + '</b> birds so far (Step ' + step + '/25)...</span>'; if (currentCards > 0 && currentCards === lastCount) { stagnantRounds++; if (stagnantRounds >= 3) break; } else { stagnantRounds = 0; } lastCount = currentCards; } const allSightings = []; const seenUrls = new Set(); const JUNK = ['today', 'yesterday', 'feeder bird', 'all', 'select', 'delete', 'download', 'share', 'cancel', 'motion', 'video', 'events', 'devices', 'all birds']; const allElements = Array.from(document.querySelectorAll('*')); for (const el of allElements) { if (el.__vue__ && Array.isArray(el.__vue__.events) && el.__vue__.events.length > 0) { const v = el.__vue__; v.events.forEach(ev => { const media = v.mediaFor ? v.mediaFor(ev) : null; const tags = media?.displayTags || []; const species = tags[0]?.label || tags[0]?.rawName || ev.title || 'Feeder Visitor'; const img = media?.images?.[0]?.largeUrl || media?.images?.[0]?.listUrl || media?.images?.[0]?.url || ev.pic || ev.fileUrl || ''; const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM'; const d = ev.alertTime ? new Date(ev.alertTime).toISOString().split('T')[0] : (v.date || new Date().toISOString().split('T')[0]); if (img && !seenUrls.has(img)) { seenUrls.add(img); allSightings.push({ speciesName: species, imageUrl: img, time: tm.replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM', date: d }); } }); } } const tb = document.querySelector('.moment-toolbar__date')?.innerText?.trim() || ''; let defaultDate = new Date().toISOString().split('T')[0]; if (tb.toLowerCase().includes('yesterday')) { const y = new Date(); y.setDate(y.getDate() - 1); defaultDate = y.toISOString().split('T')[0]; } else if (tb && !tb.toLowerCase().includes('today')) { const p = new Date(tb); if (!isNaN(p.getTime())) defaultDate = p.toISOString().split('T')[0]; } let cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card')); if (!cards.length) { cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button')).map(el => el.closest('.moment-card') || el.parentElement).filter(Boolean); } cards = cards.filter(c => !c.querySelector('.moment-card, .device-event-card') && !c.matches('.moment-toolbar, .moment-tags, .moment-selection-bar, .moment-empty, .device-events-grid')); for (const c of cards) { const vue = c.__vue__; const imgEl = c.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img'); let u = vue?.mainCoverUrl || vue?.firstImageUrl || imgEl?.dataset?.mediaUrl || imgEl?.currentSrc || imgEl?.src || imgEl?.getAttribute('src') || ''; if (!u || u.startsWith('data:image/svg') || u.includes('avatar') || u.includes('spin') || u.includes('icon') || u.includes('logo')) { const thumb = c.querySelector('.moment-card__thumb img'); u = thumb?.currentSrc || thumb?.src || ''; } if (!u || seenUrls.has(u)) continue; seenUrls.add(u); let sp = vue?.displayTags?.[0]?.label || c.querySelector('.moment-card__tag, .device-event-card__name')?.innerText?.trim() || ''; if (!sp || JUNK.includes(sp.toLowerCase())) { const lines = (c.innerText || '').split('\\n').map(l => l.trim()).filter(l => l.length > 2 && l.length < 35); for (const l of lines) { if (!JUNK.includes(l.toLowerCase()) && !/^\\d{1,2}:\\d{2}/.test(l)) { sp = l; break; } } } if (!sp || JUNK.includes(sp.toLowerCase())) sp = 'Feeder Visitor'; let tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM'; if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) { const m = tm.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i); tm = m ? m[0] : '12:00 PM'; } const cardDate = vue?.event?.alertTime ? new Date(vue.event.alertTime).toISOString().split('T')[0] : defaultDate; allSightings.push({ speciesName: sp, imageUrl: u, time: tm, date: cardDate }); } copy(allSightings); toast.style.background = '#059669'; toast.innerHTML = '<span style="font-size:18px">🎉</span><span>✓ Copied ALL <b>' + allSightings.length + '</b> bird detections! Paste into Peek & Perch.</span>'; setTimeout(() => toast.remove(), 6000); alert('✓ Copied ALL ' + allSightings.length + ' bird detection(s) to your clipboard! Paste into Peek & Perch.'); return allSightings; })()`;
+  const scraperBookmarkletCode = `(async () => {
+  const copyToClipboard = async (data) => {
+    const jsonStr = JSON.stringify(data, null, 2);
+    let ok = false;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(jsonStr);
+        ok = true;
+      } catch (e) {}
+    }
+    if (!ok) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = jsonStr;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ok = document.execCommand('copy');
+        ta.remove();
+      } catch (e) {}
+    }
+    return ok;
+  };
+
+  const toast = document.createElement('div');
+  toast.id = 'birdfy-peek-toast';
+  toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;background:#0284c7;color:#fff;padding:14px 24px;border-radius:999px;font-family:system-ui,-apple-system,sans-serif;font-size:14px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,0.35);border:2px solid #fff;display:flex;align-items:center;gap:10px;transition:all 0.3s ease;';
+  toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed to load ALL birds on page...</span>';
+  document.body.appendChild(toast);
+
+  const scrollTargets = [window, document.documentElement, document.body, ...Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]'))].filter(Boolean);
+  const doScroll = () => {
+    window.scrollBy(0, 1500);
+    scrollTargets.forEach(t => {
+      try {
+        if (t.scrollBy) t.scrollBy(0, 1500);
+        if (t.scrollTop !== undefined) t.scrollTop += 1500;
+      } catch(e){}
+    });
+    const loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter(b => /load more|view more|more events/i.test(b.textContent || ''));
+    loadBtns.forEach(b => { try { b.click(); } catch(e){} });
+  };
+
+  let lastCount = 0;
+  let stagnantRounds = 0;
+  for (let step = 1; step <= 25; step++) {
+    doScroll();
+    await new Promise(r => setTimeout(r, 380));
+    const currentCards = document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length;
+    toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed... Found <b>' + currentCards + '</b> birds so far (Step ' + step + '/25)...</span>';
+    if (currentCards > 0 && currentCards === lastCount) {
+      stagnantRounds++;
+      if (stagnantRounds >= 3) break;
+    } else {
+      stagnantRounds = 0;
+    }
+    lastCount = currentCards;
+  }
+
+  const allSightings = [];
+  const seenUrls = new Set();
+  const JUNK = ['today', 'yesterday', 'feeder bird', 'all', 'select', 'delete', 'download', 'share', 'cancel', 'motion', 'video', 'events', 'devices', 'all birds'];
+  
+  const allElements = Array.from(document.querySelectorAll('*'));
+  for (const el of allElements) {
+    if (el.__vue__ && Array.isArray(el.__vue__.events) && el.__vue__.events.length > 0) {
+      const v = el.__vue__;
+      v.events.forEach(ev => {
+        const media = v.mediaFor ? v.mediaFor(ev) : null;
+        const tags = media?.displayTags || [];
+        const species = tags[0]?.label || tags[0]?.rawName || ev.title || 'Feeder Visitor';
+        const img = media?.images?.[0]?.largeUrl || media?.images?.[0]?.listUrl || media?.images?.[0]?.url || ev.pic || ev.fileUrl || '';
+        const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM';
+        const d = ev.alertTime ? new Date(ev.alertTime).toISOString().split('T')[0] : (v.date || new Date().toISOString().split('T')[0]);
+        if (img && !seenUrls.has(img)) {
+          seenUrls.add(img);
+          allSightings.push({
+            speciesName: species,
+            imageUrl: img,
+            time: tm.replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM',
+            date: d
+          });
+        }
+      });
+    }
+  }
+
+  const tb = document.querySelector('.moment-toolbar__date')?.innerText?.trim() || '';
+  let defaultDate = new Date().toISOString().split('T')[0];
+  if (tb.toLowerCase().includes('yesterday')) {
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    defaultDate = y.toISOString().split('T')[0];
+  } else if (tb && !tb.toLowerCase().includes('today')) {
+    const p = new Date(tb);
+    if (!isNaN(p.getTime())) defaultDate = p.toISOString().split('T')[0];
+  }
+
+  let cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
+  if (!cards.length) {
+    cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button')).map(el => el.closest('.moment-card') || el.parentElement).filter(Boolean);
+  }
+  cards = cards.filter(c => !c.querySelector('.moment-card, .device-event-card') && !c.matches('.moment-toolbar, .moment-tags, .moment-selection-bar, .moment-empty, .device-events-grid'));
+
+  for (const c of cards) {
+    const vue = c.__vue__;
+    const imgEl = c.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
+    let u = vue?.mainCoverUrl || vue?.firstImageUrl || imgEl?.dataset?.mediaUrl || imgEl?.currentSrc || imgEl?.src || imgEl?.getAttribute('src') || '';
+    if (!u || u.startsWith('data:image/svg') || u.includes('avatar') || u.includes('spin') || u.includes('icon') || u.includes('logo')) {
+      const thumb = c.querySelector('.moment-card__thumb img');
+      u = thumb?.currentSrc || thumb?.src || '';
+    }
+    if (!u || seenUrls.has(u)) continue;
+    seenUrls.add(u);
+
+    let sp = vue?.displayTags?.[0]?.label || c.querySelector('.moment-card__tag, .device-event-card__name')?.innerText?.trim() || '';
+    if (!sp || JUNK.includes(sp.toLowerCase())) {
+      const lines = (c.innerText || '').split('\\n').map(l => l.trim()).filter(l => l.length > 2 && l.length < 35);
+      for (const l of lines) {
+        if (!JUNK.includes(l.toLowerCase()) && !/^\\d{1,2}:\\d{2}/.test(l)) {
+          sp = l;
+          break;
+        }
+      }
+    }
+    if (!sp || JUNK.includes(sp.toLowerCase())) sp = 'Feeder Visitor';
+
+    let tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM';
+    if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) {
+      const m = tm.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
+      tm = m ? m[0] : '12:00 PM';
+    }
+    const cardDate = vue?.event?.alertTime ? new Date(vue.event.alertTime).toISOString().split('T')[0] : defaultDate;
+    allSightings.push({ speciesName: sp, imageUrl: u, time: tm, date: cardDate });
+  }
+
+  window.__BIRDFY_CAPTURES__ = allSightings;
+  console.log('Birdfy Detections:', allSightings);
+  await copyToClipboard(allSightings);
+
+  toast.style.background = '#059669';
+  toast.innerHTML = '<span style="font-size:18px">🎉</span><span>✓ Copied ALL <b>' + allSightings.length + '</b> bird detections! Paste into Peek & Perch.</span>';
+  setTimeout(() => toast.remove(), 6000);
+  alert('✓ Copied ALL ' + allSightings.length + ' bird detection(s) to your clipboard! Paste into Peek & Perch.');
+  return allSightings;
+})()`.replace(/\\n/g, ' ').replace(/\\s+/g, ' ');
 
   const handleCopyScript = () => {
     navigator.clipboard.writeText(scraperBookmarkletCode);
