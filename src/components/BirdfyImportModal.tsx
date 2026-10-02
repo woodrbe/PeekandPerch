@@ -70,7 +70,7 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   const isFeederVisitorOrJunk = (name) => {
     if (!name) return true;
     const s = name.toLowerCase().trim();
-    return (
+    if (
       s === 'feeder visitor' ||
       s === 'visitor' ||
       s === 'feeder bird' ||
@@ -78,16 +78,40 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
       s === 'unidentified' ||
       s === 'all birds' ||
       s === 'all' ||
+      s === 'bird' ||
+      s === 'hour' ||
+      s === 'hours' ||
+      s === 'minute' ||
+      s === 'minutes' ||
+      s === 'min' ||
+      s === 'mins' ||
+      s === 'sec' ||
+      s === 'second' ||
+      s === 'seconds' ||
       s === 'today' ||
       s === 'yesterday' ||
       s === 'select' ||
       s === 'delete' ||
       s === 'download' ||
       s === 'share' ||
+      s === 'cancel' ||
+      s === 'events' ||
+      s === 'devices' ||
       s.includes('feeder visitor') ||
       s.includes('visitor') ||
       s.includes('motion')
-    );
+    ) {
+      return true;
+    }
+    if (
+      /\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\b/i.test(s) ||
+      /^\d+\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\b/i.test(s) ||
+      /^\d{1,2}:\d{2}/.test(s) ||
+      s.length < 3
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const toast = document.createElement('div');

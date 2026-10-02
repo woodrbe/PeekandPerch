@@ -213,7 +213,7 @@ export class BirdfyService {
   public static isGenericVisitorSpecies(name?: string): boolean {
     if (!name) return true;
     const s = name.toLowerCase().trim();
-    return (
+    if (
       s === 'feeder visitor' ||
       s === 'visitor' ||
       s === 'feeder bird' ||
@@ -221,9 +221,35 @@ export class BirdfyService {
       s === 'unidentified' ||
       s === 'all birds' ||
       s === 'backyard bird' ||
+      s === 'bird' ||
       s === 'all' ||
+      s === 'hour' ||
+      s === 'hours' ||
+      s === 'minute' ||
+      s === 'minutes' ||
+      s === 'min' ||
+      s === 'mins' ||
+      s === 'sec' ||
+      s === 'seconds' ||
+      s === 'today' ||
+      s === 'yesterday' ||
+      s === 'select' ||
+      s === 'delete' ||
+      s === 'download' ||
+      s === 'share' ||
       s.includes('feeder visitor')
-    );
+    ) {
+      return true;
+    }
+    if (
+      /\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\b/i.test(s) ||
+      /^\d+\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\b/i.test(s) ||
+      /^\d{1,2}:\d{2}/.test(s) ||
+      s.length < 3
+    ) {
+      return true;
+    }
+    return false;
   }
 
   public static filterOnlyRealFeederSightings(sightings: BirdSighting[]): BirdSighting[] {
