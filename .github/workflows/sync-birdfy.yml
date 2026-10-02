@@ -68,3 +68,4 @@ jobs:
           else
             echo "✓ No new feeder detections to commit (data is already up to date)."
           fi
+

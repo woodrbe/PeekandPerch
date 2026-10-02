@@ -1,0 +1,69 @@
+name: Autonomous Birdfy Web Scraper Agent
+
+on:
+  schedule:
+    # Runs twice daily at 12:00 UTC and 18:00 UTC (7:00 AM & 1:00 PM CST)
+    - cron: '0 12,18 * * *'
+  workflow_dispatch:
+    inputs:
+      device_id:
+        description: 'Target Feeder Device ID (optional, overrides secret)'
+        required: false
+        type: string
+      max_events:
+        description: 'Maximum number of event detections to scrape (default: unlimited)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    name: Scrape my.birdfy.com Detections
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Autonomous Scraper Agent
+        env:
+          BIRDFY_EMAIL: ${{ secrets.BIRDFY_EMAIL }}
+          BIRDFY_PASSWORD: ${{ secrets.BIRDFY_PASSWORD }}
+          BIRDFY_DEVICE_ID: ${{ inputs.device_id || secrets.BIRDFY_DEVICE_ID }}
+          HEADLESS: "true"
+        run: |
+          if [ -n "${{ inputs.max_events }}" ]; then
+            npx tsx scripts/scrape-birdfy-agent.ts --max "${{ inputs.max_events }}"
+          else
+            npx tsx scripts/scrape-birdfy-agent.ts
+          fi
+
+      - name: Commit & Push Updated Feeder Detections
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ -n $(git status --porcelain public/data/sightings.json) ]]; then
+            echo "✨ New bird detections found by Scraper Agent! Committing to main..."
+            git add public/data/sightings.json
+            git commit -m "chore(data): automated Birdfy web scraper agent sync [skip ci]"
+            git push origin main
+          else
+            echo "✓ Dataset is already up to date with latest feeder captures."
+          fi
