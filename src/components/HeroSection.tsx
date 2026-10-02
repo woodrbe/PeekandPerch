@@ -5,6 +5,7 @@ import cardinalAnimated from '../assets/images/cardinal animated.mp4';
 import goldenAnimated from '../assets/images/golden animated.mp4';
 import cardinalCharacter from '../assets/images/cardinal_character_1785015411958.jpg';
 import goldfinchCharacter from '../assets/images/goldfinch_character_1785015425426.jpg';
+import bluejayCharacter from '../assets/images/bluejay_character_1790964142504.jpg';
 import { TransparentVideo } from './TransparentVideo';
 
 interface HeroSectionProps {
@@ -19,7 +20,7 @@ interface MascotBird {
   badge: string;
   title: string;
   quote: string;
-  video: string;
+  video?: string;
   poster: string;
   theme: {
     accentGlow: string;
@@ -66,6 +67,23 @@ const MASCOTS: MascotBird[] = [
       tagBg: 'bg-amber-100 text-amber-900 border-amber-300',
       tagText: 'text-amber-700',
       quoteBubble: 'border-amber-200/80 bg-white/95 text-amber-950',
+    },
+  },
+  {
+    id: 'bluejay',
+    name: 'Barnaby Blue',
+    species: 'Blue Jay',
+    badge: 'Lookout Sentinel 💎',
+    title: 'Backyard Perimeter Scout',
+    quote: '“Peanuts spotted at 12 o’clock! Sounding the flock perimeter alert!”',
+    poster: bluejayCharacter,
+    theme: {
+      accentGlow: 'from-sky-400/25 via-blue-300/10 to-transparent',
+      badgeBg: 'bg-sky-600 text-white shadow-sky-200',
+      cardBorder: 'border-sky-200/90 shadow-sky-100/50',
+      tagBg: 'bg-sky-100 text-sky-900 border-sky-300',
+      tagText: 'text-sky-700',
+      quoteBubble: 'border-sky-200/80 bg-white/95 text-sky-950',
     },
   },
 ];
@@ -136,15 +154,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   aria-hidden="true" 
                 />
 
-                <TransparentVideo
-                  key={currentMascot.id}
-                  src={currentMascot.video}
-                  poster={currentMascot.poster}
-                  isPlaying={true}
-                  loop={true}
-                  loopDelay={15000}
-                  className="w-full h-full relative z-10"
-                />
+                {currentMascot.video ? (
+                  <TransparentVideo
+                    key={currentMascot.id}
+                    src={currentMascot.video}
+                    poster={currentMascot.poster}
+                    isPlaying={true}
+                    loop={true}
+                    loopDelay={15000}
+                    className="w-full h-full relative z-10"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center relative z-10 animate-fade-in p-1">
+                    <img
+                      src={currentMascot.poster}
+                      alt={currentMascot.name}
+                      className="w-full h-full max-h-[260px] object-contain mix-blend-multiply drop-shadow-lg transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Mascot Info & Personality Quote */}
