@@ -193,6 +193,22 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
               {isSearchOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
+            {/* Clear / Delete All Data Button */}
+            {onClearAllSightings && sightings.length > 0 && (
+              <button
+                onClick={() => {
+                  if (window.confirm('Delete all bird sightings from your gallery? This permanently removes all saved detections so you can start fresh.')) {
+                    onClearAllSightings();
+                  }
+                }}
+                className="px-3.5 py-2 rounded-full border-2 border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-900 transition-all flex items-center gap-1.5 cursor-pointer text-xs font-pixar-sub font-bold shrink-0 shadow-2xs hover:scale-102"
+                title="Delete all bird detections from gallery"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>Delete All Data</span>
+              </button>
+            )}
+
           </div>
         </div>
 
@@ -396,21 +412,38 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         </div>
                       )}
 
-                      {/* Star Favorite Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavoriteSighting(s.id);
-                        }}
-                        className={`absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer ${
-                          s.isFavorite 
-                            ? 'bg-rose-500 text-white scale-110 ring-2 ring-white' 
-                            : 'bg-white/80 text-stone-600 hover:bg-white hover:text-rose-500 hover:scale-110'
-                        }`}
-                        title={s.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                      >
-                        <Star className={`w-4 h-4 ${s.isFavorite ? 'fill-white' : ''}`} />
-                      </button>
+                      {/* Card Action Buttons (Favorite + Delete) */}
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                        {/* Delete Single Card Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm(`Delete sighting of ${s.speciesName}?`)) {
+                              onDeleteSighting(s.id);
+                            }
+                          }}
+                          className="p-2.5 rounded-full bg-white/80 hover:bg-rose-500 text-stone-600 hover:text-white backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer hover:scale-110"
+                          title="Delete this sighting"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+
+                        {/* Star Favorite Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleFavoriteSighting(s.id);
+                          }}
+                          className={`p-2.5 rounded-full backdrop-blur-md shadow-md transition-all duration-200 cursor-pointer ${
+                            s.isFavorite 
+                              ? 'bg-rose-500 text-white scale-110 ring-2 ring-white' 
+                              : 'bg-white/80 text-stone-600 hover:bg-white hover:text-rose-500 hover:scale-110'
+                          }`}
+                          title={s.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          <Star className={`w-4 h-4 ${s.isFavorite ? 'fill-white' : ''}`} />
+                        </button>
+                      </div>
 
                       {/* Quick Inspect Photo Overlay */}
                       <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">

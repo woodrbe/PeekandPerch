@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { BirdfyDevice } from '../types';
+import { BirdfyDevice, BirdSighting } from '../types';
 import { BirdfyService, extractBirdfyUuid } from '../services/birdfyService';
 import { 
   X, Camera, Sun, BatteryCharging, Wifi, Sparkles, RefreshCw, 
   Settings, CheckCircle2, AlertCircle, Link, HardDrive, ShieldCheck,
-  ExternalLink, Info, Key, User, Calendar, Share2
+  ExternalLink, Info, Key, User, Calendar, Share2, Trash2
 } from 'lucide-react';
 
 interface BirdfySettingsModalProps {
@@ -13,6 +13,8 @@ interface BirdfySettingsModalProps {
   device: BirdfyDevice;
   onUpdateDevice: (updated: BirdfyDevice) => void;
   onTriggerManualSync: () => void;
+  onApplySightings?: (sightings: BirdSighting[]) => void;
+  onClearAllSightings?: () => void;
 }
 
 export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
@@ -21,6 +23,7 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
   device,
   onUpdateDevice,
   onTriggerManualSync,
+  onClearAllSightings,
 }) => {
   if (!isOpen) return null;
 
@@ -76,10 +79,12 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
   };
 
   const handleTestUuid = async () => {
-    const cleanUuid = extractBirdfyUuid(highlightUuid);
-    if (!cleanUuid) {
+    const cleanHighlight = extractBirdfyUuid(highlightUuid);
+    const cleanRecap = extractBirdfyUuid(recapUuid);
+
+    if (!cleanHighlight && !cleanRecap) {
       setIsError(true);
-      setStatusMessage('Please paste a valid Birdfy Highlight Share Link or UUID first.');
+      setStatusMessage('Please paste your Birdfy Highlight or Recap Share Link (or UUID).');
       return;
     }
 
@@ -88,17 +93,25 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
     setIsError(false);
 
     try {
-      const result = await BirdfyService.fetchHighlights(cleanUuid, dateRange);
+      const result = await BirdfyService.fetchAnyBirdfyData(
+        cleanHighlight || cleanRecap,
+        cleanRecap || '',
+        dateRange
+      );
       setIsTestingPing(false);
+
       if (result.sightings.length > 0) {
-        setStatusMessage(`✓ Success! Connected to Birdfy feed. Discovered ${result.sightings.length} real detection moments!`);
+        const uniqueSpecies = Array.from(new Set(result.sightings.map((s) => s.speciesName))).join(', ');
+        const sourceName = result.source === 'recap' ? 'Birdfy Recap' : result.source === 'both' ? 'Birdfy Highlights & Recap' : 'Birdfy Highlights';
+        setStatusMessage(`✓ Success! Connected to ${sourceName}. Found ${result.sightings.length} real bird detections: [${uniqueSpecies}]`);
       } else {
-        setStatusMessage('✓ Connected to Birdfy feed! (No bird detections found in selected date range).');
+        setIsError(true);
+        setStatusMessage('Connected to server, but no bird moments were found for this UUID/date range. Try choosing "All Time" or pasting your Recap link.');
       }
     } catch (err: any) {
       setIsTestingPing(false);
       setIsError(true);
-      setStatusMessage(`Connection error: ${err.message || 'Could not reach Birdfy moments API'}`);
+      setStatusMessage(`Connection error: ${err.message || 'Could not reach Birdfy API'}`);
     }
   };
 
@@ -353,6 +366,30 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
               </select>
             </div>
           </div>
+
+          {/* Danger Zone: Clear All Data */}
+          {onClearAllSightings && (
+            <div className="p-3.5 rounded-2xl bg-rose-50/70 border border-rose-200 flex items-center justify-between gap-3 text-xs font-pixar-sub">
+              <div>
+                <span className="font-bold text-rose-950 block">Gallery Data Management</span>
+                <span className="text-rose-700 text-[11px]">Remove all bird detections to start fresh</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to permanently delete all bird sightings? This cannot be undone.')) {
+                    onClearAllSightings();
+                    setStatusMessage('✓ All saved bird sightings have been deleted.');
+                    setIsError(false);
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs transition flex items-center gap-1.5 border border-rose-300 cursor-pointer shrink-0 hover:scale-102"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                <span>Delete All Data</span>
+              </button>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="pt-3 border-t-2 border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-3">
