@@ -25,6 +25,7 @@ interface MascotBird {
   quote: string;
   video?: string;
   poster: string;
+  scaleClass?: string;
   theme: {
     accentGlow: string;
     badgeBg: string;
@@ -99,6 +100,7 @@ const MASCOTS: MascotBird[] = [
     quote: '“Dropped seeds? No problem! Ground cleanup squad is on duty.”',
     video: turkeyAnimated,
     poster: turkeyCharacter,
+    scaleClass: 'scale-[1.22] sm:scale-[1.26] md:scale-[1.30] origin-center',
     theme: {
       accentGlow: 'from-amber-600/25 via-emerald-600/10 to-transparent',
       badgeBg: 'bg-amber-700 text-white shadow-amber-200',
@@ -184,14 +186,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     isPlaying={true}
                     loop={true}
                     loopDelay={15000}
-                    className="w-full h-full relative z-10"
+                    className={`w-full h-full relative z-10 ${currentMascot.scaleClass || ''}`}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center relative z-10 animate-fade-in p-1">
                     <img
                       src={currentMascot.poster}
                       alt={currentMascot.name}
-                      className="w-full h-full max-h-[260px] object-contain mix-blend-multiply drop-shadow-lg transition-transform duration-500 hover:scale-105 animate-mascot-float"
+                      className={`w-full h-full max-h-[260px] object-contain mix-blend-multiply drop-shadow-lg transition-transform duration-500 hover:scale-105 animate-mascot-float ${currentMascot.scaleClass || ''}`}
                     />
                   </div>
                 )}
