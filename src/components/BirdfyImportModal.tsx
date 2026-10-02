@@ -150,7 +150,8 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   }
 
   const allSightings = [];
-  const seenUrls = new Set();
+  const seenKeys = new Set();
+  const getDedupeKey = (sp, d, tm) => (sp || '').toLowerCase().trim() + '__' + (d || '').trim() + '__' + (tm || '').trim();
   
   const allElements = Array.from(document.querySelectorAll('*'));
   for (const el of allElements) {
@@ -167,12 +168,14 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
         const img = media?.images?.[0]?.largeUrl || media?.images?.[0]?.listUrl || media?.images?.[0]?.url || ev.pic || ev.fileUrl || '';
         const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM';
         const d = ev.alertTime ? new Date(ev.alertTime).toISOString().split('T')[0] : (v.date || new Date().toISOString().split('T')[0]);
-        if (img && !seenUrls.has(img)) {
-          seenUrls.add(img);
+        const cleanTime = tm.replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
+        const k = getDedupeKey(species, d, cleanTime);
+        if (img && !seenKeys.has(k)) {
+          seenKeys.add(k);
           allSightings.push({
             speciesName: species,
             imageUrl: img,
-            time: tm.replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM',
+            time: cleanTime,
             date: d
           });
         }
@@ -204,7 +207,6 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
       const thumb = c.querySelector('.moment-card__thumb img');
       u = thumb?.currentSrc || thumb?.src || '';
     }
-    if (!u || seenUrls.has(u)) continue;
 
     let sp = vue?.displayTags?.[0]?.label || c.querySelector('.moment-card__tag, .device-event-card__name')?.innerText?.trim() || '';
     if (!sp || isFeederVisitorOrJunk(sp)) {
@@ -220,14 +222,17 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
     // Skip if still generic / Feeder Visitor
     if (!sp || isFeederVisitorOrJunk(sp)) continue;
 
-    seenUrls.add(u);
-
     let tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM';
     if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) {
       const m = tm.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
       tm = m ? m[0] : '12:00 PM';
     }
     const cardDate = vue?.event?.alertTime ? new Date(vue.event.alertTime).toISOString().split('T')[0] : defaultDate;
+    const k = getDedupeKey(sp, cardDate, tm);
+
+    if (!u || seenKeys.has(k)) continue;
+    seenKeys.add(k);
+
     allSightings.push({ speciesName: sp, imageUrl: u, time: tm, date: cardDate });
   }
 

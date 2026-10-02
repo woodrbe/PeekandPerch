@@ -277,13 +277,33 @@ async function main() {
     }
   }
 
-  // Deduplicate and merge
+  function normalizeTime(t?: string): string {
+    if (!t) return '12:00 PM';
+    const clean = t.trim();
+    const m = clean.match(/^(\d{1,2}):(\d{2})(\s*(?:AM|PM|am|pm))?/i);
+    if (m) {
+      const hh = m[1].padStart(2, '0');
+      const mm = m[2];
+      const ampm = m[3] ? ` ${m[3].trim().toUpperCase()}` : '';
+      return `${hh}:${mm}${ampm}`;
+    }
+    return clean.toUpperCase();
+  }
+
+  function getSightingKey(s: { speciesName?: string; date?: string; time?: string }): string {
+    const sp = (s.speciesName || '').toLowerCase().trim();
+    const dt = (s.date || '').trim();
+    const tm = normalizeTime(s.time);
+    return `${sp}__${dt}__${tm}`;
+  }
+
+  // Deduplicate and merge strictly by bird species + date + time
   const seen = new Set<string>();
   const merged: any[] = [];
 
   const addUnique = (s: any) => {
     if (!s || !s.speciesName) return;
-    const key = `${s.speciesName.toLowerCase().trim()}_${s.date}_${s.time}_${s.imageUrl || ''}`;
+    const key = getSightingKey(s);
     if (!seen.has(key)) {
       seen.add(key);
       merged.push(s);

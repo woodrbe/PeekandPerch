@@ -252,6 +252,26 @@ export class BirdfyService {
     return false;
   }
 
+  public static normalizeTime(t?: string): string {
+    if (!t) return '12:00 PM';
+    const clean = t.trim();
+    const m = clean.match(/^(\d{1,2}):(\d{2})(\s*(?:AM|PM|am|pm))?/i);
+    if (m) {
+      const hh = m[1].padStart(2, '0');
+      const mm = m[2];
+      const ampm = m[3] ? ` ${m[3].trim().toUpperCase()}` : '';
+      return `${hh}:${mm}${ampm}`;
+    }
+    return clean.toUpperCase();
+  }
+
+  public static getSightingKey(s: { speciesName?: string; date?: string; time?: string }): string {
+    const sp = (s.speciesName || '').toLowerCase().trim();
+    const dt = (s.date || '').trim();
+    const tm = BirdfyService.normalizeTime(s.time);
+    return `${sp}__${dt}__${tm}`;
+  }
+
   public static filterOnlyRealFeederSightings(sightings: BirdSighting[]): BirdSighting[] {
     if (!Array.isArray(sightings)) return [];
     return sightings.filter(
@@ -266,7 +286,7 @@ export class BirdfyService {
 
     sightings.forEach((s) => {
       if (!s || !s.speciesName || BirdfyService.isGenericVisitorSpecies(s.speciesName)) return;
-      const key = `${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`;
+      const key = BirdfyService.getSightingKey(s);
       if (!seen.has(key)) {
         seen.add(key);
         result.push(s);
@@ -283,13 +303,9 @@ export class BirdfyService {
     const existingClean = BirdfyService.cleanAndDeduplicateSightings(existing || []);
     const incomingClean = BirdfyService.cleanAndDeduplicateSightings(incoming || []);
 
-    const existingKeys = new Set(
-      existingClean.map((s) => `${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`)
-    );
+    const existingKeys = new Set(existingClean.map((s) => BirdfyService.getSightingKey(s)));
 
-    const fresh = incomingClean.filter(
-      (s) => !existingKeys.has(`${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`)
-    );
+    const fresh = incomingClean.filter((s) => !existingKeys.has(BirdfyService.getSightingKey(s)));
 
     const merged = [...fresh, ...existingClean];
     return { merged, addedCount: fresh.length };
