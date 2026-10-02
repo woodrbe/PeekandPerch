@@ -55,6 +55,21 @@ export default function App() {
     sightingsRef.current = sightings;
   }, [sightings]);
 
+  // Preload shared feeder data from public/data/sightings.json on mount (for all web clients/devices)
+  useEffect(() => {
+    let isMounted = true;
+    BirdfyService.fetchSharedSightings().then((sharedSightings) => {
+      if (!isMounted || sharedSightings.length === 0) return;
+      setSightings((prev) => {
+        const { merged } = BirdfyService.mergeSightings(prev, sharedSightings);
+        return merged;
+      });
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem('peep_perch_sightings', JSON.stringify(sightings));
@@ -337,6 +352,7 @@ export default function App() {
         isOpen={isBirdfySettingsOpen}
         onClose={() => setIsBirdfySettingsOpen(false)}
         device={birdfyDevice}
+        currentSightings={sightings}
         onUpdateDevice={(updated) => setBirdfyDevice({ ...updated, autoSyncEnabled: false })}
         onTriggerManualSync={handleSyncBirdfy}
         onApplySightings={handleApplySightings}
@@ -350,6 +366,7 @@ export default function App() {
         onAddSighting={handleAddSighting}
         onApplySightings={handleApplySightings}
         device={birdfyDevice}
+        currentSightings={sightings}
       />
 
       {/* BIRDFY SMART FEEDER POPUP MODAL */}

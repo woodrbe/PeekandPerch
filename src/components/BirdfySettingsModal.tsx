@@ -4,13 +4,14 @@ import { BirdfyService, extractBirdfyUuid } from '../services/birdfyService';
 import { 
   X, Camera, Sun, BatteryCharging, Wifi, Sparkles, RefreshCw, 
   Settings, CheckCircle2, AlertCircle, Link, HardDrive, ShieldCheck,
-  ExternalLink, Info, Key, User, Calendar, Share2, Trash2
+  ExternalLink, Info, Key, User, Calendar, Share2, Trash2, Download, FileJson, Globe
 } from 'lucide-react';
 
 interface BirdfySettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   device: BirdfyDevice;
+  currentSightings?: BirdSighting[];
   onUpdateDevice: (updated: BirdfyDevice) => void;
   onTriggerManualSync: () => void;
   onApplySightings?: (sightings: BirdSighting[]) => void;
@@ -21,6 +22,7 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
   isOpen,
   onClose,
   device,
+  currentSightings = [],
   onUpdateDevice,
   onTriggerManualSync,
   onClearAllSightings,
@@ -365,6 +367,32 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
                 <option value="900">Every 15 minutes (Standard)</option>
               </select>
             </div>
+          </div>
+
+          {/* Global Dataset & Backup Export */}
+          <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-pixar-sub">
+            <div className="space-y-0.5">
+              <span className="font-bold text-sky-950 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-sky-600" />
+                <span>Global Dataset &amp; GitHub Sync</span>
+              </span>
+              <p className="text-sky-800 text-[11px] leading-tight">
+                Peek &amp; Perch preloads <code className="bg-sky-100 px-1 py-0.5 rounded font-mono text-[10px]">public/data/sightings.json</code> for all web visitors.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                BirdfyService.exportSightingsToJson(currentSightings);
+                setStatusMessage(`✓ Exported ${currentSightings.length} sightings to sightings.json!`);
+                setIsError(false);
+              }}
+              className="px-3.5 py-1.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs hover:scale-102"
+              title="Download your active sightings dataset to update public/data/sightings.json"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export sightings.json</span>
+            </button>
           </div>
 
           {/* Danger Zone: Clear All Data */}

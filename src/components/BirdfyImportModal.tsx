@@ -4,7 +4,7 @@ import { BACKYARD_SPECIES } from '../data/birdsData';
 import { BirdfyService } from '../services/birdfyService';
 import { 
   X, UploadCloud, Camera, Sparkles, Check, Image as ImageIcon, 
-  Calendar, Clock, MapPin, Tag, ShieldCheck, Copy, ExternalLink, Globe, FileCode, CheckCircle2
+  Calendar, Clock, MapPin, Tag, ShieldCheck, Copy, ExternalLink, Globe, FileCode, CheckCircle2, Download
 } from 'lucide-react';
 
 interface BirdfyImportModalProps {
@@ -13,6 +13,7 @@ interface BirdfyImportModalProps {
   onAddSighting: (sighting: BirdSighting) => void;
   onApplySightings?: (sightings: BirdSighting[]) => void;
   device?: BirdfyDevice;
+  currentSightings?: BirdSighting[];
 }
 
 export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
@@ -21,6 +22,7 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   onAddSighting,
   onApplySightings,
   device,
+  currentSightings = [],
 }) => {
   if (!isOpen) return null;
 
@@ -291,14 +293,26 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
                 </span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleLoadDemoCaptures}
-                className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-pixar-title text-xs uppercase tracking-wider transition cursor-pointer border border-stone-300 shrink-0"
-                title="Preview gallery immediately with 5 authentic smart feeder captures"
-              >
-                <span>🌿 Preview Demo Visits</span>
-              </button>
+              {parsedSightingsFromText.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => BirdfyService.exportSightingsToJson(parsedSightingsFromText)}
+                  className="w-full sm:w-auto px-4 py-3.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-pixar-title text-xs uppercase tracking-wider transition cursor-pointer border border-emerald-300 shrink-0 flex items-center justify-center gap-1.5"
+                  title="Download pasted captures directly as sightings.json"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download sightings.json</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleLoadDemoCaptures}
+                  className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-pixar-title text-xs uppercase tracking-wider transition cursor-pointer border border-stone-300 shrink-0"
+                  title="Preview gallery immediately with 5 authentic smart feeder captures"
+                >
+                  <span>🌿 Preview Demo Visits</span>
+                </button>
+              )}
             </div>
           </div>
         )}

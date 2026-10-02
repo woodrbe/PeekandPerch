@@ -932,4 +932,37 @@ export class BirdfyService {
       },
     };
   }
+  /**
+   * Fetches the globally shared sightings from public/data/sightings.json
+   */
+  public static async fetchSharedSightings(): Promise<BirdSighting[]> {
+    try {
+      const res = await fetch('./data/sightings.json', {
+        headers: { 'Accept': 'application/json' },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) {
+          return json;
+        }
+      }
+    } catch {
+      // Ignore network / offline error
+    }
+    return [];
+  }
+
+  /**
+   * Triggers a browser download of the current sightings dataset as sightings.json
+   */
+  public static exportSightingsToJson(sightings: BirdSighting[]): void {
+    const clean = BirdfyService.cleanAndDeduplicateSightings(sightings);
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(clean, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', 'sightings.json');
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  }
 }
