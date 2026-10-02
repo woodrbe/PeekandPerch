@@ -12,3 +12,24 @@
   }
 }
 
+@keyframes mascotFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-5px) rotate(-1.2deg) scale(1.01);
+  }
+  50% {
+    transform: translateY(-9px) rotate(1.2deg) scale(1.02);
+  }
+  75% {
+    transform: translateY(-4px) rotate(0.4deg) scale(1.01);
+  }
+}
+
+.animate-mascot-float {
+  animation: mascotFloat 5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+

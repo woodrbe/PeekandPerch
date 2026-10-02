@@ -169,7 +169,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <img
                       src={currentMascot.poster}
                       alt={currentMascot.name}
-                      className="w-full h-full max-h-[260px] object-contain mix-blend-multiply drop-shadow-lg transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full max-h-[260px] object-contain mix-blend-multiply drop-shadow-lg transition-transform duration-500 hover:scale-105 animate-mascot-float"
                     />
                   </div>
                 )}
