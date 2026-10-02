@@ -82,6 +82,7 @@ const MASCOTS: MascotBird[] = [
     quote: '“Peanuts spotted at 12 o’clock! Sounding the flock perimeter alert!”',
     video: bluejayAnimated,
     poster: bluejayCharacter,
+    scaleClass: 'scale-[1.22] sm:scale-[1.26] md:scale-[1.30] origin-center',
     theme: {
       accentGlow: 'from-sky-400/25 via-blue-300/10 to-transparent',
       badgeBg: 'bg-sky-600 text-white shadow-sky-200',
