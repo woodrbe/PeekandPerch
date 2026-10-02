@@ -50,6 +50,7 @@ jobs:
 
       - name: Run Feeder Sync Script
         env:
+          TZ: "America/Chicago"
           BIRDFY_HIGHLIGHT_UUID: ${{ inputs.highlight_uuid || secrets.BIRDFY_HIGHLIGHT_UUID || secrets.BIRDFY_UUID }}
           BIRDFY_RECAP_UUID: ${{ inputs.recap_uuid || secrets.BIRDFY_RECAP_UUID }}
           BIRDFY_DATE_RANGE: ${{ inputs.date_range || 'last_7_days' }}

@@ -99,6 +99,44 @@ export function extractBirdfyUuid(input: string): string {
   return match ? match[0] : trimmed;
 }
 
+const TIMEZONE = 'America/Chicago';
+
+export function formatCentralDate(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ms));
+}
+
+export function formatCentralTime(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: TIMEZONE,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(ms));
+}
+
 // Fallback pool for offline / demo mode
 const BIRDFY_EVENT_POOL = [
   {
@@ -497,9 +535,8 @@ export class BirdfyService {
       );
 
       const timestamp = item.createTime ? Number(item.createTime) : Date.now();
-      const dateObj = new Date(timestamp);
-      const dateString = dateObj.toISOString().split('T')[0];
-      const timeString = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateString = formatCentralDate(timestamp);
+      const timeString = formatCentralTime(timestamp);
 
       sightings.push({
         id: `birdfy-live-${cleanUuid.slice(0, 6)}-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
@@ -528,7 +565,7 @@ export class BirdfyService {
           batteryLevel: device.batteryPercent,
           isSolarCharging: device.isSolarCharging,
           wifiSignal: device.wifiSignal,
-          rawPIRTimestamp: dateObj.toISOString(),
+          rawPIRTimestamp: new Date(timestamp).toISOString(),
         },
       });
     });

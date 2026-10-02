@@ -153,6 +153,14 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   const seenKeys = new Set();
   const getDedupeKey = (sp, d, tm) => (sp || '').toLowerCase().trim() + '__' + (d || '').trim() + '__' + (tm || '').trim();
   
+  const formatCentral = (ts) => {
+    const d = new Date(Number(ts) < 1e11 ? Number(ts) * 1000 : Number(ts));
+    return {
+      date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
+      time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true })
+    };
+  };
+
   const allElements = Array.from(document.querySelectorAll('*'));
   for (const el of allElements) {
     if (el.__vue__ && Array.isArray(el.__vue__.events) && el.__vue__.events.length > 0) {
@@ -166,16 +174,23 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
         if (!species || isFeederVisitorOrJunk(species)) return;
 
         const img = media?.images?.[0]?.largeUrl || media?.images?.[0]?.listUrl || media?.images?.[0]?.url || ev.pic || ev.fileUrl || '';
-        const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM';
-        const d = ev.alertTime ? new Date(ev.alertTime).toISOString().split('T')[0] : (v.date || new Date().toISOString().split('T')[0]);
-        const cleanTime = tm.replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
-        const k = getDedupeKey(species, d, cleanTime);
+        let tm = '12:00 PM';
+        let d = formatCentral(Date.now()).date;
+        if (ev.alertTime) {
+          const formatted = formatCentral(ev.alertTime);
+          tm = formatted.time;
+          d = formatted.date;
+        } else if (v.formatTime) {
+          tm = (v.formatTime(ev.alertTime) || '12:00 PM').replace(/^.*?(Today|Yesterday)\\s*/i, '').trim();
+          if (v.date) d = v.date;
+        }
+        const k = getDedupeKey(species, d, tm);
         if (img && !seenKeys.has(k)) {
           seenKeys.add(k);
           allSightings.push({
             speciesName: species,
             imageUrl: img,
-            time: cleanTime,
+            time: tm,
             date: d
           });
         }
@@ -184,13 +199,13 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   }
 
   const tb = document.querySelector('.moment-toolbar__date')?.innerText?.trim() || '';
-  let defaultDate = new Date().toISOString().split('T')[0];
+  let defaultDate = formatCentral(Date.now()).date;
   if (tb.toLowerCase().includes('yesterday')) {
     const y = new Date(); y.setDate(y.getDate() - 1);
-    defaultDate = y.toISOString().split('T')[0];
+    defaultDate = formatCentral(y).date;
   } else if (tb && !tb.toLowerCase().includes('today')) {
     const p = new Date(tb);
-    if (!isNaN(p.getTime())) defaultDate = p.toISOString().split('T')[0];
+    if (!isNaN(p.getTime())) defaultDate = formatCentral(p).date;
   }
 
   let cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
@@ -222,12 +237,20 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
     // Skip if still generic / Feeder Visitor
     if (!sp || isFeederVisitorOrJunk(sp)) continue;
 
-    let tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM';
-    if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) {
-      const m = tm.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
-      tm = m ? m[0] : '12:00 PM';
+    let tm = '12:00 PM';
+    let cardDate = defaultDate;
+    const cardAlertTime = vue?.event?.alertTime || vue?.event?.createTime;
+    if (cardAlertTime) {
+      const formatted = formatCentral(cardAlertTime);
+      cardDate = formatted.date;
+      tm = formatted.time;
+    } else {
+      tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM';
+      if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) {
+        const m = tm.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
+        tm = m ? m[0] : '12:00 PM';
+      }
     }
-    const cardDate = vue?.event?.alertTime ? new Date(vue.event.alertTime).toISOString().split('T')[0] : defaultDate;
     const k = getDedupeKey(sp, cardDate, tm);
 
     if (!u || seenKeys.has(k)) continue;

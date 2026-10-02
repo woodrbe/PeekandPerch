@@ -22,6 +22,44 @@ const SIGHTINGS_FILE = path.resolve(__dirname, '../public/data/sightings.json');
 const DIST_SIGHTINGS_FILE = path.resolve(__dirname, '../dist/data/sightings.json');
 const CONFIG_FILE = path.resolve(__dirname, '../birdfy.config.json');
 
+const TIMEZONE = 'America/Chicago';
+
+export function formatCentralDate(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ms));
+}
+
+export function formatCentralTime(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: TIMEZONE,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(ms));
+}
+
 interface ExtractedVisit {
   speciesName: string;
   imageUrl: string;
@@ -163,6 +201,8 @@ async function runScraperAgent() {
   const browser: Browser = await launchBrowser(headed);
 
   const context = await browser.newContext({
+    timezoneId: 'America/Chicago',
+    locale: 'en-US',
     userAgent:
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     viewport: { width: 1440, height: 900 },
@@ -234,16 +274,14 @@ async function runScraperAgent() {
               if (!img) return;
 
               const rawTime = ev.createTime || ev.alertTime || ev.time || ev.timestamp;
-              let date = new Date().toISOString().split('T')[0];
+              let date = formatCentralDate(new Date());
               let time = '12:00 PM';
 
               if (rawTime) {
                 const ts = Number(rawTime);
                 if (!isNaN(ts) && ts > 0) {
-                  const ms = ts < 1e11 ? ts * 1000 : ts;
-                  const dateObj = new Date(ms);
-                  date = dateObj.toISOString().split('T')[0];
-                  time = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                  date = formatCentralDate(ts);
+                  time = formatCentralTime(ts);
                 }
               }
 
@@ -416,6 +454,14 @@ async function runScraperAgent() {
       var results = [];
       var seenImgs = new Set();
 
+      var formatToCentral = function(ts) {
+        var d = new Date(Number(ts) < 1e11 ? Number(ts) * 1000 : Number(ts));
+        return {
+          date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
+          time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true })
+        };
+      };
+
       // Method A: Check Vue component instances
       var allElements = Array.from(document.querySelectorAll('*'));
       for (var j = 0; j < allElements.length; j++) {
@@ -439,19 +485,16 @@ async function runScraperAgent() {
             seenImgs.add(img);
 
             var tm = '12:00 PM';
+            var d = formatToCentral(Date.now()).date;
             var alertTime = ev.alertTime || ev.createTime || ev.time;
             if (alertTime) {
-              var dObj = new Date(Number(alertTime));
-              if (!isNaN(dObj.getTime())) {
-                tm = dObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-              }
+              var formatted = formatToCentral(alertTime);
+              tm = formatted.time;
+              d = formatted.date;
             } else if (v.formatTime) {
               tm = v.formatTime(alertTime).replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
+              if (v.date) d = v.date;
             }
-
-            var d = alertTime
-              ? new Date(Number(alertTime)).toISOString().split('T')[0]
-              : (v.date || new Date().toISOString().split('T')[0]);
 
             results.push({
               speciesName: species,
@@ -465,14 +508,14 @@ async function runScraperAgent() {
 
       // Method B: DOM Cards
       var tb = (document.querySelector('.moment-toolbar__date') && document.querySelector('.moment-toolbar__date').textContent) || '';
-      var defaultDate = new Date().toISOString().split('T')[0];
+      var defaultDate = formatToCentral(Date.now()).date;
       if (tb.toLowerCase().indexOf('yesterday') !== -1) {
         var y = new Date();
         y.setDate(y.getDate() - 1);
-        defaultDate = y.toISOString().split('T')[0];
+        defaultDate = formatToCentral(y).date;
       } else if (tb && tb.toLowerCase().indexOf('today') === -1) {
         var p = new Date(tb);
-        if (!isNaN(p.getTime())) defaultDate = p.toISOString().split('T')[0];
+        if (!isNaN(p.getTime())) defaultDate = formatToCentral(p).date;
       }
 
       var cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
@@ -535,9 +578,14 @@ async function runScraperAgent() {
         if (mMatch) timeStr = mMatch[0];
 
         var cardAlertTime = vue && vue.event && (vue.event.alertTime || vue.event.createTime);
-        var cardDate = cardAlertTime
-          ? new Date(Number(cardAlertTime)).toISOString().split('T')[0]
-          : defaultDate;
+        var cardDate = defaultDate;
+        if (cardAlertTime) {
+          var formattedCard = formatToCentral(cardAlertTime);
+          cardDate = formattedCard.date;
+          if (!timeStr || timeStr === '12:00 PM') {
+            timeStr = formattedCard.time;
+          }
+        }
 
         results.push({
           speciesName: species,
@@ -587,7 +635,11 @@ async function runScraperAgent() {
 
     const newSightingsFormatted: any[] = filteredDetections.map((d, index) => {
       const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      const timestamp = new Date(`${d.date} ${d.time}`).getTime() || Date.now() - index * 60000;
+      let timestamp = Date.now() - index * 60000;
+      const nvcMatch = d.imageUrl.match(/nvc_(\d{13})_/);
+      if (nvcMatch) {
+        timestamp = Number(nvcMatch[1]);
+      }
       return {
         id: `birdfy-scrape-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
         speciesId: spId || 'custom',

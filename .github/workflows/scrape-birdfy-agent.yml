@@ -43,6 +43,7 @@ jobs:
 
       - name: Run Autonomous Scraper Agent
         env:
+          TZ: "America/Chicago"
           BIRDFY_EMAIL: ${{ secrets.BIRDFY_EMAIL }}
           BIRDFY_PASSWORD: ${{ secrets.BIRDFY_PASSWORD }}
           BIRDFY_DEVICE_ID: ${{ inputs.device_id || secrets.BIRDFY_DEVICE_ID }}

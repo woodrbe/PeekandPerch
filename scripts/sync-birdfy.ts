@@ -18,6 +18,44 @@ const CONFIG_FILE = path.resolve(__dirname, '../birdfy.config.json');
 const BIRDFY_API_DIRECT = 'https://api2.nvts.co/moments/h5CuratedData';
 const BIRDFY_RECAP_API_DIRECT = 'https://api2.nvts.co/moments/community/recapData';
 
+const TIMEZONE = 'America/Chicago';
+
+export function formatCentralDate(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ms));
+}
+
+export function formatCentralTime(dateOrTs: Date | number | string): string {
+  let ms: number;
+  if (typeof dateOrTs === 'number') {
+    ms = dateOrTs < 1e11 ? dateOrTs * 1000 : dateOrTs;
+  } else if (typeof dateOrTs === 'string' && !isNaN(Number(dateOrTs))) {
+    const num = Number(dateOrTs);
+    ms = num < 1e11 ? num * 1000 : num;
+  } else {
+    ms = new Date(dateOrTs).getTime();
+  }
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: TIMEZONE,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(ms));
+}
+
 function extractUuid(input?: string): string {
   if (!input) return '';
   const trimmed = input.trim();
@@ -161,9 +199,8 @@ async function main() {
       dataList.forEach((item: any) => {
         const speciesName = item.detectObject || item.title || 'Backyard Bird';
         const timestamp = item.createTime ? Number(item.createTime) : Date.now();
-        const dateObj = new Date(timestamp);
-        const dateString = dateObj.toISOString().split('T')[0];
-        const timeString = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const dateString = formatCentralDate(timestamp);
+        const timeString = formatCentralTime(timestamp);
 
         incomingSightings.push({
           id: `birdfy-live-${highlightUuid.slice(0, 6)}-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
@@ -192,7 +229,7 @@ async function main() {
             batteryLevel: 96,
             isSolarCharging: true,
             wifiSignal: 'Excellent',
-            rawPIRTimestamp: dateObj.toISOString(),
+            rawPIRTimestamp: new Date(timestamp).toISOString(),
           },
         });
       });
