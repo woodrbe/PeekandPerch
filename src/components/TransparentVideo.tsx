@@ -10,7 +10,6 @@ declare global {
 
 interface TransparentVideoProps {
   src: string;
-  poster?: string;
   className?: string;
   style?: React.CSSProperties;
   isPlaying?: boolean;
@@ -18,11 +17,11 @@ interface TransparentVideoProps {
   loopDelay?: number; // Delay in milliseconds before restarting loop (e.g. 15000)
   onEnded?: () => void;
   playbackRate?: number;
+  poster?: string;
 }
 
 export const TransparentVideo: React.FC<TransparentVideoProps> = ({
   src,
-  poster,
   className,
   style,
   isPlaying = true,
@@ -30,71 +29,70 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
   loopDelay = 0,
   onEnded,
   playbackRate = 1.0,
+  poster,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isWaitingLoopRef = useRef<boolean>(false);
-
-  // Check if device is iOS / iPadOS / Touch where canvas pixel-processing can be throttled
-  const [isMobileOrTouch] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    return isIOS || isTouch;
-  });
-
-  const [useCanvas, setUseCanvas] = useState<boolean>(!isMobileOrTouch);
-  const [canvasHasFrame, setCanvasHasFrame] = useState<boolean>(false);
-  const [hasVideoError, setHasVideoError] = useState<boolean>(false);
-
   const hasEndedRef = useRef<boolean>(false);
   const onEndedRef = useRef(onEnded);
+
+  const [useCanvas, setUseCanvas] = useState<boolean>(true);
+  const [canvasHasFrame, setCanvasHasFrame] = useState<boolean>(false);
+  const [hasVideoError, setHasVideoError] = useState<boolean>(false);
 
   useEffect(() => {
     onEndedRef.current = onEnded;
   }, [onEnded]);
 
-  // Helper to ensure DOM properties are explicitly set for WebKit / iOS Safari
-  const enforceVideoProps = useCallback((video: HTMLVideoElement) => {
+  // Ensure iOS / iPad Safari attributes are explicitly set on the DOM element
+  const configureVideoDOM = useCallback((video: HTMLVideoElement) => {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+    video.setAttribute('preload', 'auto');
     if (playbackRate && playbackRate !== 1.0) {
       video.playbackRate = playbackRate;
     }
   }, [playbackRate]);
 
-  const playVideo = useCallback((video: HTMLVideoElement) => {
-    enforceVideoProps(video);
+  // Safe play helper handling mobile media policies
+  const safePlay = useCallback((video: HTMLVideoElement) => {
+    configureVideoDOM(video);
     const promise = video.play();
     if (promise !== undefined) {
       promise.catch(() => {
-        // Autoplay policy fallback for iOS Safari if un-interacted
+        // Autoplay blocked until user gesture or touch
       });
     }
-  }, [enforceVideoProps]);
+  }, [configureVideoDOM]);
 
-  // User gesture interaction listener to unlock video if browser autoplay policy blocks initial attempt
+  // Listen for user touch / interaction to unlock video playback if initially blocked
   useEffect(() => {
-    const handleUserInteraction = () => {
+    const handleUserGesture = () => {
       const video = videoRef.current;
       if (video && isPlaying && video.paused) {
-        playVideo(video);
+        safePlay(video);
       }
     };
 
-    window.addEventListener('touchstart', handleUserInteraction, { passive: true, once: true });
-    window.addEventListener('click', handleUserInteraction, { passive: true, once: true });
-    window.addEventListener('scroll', handleUserInteraction, { passive: true, once: true });
+    window.addEventListener('touchstart', handleUserGesture, { passive: true });
+    window.addEventListener('touchend', handleUserGesture, { passive: true });
+    window.addEventListener('click', handleUserGesture, { passive: true });
+    window.addEventListener('scroll', handleUserGesture, { passive: true });
 
     return () => {
-      window.removeEventListener('touchstart', handleUserInteraction);
-      window.removeEventListener('click', handleUserInteraction);
-      window.removeEventListener('scroll', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserGesture);
+      window.removeEventListener('touchend', handleUserGesture);
+      window.removeEventListener('click', handleUserGesture);
+      window.removeEventListener('scroll', handleUserGesture);
     };
-  }, [isPlaying, playVideo]);
+  }, [isPlaying, safePlay]);
 
   // Render a single video frame onto the transparent canvas
   const drawKeyedFrame = useCallback(() => {
@@ -117,7 +115,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
       const data = frame.data;
       const len = data.length;
 
-      // Key out white / light grey background
+      // Key out white / light grey background (r,g,b > 140 & low color tint diff)
       for (let i = 0; i < len; i += 4) {
         const r = data[i];
         const g = data[i + 1];
@@ -147,7 +145,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
     }
   }, []);
 
-  // Listen for video loading events to draw first frame immediately (even when paused)
+  // Listen for video loading events to draw first frame immediately
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -163,7 +161,6 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
     video.addEventListener('canplay', handleDataReady);
     video.addEventListener('seeked', handleDataReady);
 
-    // Initial check in case video is already cached/loaded
     if (video.readyState >= 2) {
       handleDataReady();
     }
@@ -184,12 +181,82 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
     };
   }, []);
 
-  // Sync play / pause state whenever isPlaying changes
+  const handleEnded = useCallback(() => {
+    if (!isPlaying) return;
+
+    if (loop) {
+      const video = videoRef.current;
+      if (!video) return;
+
+      if (loopDelay > 0) {
+        if (isWaitingLoopRef.current) return;
+        isWaitingLoopRef.current = true;
+
+        video.pause();
+        if (useCanvas && video.readyState >= 1) {
+          const ok = drawKeyedFrame();
+          if (ok) setCanvasHasFrame(true);
+        }
+
+        if (onEndedRef.current) {
+          onEndedRef.current();
+        }
+
+        if (restartTimerRef.current) {
+          clearTimeout(restartTimerRef.current);
+        }
+
+        restartTimerRef.current = setTimeout(() => {
+          isWaitingLoopRef.current = false;
+          const v = videoRef.current;
+          if (v && isPlaying) {
+            try {
+              v.currentTime = 0;
+              safePlay(v);
+            } catch {
+              // ignore
+            }
+          }
+        }, loopDelay);
+      } else {
+        try {
+          video.currentTime = 0;
+          safePlay(video);
+        } catch {
+          // ignore
+        }
+      }
+    } else if (!hasEndedRef.current) {
+      hasEndedRef.current = true;
+      const video = videoRef.current;
+      if (video) video.pause();
+      if (onEndedRef.current) {
+        onEndedRef.current();
+      }
+    }
+  }, [isPlaying, loop, loopDelay, useCanvas, drawKeyedFrame, safePlay]);
+
+  const handleTimeUpdate = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || !isPlaying || video.duration <= 0) return;
+
+    if (loop && loopDelay > 0) {
+      if (!isWaitingLoopRef.current && video.currentTime >= video.duration - 0.12) {
+        handleEnded();
+      }
+    } else if (!loop && !hasEndedRef.current) {
+      if (video.currentTime >= video.duration - 0.15) {
+        handleEnded();
+      }
+    }
+  }, [isPlaying, loop, loopDelay, handleEnded]);
+
+  // Handle controlled play/pause state updates
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    enforceVideoProps(video);
+    configureVideoDOM(video);
 
     if (restartTimerRef.current) {
       clearTimeout(restartTimerRef.current);
@@ -201,18 +268,17 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
       try {
         video.currentTime = 0;
       } catch {
-        // Continue if metadata loading
+        // Ignore if metadata is still loading
       }
-      playVideo(video);
+      safePlay(video);
     } else {
       video.pause();
-      // Render the paused frame so the bird stays visible on canvas
       if (useCanvas && video.readyState >= 1) {
         const ok = drawKeyedFrame();
         if (ok) setCanvasHasFrame(true);
       }
     }
-  }, [isPlaying, src, playbackRate, useCanvas, enforceVideoProps, playVideo, drawKeyedFrame]);
+  }, [isPlaying, src, useCanvas, configureVideoDOM, safePlay, drawKeyedFrame]);
 
   // Handle Canvas pixel keying animation loop while active
   useEffect(() => {
@@ -238,77 +304,6 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
     };
   }, [useCanvas, drawKeyedFrame, canvasHasFrame]);
 
-  const handleEnded = useCallback(() => {
-    if (!isPlaying) return;
-
-    if (loop) {
-      const video = videoRef.current;
-      if (!video) return;
-
-      if (loopDelay > 0) {
-        if (isWaitingLoopRef.current) return;
-        isWaitingLoopRef.current = true;
-
-        video.pause();
-        // Render the resting end frame onto canvas
-        if (useCanvas && video.readyState >= 1) {
-          const ok = drawKeyedFrame();
-          if (ok) setCanvasHasFrame(true);
-        }
-
-        if (onEndedRef.current) {
-          onEndedRef.current();
-        }
-
-        if (restartTimerRef.current) {
-          clearTimeout(restartTimerRef.current);
-        }
-
-        restartTimerRef.current = setTimeout(() => {
-          isWaitingLoopRef.current = false;
-          const v = videoRef.current;
-          if (v && isPlaying) {
-            try {
-              v.currentTime = 0;
-              playVideo(v);
-            } catch {
-              // ignore
-            }
-          }
-        }, loopDelay);
-      } else {
-        try {
-          video.currentTime = 0;
-          playVideo(video);
-        } catch {
-          // ignore
-        }
-      }
-    } else if (!hasEndedRef.current) {
-      hasEndedRef.current = true;
-      const video = videoRef.current;
-      if (video) video.pause();
-      if (onEndedRef.current) {
-        onEndedRef.current();
-      }
-    }
-  }, [isPlaying, loop, loopDelay, useCanvas, drawKeyedFrame, playVideo]);
-
-  const handleTimeUpdate = useCallback(() => {
-    const video = videoRef.current;
-    if (!video || !isPlaying || video.duration <= 0) return;
-
-    if (loop && loopDelay > 0) {
-      if (!isWaitingLoopRef.current && video.currentTime >= video.duration - 0.12) {
-        handleEnded();
-      }
-    } else if (!loop && !hasEndedRef.current) {
-      if (video.currentTime >= video.duration - 0.15) {
-        handleEnded();
-      }
-    }
-  }, [isPlaying, loop, loopDelay, handleEnded]);
-
   return (
     <div className={`relative flex items-center justify-center ${className || ''}`} style={style}>
       
@@ -321,7 +316,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
         />
       )}
 
-      {/* HTML5 Video Element: Source for canvas keying (hidden on canvas mode, mix-blend-multiply on fallback) */}
+      {/* HTML5 Video Element: Source for canvas keying */}
       {!hasVideoError && (
         <video
           ref={videoRef}
@@ -338,7 +333,7 @@ export const TransparentVideo: React.FC<TransparentVideoProps> = ({
             setUseCanvas(false);
           }}
           onPlay={() => {
-            if (videoRef.current) enforceVideoProps(videoRef.current);
+            if (videoRef.current) configureVideoDOM(videoRef.current);
           }}
           className={
             useCanvas

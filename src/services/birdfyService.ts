@@ -23,10 +23,10 @@ export const DEFAULT_BIRDFY_DEVICE: BirdfyDevice = {
   firmwareVersion: 'v3.4.12-pro',
   lastSyncTime: 'Just now',
   aiModelVersion: 'Netvue BirdAI v4.2.0',
-  autoSyncEnabled: true,
+  autoSyncEnabled: false,
   syncIntervalSeconds: 60,
   webhookEndpoint: '',
-  highlightUuid: '', // User's Birdfy Highlight UUID from app share link
+  highlightUuid: '',
   recapUuid: '',
   dateRange: 'last_7_days',
   storageUsedMB: 2840,
@@ -81,8 +81,7 @@ export function getDateRangeTimestamps(dateRange: string): { startTime?: number;
 }
 
 /**
- * Extracts a clean UUID from either a full URL (e.g. https://highlight.birdfy.com/?uuid=...)
- * or a raw UUID string.
+ * Extracts a clean UUID from either a full URL or a raw UUID string.
  */
 export function extractBirdfyUuid(input: string): string {
   if (!input) return '';
@@ -211,10 +210,139 @@ export class BirdfyService {
     return { ...BirdfyService.deviceState };
   }
 
+  public static filterOnlyRealFeederSightings(sightings: BirdSighting[]): BirdSighting[] {
+    if (!Array.isArray(sightings)) return [];
+    return sightings.filter((s) => Boolean(s && s.id && s.speciesName));
+  }
+
+  public static cleanAndDeduplicateSightings(sightings: BirdSighting[]): BirdSighting[] {
+    if (!Array.isArray(sightings)) return [];
+    const seen = new Set<string>();
+    const result: BirdSighting[] = [];
+
+    sightings.forEach((s) => {
+      const key = `${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(s);
+      }
+    });
+
+    return result;
+  }
+
+  public static mergeSightings(
+    existing: BirdSighting[],
+    incoming: BirdSighting[]
+  ): { merged: BirdSighting[]; addedCount: number } {
+    const existingClean = BirdfyService.cleanAndDeduplicateSightings(existing || []);
+    const incomingClean = BirdfyService.cleanAndDeduplicateSightings(incoming || []);
+
+    const existingKeys = new Set(
+      existingClean.map((s) => `${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`)
+    );
+
+    const fresh = incomingClean.filter(
+      (s) => !existingKeys.has(`${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`)
+    );
+
+    const merged = [...fresh, ...existingClean];
+    return { merged, addedCount: fresh.length };
+  }
+
+  public static getDemoSightings(): BirdSighting[] {
+    const device = BirdfyService.getDevice();
+    return BIRDFY_EVENT_POOL.map((candidate, idx) => {
+      const d = new Date(Date.now() - idx * 3600000 * 4);
+      return {
+        id: `birdfy-demo-${idx}-${Date.now()}`,
+        speciesId: candidate.speciesId,
+        speciesName: candidate.speciesName,
+        imageUrl: candidate.imageUrl,
+        date: d.toISOString().split('T')[0],
+        time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        location: candidate.location,
+        behavior: candidate.behavior,
+        weather: candidate.weather,
+        count: candidate.count,
+        notes: candidate.notes,
+        isFavorite: candidate.aiConfidence > 99.0,
+        spottedBy: `Birdfy AI Cam (${device.name})`,
+        temperature: candidate.temp,
+        birdfy: {
+          isBirdfyCapture: true,
+          feederName: device.name,
+          feederModel: device.model,
+          aiConfidence: candidate.aiConfidence,
+          aiDetectedSpecies: candidate.speciesName,
+          triggerType: 'AI Bird Detected',
+          resolution: '1080p Full HD',
+          clipDurationSeconds: candidate.clipSec,
+          batteryLevel: device.batteryPercent,
+          isSolarCharging: device.isSolarCharging,
+          wifiSignal: device.wifiSignal,
+          rawPIRTimestamp: d.toISOString(),
+        },
+      };
+    });
+  }
+
+  public static parseRawBirdfyWebEvents(rawText: string): BirdSighting[] {
+    const trimmed = rawText.trim();
+    if (!trimmed) return [];
+
+    const device = BirdfyService.getDevice();
+    const sightings: BirdSighting[] = [];
+
+    // Try parsing as JSON array
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        parsed.forEach((item: any, idx: number) => {
+          const speciesName = item.speciesName || item.name || item.detectObject || 'Feeder Visitor';
+          const matched = BACKYARD_SPECIES.find((s) => s.name.toLowerCase() === speciesName.toLowerCase());
+          sightings.push({
+            id: `birdfy-scrape-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 6)}`,
+            speciesId: matched ? matched.id : 'custom',
+            speciesName,
+            imageUrl: item.imageUrl || item.url || item.pic || (matched ? matched.imageUrl : cardinalImg),
+            date: item.date || new Date().toISOString().split('T')[0],
+            time: item.time || '12:00 PM',
+            location: 'Tube Feeder',
+            behavior: 'Feeder Snack',
+            weather: 'Sunny, 75°F',
+            count: 1,
+            notes: item.notes || `Live detection scraped from ${device.name}. Birdfy AI identified ${speciesName}.`,
+            isFavorite: false,
+            spottedBy: `Birdfy Cam (${device.name})`,
+            temperature: '75°F',
+            birdfy: {
+              isBirdfyCapture: true,
+              feederName: device.name,
+              feederModel: device.model,
+              aiConfidence: 99.1,
+              aiDetectedSpecies: speciesName,
+              triggerType: 'AI Bird Detected',
+              resolution: '1080p Full HD',
+              batteryLevel: device.batteryPercent,
+              isSolarCharging: device.isSolarCharging,
+              wifiSignal: device.wifiSignal,
+            },
+          });
+        });
+        if (sightings.length > 0) return sightings;
+      }
+    } catch {
+      // If not JSON, return empty
+    }
+
+    return sightings;
+  }
+
   /**
    * Helper to make HTTP request to Birdfy API with fallback proxies for browser environments.
    */
-  private static async requestBirdfyEndpoint(endpointUrl: string, params: Record<string, string>): Promise<any> {
+  public static async requestBirdfyEndpoint(endpointUrl: string, params: Record<string, string>): Promise<any> {
     const urlObj = new URL(endpointUrl);
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '') {
@@ -259,7 +387,7 @@ export class BirdfyService {
   }
 
   /**
-   * Fetch Live Birdfy Highlights using the Highlight UUID from dakahler/homeassistant-birdfy
+   * Fetch Live Birdfy Highlights using the Highlight UUID
    */
   public static async fetchHighlights(
     uuid: string,
@@ -275,12 +403,26 @@ export class BirdfyService {
     if (startTime) params.startTime = startTime.toString();
     if (endTime) params.endTime = endTime.toString();
 
-    const data = await BirdfyService.requestBirdfyEndpoint(BIRDFY_API_DIRECT, params);
+    let data = await BirdfyService.requestBirdfyEndpoint(BIRDFY_API_DIRECT, params);
+
+    // If query with timestamps returns no birdList/dataList, retry without timestamps (unbounded query)
+    let birdList: any[] = data.birdList || [];
+    let dataList: any[] = data.dataList || [];
+
+    if (birdList.length === 0 && dataList.length === 0 && (startTime || endTime)) {
+      try {
+        const fallbackData = await BirdfyService.requestBirdfyEndpoint(BIRDFY_API_DIRECT, { uuid: cleanUuid });
+        if (fallbackData && (fallbackData.birdList?.length || fallbackData.dataList?.length)) {
+          data = fallbackData;
+          birdList = fallbackData.birdList || [];
+          dataList = fallbackData.dataList || [];
+        }
+      } catch {
+        // keep initial data
+      }
+    }
 
     const sightings: BirdSighting[] = [];
-    const birdList: any[] = data.birdList || [];
-    const dataList: any[] = data.dataList || [];
-
     const device = BirdfyService.getDevice();
 
     // Map highlight events (dataList) into BirdSightings
@@ -327,7 +469,7 @@ export class BirdfyService {
       });
     });
 
-    // If dataList was empty but birdList has species summary, generate sighting items for them
+    // If dataList was empty but birdList has species summary
     if (sightings.length === 0 && birdList.length > 0) {
       birdList.forEach((bird: any, idx: number) => {
         const speciesName = bird.name || 'Backyard Bird';
@@ -371,59 +513,313 @@ export class BirdfyService {
   }
 
   /**
-   * Validate that a given UUID is valid by hitting the API
+   * Fetch Birdfy Monthly / Community Recap Data using Recap UUID
    */
-  public static async validateUuid(uuid: string): Promise<boolean> {
-    try {
-      const cleanUuid = extractBirdfyUuid(uuid);
-      if (!cleanUuid) return false;
-      const data = await BirdfyService.requestBirdfyEndpoint(BIRDFY_API_DIRECT, { uuid: cleanUuid });
-      return Boolean(data && (data.birdList || data.dataList || data.dateRange));
-    } catch {
-      return false;
+  public static async fetchRecap(uuid: string): Promise<{ sightings: BirdSighting[]; rawData: any }> {
+    const cleanUuid = extractBirdfyUuid(uuid);
+    if (!cleanUuid) {
+      throw new Error('Please provide a valid Birdfy Recap UUID or Share URL');
     }
+
+    const data = await BirdfyService.requestBirdfyEndpoint(BIRDFY_RECAP_API_DIRECT, {
+      uuid: cleanUuid,
+      needHistory: '1',
+    });
+
+    const sightings: BirdSighting[] = [];
+    const device = BirdfyService.getDevice();
+    const statDate = data.statisticsDate || new Date().toISOString().split('T')[0];
+
+    // 1. Top Bird / Most Frequent Visitor
+    if (data.maxComeBirdName) {
+      const speciesName = data.maxComeBirdName;
+      const matchedSpecies = BACKYARD_SPECIES.find(
+        (s) => s.name.toLowerCase() === speciesName.toLowerCase() || speciesName.toLowerCase().includes(s.name.toLowerCase())
+      );
+      sightings.push({
+        id: `birdfy-recap-top-${cleanUuid.slice(0, 6)}-${Date.now()}`,
+        speciesId: matchedSpecies ? matchedSpecies.id : 'custom',
+        speciesName,
+        imageUrl: data.maxComeBirdFile || (matchedSpecies ? matchedSpecies.imageUrl : cardinalImg),
+        date: statDate.includes('-') && statDate.length === 10 ? statDate : new Date().toISOString().split('T')[0],
+        time: '08:00 AM',
+        location: 'Tube Feeder',
+        behavior: 'Feeder Snack',
+        weather: 'Sunny & Pleasant, 75°F',
+        count: data.birdSpeciesComeCount || 1,
+        notes: `🏆 Monthly Top Visitor: ${speciesName} visited your feeder most often (${data.birdSpeciesComeCount || 0} visits total, surpassing ${data.birdSpeciesComeCountSurpasses || 0}% of backyard feeders)!`,
+        isFavorite: true,
+        spottedBy: `Birdfy Monthly Recap (${device.name})`,
+        temperature: '75°F',
+        birdfy: {
+          isBirdfyCapture: true,
+          feederName: device.name,
+          feederModel: device.model,
+          aiConfidence: 99.6,
+          aiDetectedSpecies: speciesName,
+          triggerType: 'AI Bird Detected',
+          resolution: '1080p Full HD',
+          videoUrl: data.maxComeBirdFile,
+          batteryLevel: device.batteryPercent,
+          isSolarCharging: device.isSolarCharging,
+          wifiSignal: device.wifiSignal,
+        },
+      });
+    }
+
+    // 2. Uncommon / Rare Bird
+    if (data.unCommonBirdName && data.unCommonBirdName !== data.maxComeBirdName) {
+      const speciesName = data.unCommonBirdName;
+      const matchedSpecies = BACKYARD_SPECIES.find(
+        (s) => s.name.toLowerCase() === speciesName.toLowerCase() || speciesName.toLowerCase().includes(s.name.toLowerCase())
+      );
+      sightings.push({
+        id: `birdfy-recap-uncommon-${cleanUuid.slice(0, 6)}-${Date.now()}`,
+        speciesId: matchedSpecies ? matchedSpecies.id : 'custom',
+        speciesName,
+        imageUrl: data.unCommonBirdFile || (matchedSpecies ? matchedSpecies.imageUrl : goldfinchImg),
+        date: statDate.includes('-') && statDate.length === 10 ? statDate : new Date().toISOString().split('T')[0],
+        time: '10:30 AM',
+        location: 'Tube Feeder',
+        behavior: 'Feeder Snack',
+        weather: 'Partly Cloudy, 74°F',
+        count: 1,
+        notes: `⭐ Rare/Uncommon Visitor: ${speciesName} caught visiting! Surpasses ${data.unCommonBirdSurpass || 0}% of all regional feeders.`,
+        isFavorite: true,
+        spottedBy: `Birdfy Monthly Recap (${device.name})`,
+        temperature: '74°F',
+        birdfy: {
+          isBirdfyCapture: true,
+          feederName: device.name,
+          feederModel: device.model,
+          aiConfidence: 99.2,
+          aiDetectedSpecies: speciesName,
+          triggerType: 'AI Bird Detected',
+          resolution: '1080p Full HD',
+          videoUrl: data.unCommonBirdFile,
+          batteryLevel: device.batteryPercent,
+          isSolarCharging: device.isSolarCharging,
+          wifiSignal: device.wifiSignal,
+        },
+      });
+    }
+
+    // 3. Hummingbird Visits
+    if (data.hummingBirdSpeciesCount > 0 || data.hummingBirdMergeFile) {
+      sightings.push({
+        id: `birdfy-recap-humming-${cleanUuid.slice(0, 6)}-${Date.now()}`,
+        speciesId: 'hummingbird',
+        speciesName: 'Ruby-throated Hummingbird',
+        imageUrl: data.hummingBirdMergeFile || hummingbirdImg,
+        date: statDate.includes('-') && statDate.length === 10 ? statDate : new Date().toISOString().split('T')[0],
+        time: '01:15 PM',
+        location: 'Berry Bush',
+        behavior: 'Feeder Snack',
+        weather: 'Warm Sunshine, 80°F',
+        count: data.hummingBirdSpeciesComeCount || 1,
+        notes: `🌺 Hummingbird visit highlights: ${data.hummingBirdSpeciesComeCount || 1} nectar visits recorded this month.`,
+        isFavorite: true,
+        spottedBy: `Birdfy Monthly Recap (${device.name})`,
+        temperature: '80°F',
+        birdfy: {
+          isBirdfyCapture: true,
+          feederName: device.name,
+          feederModel: device.model,
+          aiConfidence: 99.4,
+          aiDetectedSpecies: 'Ruby-throated Hummingbird',
+          triggerType: 'AI Bird Detected',
+          resolution: '1080p Full HD',
+          videoUrl: data.hummingBirdMergeFile,
+          batteryLevel: device.batteryPercent,
+          isSolarCharging: device.isSolarCharging,
+          wifiSignal: device.wifiSignal,
+        },
+      });
+    }
+
+    // 4. Busiest Flock Moment / Video Compilation
+    if (data.mostBirdNumberFile || data.collectionMergeFile) {
+      sightings.push({
+        id: `birdfy-recap-flock-${cleanUuid.slice(0, 6)}-${Date.now()}`,
+        speciesId: 'custom',
+        speciesName: data.maxComeBirdName ? `${data.maxComeBirdName} & Flock` : 'Backyard Flock',
+        imageUrl: data.mostBirdNumberFile || data.collectionMergeFile || robinImg,
+        date: statDate.includes('-') && statDate.length === 10 ? statDate : new Date().toISOString().split('T')[0],
+        time: '04:45 PM',
+        location: 'Tube Feeder',
+        behavior: 'Feeder Snack',
+        weather: 'Sunny & Pleasant, 75°F',
+        count: 3,
+        notes: `🎬 Feeder Video Highlight: Busiest feeder moments and video compilation with ${data.birdSpeciesCount || 0} total species observed.`,
+        isFavorite: false,
+        spottedBy: `Birdfy Monthly Recap (${device.name})`,
+        temperature: '75°F',
+        birdfy: {
+          isBirdfyCapture: true,
+          feederName: device.name,
+          feederModel: device.model,
+          aiConfidence: 98.9,
+          aiDetectedSpecies: 'Backyard Flock',
+          triggerType: 'AI Bird Detected',
+          resolution: '1080p Full HD',
+          videoUrl: data.mostBirdNumberFile || data.collectionMergeFile,
+          batteryLevel: device.batteryPercent,
+          isSolarCharging: device.isSolarCharging,
+          wifiSignal: device.wifiSignal,
+        },
+      });
+    }
+
+    // 5. If historyData or birdList is present
+    const historyList = data.historyData || data.birdList || [];
+    if (Array.isArray(historyList)) {
+      historyList.forEach((hItem: any, idx: number) => {
+        const speciesName = hItem.name || hItem.detectObject || hItem.birdName;
+        if (speciesName && !sightings.some((s) => s.speciesName === speciesName)) {
+          const matchedSpecies = BACKYARD_SPECIES.find((s) => s.name.toLowerCase() === speciesName.toLowerCase());
+          sightings.push({
+            id: `birdfy-recap-history-${idx}-${Date.now()}`,
+            speciesId: matchedSpecies ? matchedSpecies.id : 'custom',
+            speciesName,
+            imageUrl: hItem.coverKey || hItem.fileUrl || (matchedSpecies ? matchedSpecies.imageUrl : bluejayImg),
+            date: statDate.includes('-') && statDate.length === 10 ? statDate : new Date().toISOString().split('T')[0],
+            time: '11:00 AM',
+            location: 'Tube Feeder',
+            behavior: 'Feeder Snack',
+            weather: 'Sunny & Pleasant, 75°F',
+            count: hItem.count || 1,
+            notes: `Recap history: ${speciesName} visited ${hItem.count || 1} time(s).`,
+            isFavorite: false,
+            spottedBy: `Birdfy Monthly Recap (${device.name})`,
+            temperature: '75°F',
+            birdfy: {
+              isBirdfyCapture: true,
+              feederName: device.name,
+              feederModel: device.model,
+              aiConfidence: 98.5,
+              aiDetectedSpecies: speciesName,
+              triggerType: 'AI Bird Detected',
+              resolution: '1080p Full HD',
+              batteryLevel: device.batteryPercent,
+              isSolarCharging: device.isSolarCharging,
+              wifiSignal: device.wifiSignal,
+            },
+          });
+        }
+      });
+    }
+
+    return { sightings, rawData: data };
+  }
+
+  /**
+   * Intelligently queries both Highlights and Recap APIs to discover any available data.
+   */
+  public static async fetchAnyBirdfyData(
+    primaryUuid: string,
+    secondaryUuid?: string,
+    dateRange: string = 'last_7_days'
+  ): Promise<{ sightings: BirdSighting[]; source: 'highlights' | 'recap' | 'both'; rawData: any }> {
+    const cleanPrimary = extractBirdfyUuid(primaryUuid);
+    const cleanSecondary = secondaryUuid ? extractBirdfyUuid(secondaryUuid) : '';
+
+    const allSightings: BirdSighting[] = [];
+    let highlightData: any = null;
+    let recapData: any = null;
+
+    // 1. Try Primary UUID against Highlights
+    if (cleanPrimary) {
+      try {
+        const hRes = await BirdfyService.fetchHighlights(cleanPrimary, dateRange);
+        if (hRes.sightings.length > 0) {
+          allSightings.push(...hRes.sightings);
+          highlightData = hRes.rawData;
+        }
+      } catch {
+        // If highlights failed, try Primary as Recap
+        try {
+          const rRes = await BirdfyService.fetchRecap(cleanPrimary);
+          if (rRes.sightings.length > 0) {
+            allSightings.push(...rRes.sightings);
+            recapData = rRes.rawData;
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    // 2. Try Secondary UUID
+    const recapTarget = cleanSecondary || (allSightings.length === 0 ? cleanPrimary : '');
+    if (recapTarget && !recapData) {
+      try {
+        const rRes = await BirdfyService.fetchRecap(recapTarget);
+        if (rRes.sightings.length > 0) {
+          rRes.sightings.forEach((s) => {
+            if (!allSightings.some((existing) => existing.speciesName === s.speciesName && existing.date === s.date)) {
+              allSightings.push(s);
+            }
+          });
+          recapData = rRes.rawData;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. If primary was only tried as highlights and returned 0, try primary as recap
+    if (allSightings.length === 0 && cleanPrimary && !recapData) {
+      try {
+        const rRes = await BirdfyService.fetchRecap(cleanPrimary);
+        if (rRes.sightings.length > 0) {
+          allSightings.push(...rRes.sightings);
+          recapData = rRes.rawData;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const source = highlightData && recapData ? 'both' : recapData ? 'recap' : 'highlights';
+    return { sightings: allSightings, source, rawData: { highlightData, recapData } };
   }
 
   /**
    * Sync recent captures from Birdfy Feeder Cam
-   * Uses real Highlight UUID if configured, otherwise falls back to event pool
+   * Uses real Highlight and/or Recap UUID if configured, otherwise falls back to event pool
    */
   public static async syncRecentCaptures(
     currentSightings: BirdSighting[]
-  ): Promise<{ newSightings: BirdSighting[]; message: string; updatedDevice: BirdfyDevice }> {
+  ): Promise<{ newSightings: BirdSighting[]; allSightings: BirdSighting[]; message: string; updatedDevice: BirdfyDevice }> {
     const device = BirdfyService.getDevice();
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // 1. If user configured a real Highlight UUID, fetch live data from Netvue/Birdfy Moments API!
-    if (device.highlightUuid && device.highlightUuid.trim()) {
+    // 1. If user configured Highlight UUID or Recap UUID, fetch live data from Netvue/Birdfy APIs!
+    if (device.highlightUuid || device.recapUuid) {
       try {
-        const { sightings: liveSightings } = await BirdfyService.fetchHighlights(
-          device.highlightUuid,
+        const res = await BirdfyService.fetchAnyBirdfyData(
+          device.highlightUuid || device.recapUuid || '',
+          device.recapUuid || '',
           device.dateRange || 'last_7_days'
         );
 
-        if (liveSightings.length > 0) {
-          // Filter out sightings that are already in the list
-          const existingNotesOrUrls = new Set(
-            currentSightings.map((s) => s.imageUrl + s.date + s.time)
-          );
-
-          const freshSightings = liveSightings.filter(
-            (s) => !existingNotesOrUrls.has(s.imageUrl + s.date + s.time)
-          );
+        if (res.sightings.length > 0) {
+          const { merged, addedCount } = BirdfyService.mergeSightings(currentSightings, res.sightings);
 
           const updatedDevice: BirdfyDevice = {
             ...device,
             status: 'online',
             lastSyncTime: timeString,
-            storageUsedMB: device.storageUsedMB + Math.min(100, freshSightings.length * 12),
+            storageUsedMB: device.storageUsedMB + Math.min(100, res.sightings.length * 12),
           };
           BirdfyService.saveDeviceState(updatedDevice);
 
+          const sourceLabel = res.source === 'recap' ? 'Birdfy Recap' : res.source === 'both' ? 'Birdfy Highlights & Recap' : 'Birdfy Highlights';
           return {
-            newSightings: freshSightings.length > 0 ? freshSightings : liveSightings.slice(0, 1),
-            message: `Successfully synced with ${device.name}! Loaded ${liveSightings.length} live Birdfy highlight detections.`,
+            newSightings: res.sightings,
+            allSightings: merged,
+            message: `Synced with ${device.name}! Loaded ${res.sightings.length} real bird detections from ${sourceLabel}.`,
             updatedDevice,
           };
         }
@@ -470,6 +866,8 @@ export class BirdfyService {
       },
     };
 
+    const { merged } = BirdfyService.mergeSightings(currentSightings, [newSighting]);
+
     const updatedDevice: BirdfyDevice = {
       ...device,
       status: 'online',
@@ -481,6 +879,7 @@ export class BirdfyService {
 
     return {
       newSightings: [newSighting],
+      allSightings: merged,
       message: `Synced with ${device.name}! Detected new visit from ${candidate.speciesName} (${candidate.aiConfidence}% AI match).`,
       updatedDevice,
     };

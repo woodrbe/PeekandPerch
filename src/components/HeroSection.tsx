@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, RefreshCw } from 'lucide-react';
 
-import cardinalAnimated from '../assets/images/cardinal_ios_ready.mp4';
-import goldenAnimated from '../assets/images/golden_animated.mp4';
+import cardinalAnimated from '../assets/images/cardinal animated.mp4';
+import goldenAnimated from '../assets/images/golden animated.mp4';
 import cardinalCharacter from '../assets/images/cardinal_character_1785015411958.jpg';
 import goldfinchCharacter from '../assets/images/goldfinch_character_1785015425426.jpg';
 import { TransparentVideo } from './TransparentVideo';
@@ -128,7 +128,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </button>
               </div>
 
-              {/* The Pixar Bird: Transparent video playing continuously in loop - uncropped full body (reduced by 25%) */}
+              {/* The Pixar Bird: Transparent video playing continuously in loop - uncropped full body */}
               <div className="relative w-full h-[240px] sm:h-[260px] md:h-[285px] mx-auto flex items-center justify-center my-0.5">
                 {/* Soft circular background glow behind mascot */}
                 <div 
@@ -139,6 +139,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <TransparentVideo
                   key={currentMascot.id}
                   src={currentMascot.video}
+                  poster={currentMascot.poster}
                   isPlaying={true}
                   loop={true}
                   loopDelay={15000}
