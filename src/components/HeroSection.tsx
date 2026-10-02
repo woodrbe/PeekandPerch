@@ -3,6 +3,7 @@ import { Eye, RefreshCw } from 'lucide-react';
 
 import cardinalAnimated from '../assets/images/cardinal animated.mp4';
 import goldenAnimated from '../assets/images/golden animated.mp4';
+import bluejayAnimated from '../assets/images/bluejay animated.mp4';
 import cardinalCharacter from '../assets/images/cardinal_character_1785015411958.jpg';
 import goldfinchCharacter from '../assets/images/goldfinch_character_1785015425426.jpg';
 import bluejayCharacter from '../assets/images/bluejay_character_1790964142504.jpg';
@@ -76,6 +77,7 @@ const MASCOTS: MascotBird[] = [
     badge: 'Lookout Sentinel 💎',
     title: 'Backyard Perimeter Scout',
     quote: '“Peanuts spotted at 12 o’clock! Sounding the flock perimeter alert!”',
+    video: bluejayAnimated,
     poster: bluejayCharacter,
     theme: {
       accentGlow: 'from-sky-400/25 via-blue-300/10 to-transparent',
