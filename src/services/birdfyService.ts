@@ -210,9 +210,27 @@ export class BirdfyService {
     return { ...BirdfyService.deviceState };
   }
 
+  public static isGenericVisitorSpecies(name?: string): boolean {
+    if (!name) return true;
+    const s = name.toLowerCase().trim();
+    return (
+      s === 'feeder visitor' ||
+      s === 'visitor' ||
+      s === 'feeder bird' ||
+      s === 'motion' ||
+      s === 'unidentified' ||
+      s === 'all birds' ||
+      s === 'backyard bird' ||
+      s === 'all' ||
+      s.includes('feeder visitor')
+    );
+  }
+
   public static filterOnlyRealFeederSightings(sightings: BirdSighting[]): BirdSighting[] {
     if (!Array.isArray(sightings)) return [];
-    return sightings.filter((s) => Boolean(s && s.id && s.speciesName));
+    return sightings.filter(
+      (s) => Boolean(s && s.id && s.speciesName && !BirdfyService.isGenericVisitorSpecies(s.speciesName))
+    );
   }
 
   public static cleanAndDeduplicateSightings(sightings: BirdSighting[]): BirdSighting[] {
@@ -221,6 +239,7 @@ export class BirdfyService {
     const result: BirdSighting[] = [];
 
     sightings.forEach((s) => {
+      if (!s || !s.speciesName || BirdfyService.isGenericVisitorSpecies(s.speciesName)) return;
       const key = `${s.speciesName}_${s.date}_${s.time}_${s.imageUrl || ''}`;
       if (!seen.has(key)) {
         seen.add(key);
@@ -299,7 +318,10 @@ export class BirdfyService {
       const parsed = JSON.parse(trimmed);
       if (Array.isArray(parsed)) {
         parsed.forEach((item: any, idx: number) => {
-          const speciesName = item.speciesName || item.name || item.detectObject || 'Feeder Visitor';
+          const speciesName = item.speciesName || item.name || item.detectObject || '';
+          // Skip if missing or generic Feeder Visitor
+          if (!speciesName || BirdfyService.isGenericVisitorSpecies(speciesName)) return;
+
           const matched = BACKYARD_SPECIES.find((s) => s.name.toLowerCase() === speciesName.toLowerCase());
           sightings.push({
             id: `birdfy-scrape-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 6)}`,

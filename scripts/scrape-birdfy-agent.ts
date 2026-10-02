@@ -124,7 +124,21 @@ async function runScraperAgent() {
               ev.displayTags?.[0]?.label ||
               ev.tags?.[0]?.label ||
               ev.rawName ||
-              'Feeder Visitor';
+              '';
+
+            // Ignore Feeder Visitor and generic motion events
+            if (
+              !speciesName ||
+              speciesName.toLowerCase().includes('feeder visitor') ||
+              speciesName.toLowerCase() === 'visitor' ||
+              speciesName.toLowerCase() === 'motion' ||
+              speciesName.toLowerCase() === 'feeder bird' ||
+              speciesName.toLowerCase() === 'unidentified' ||
+              speciesName.toLowerCase() === 'all birds'
+            ) {
+              return;
+            }
+
             const img =
               ev.fileUrl ||
               ev.coverKey ||
@@ -275,7 +289,12 @@ async function runScraperAgent() {
             .map((ev: any) => {
               const media = v.mediaFor ? v.mediaFor(ev) : null;
               const tags = media?.displayTags || [];
-              const species = tags[0]?.label || tags[0]?.rawName || ev.title || 'Feeder Visitor';
+              const species = tags[0]?.label || tags[0]?.rawName || ev.title || '';
+              
+              if (!species || species.toLowerCase().includes('feeder visitor') || species.toLowerCase() === 'visitor' || species.toLowerCase() === 'motion') {
+                return null;
+              }
+
               const img =
                 media?.images?.[0]?.largeUrl ||
                 media?.images?.[0]?.listUrl ||
@@ -294,7 +313,7 @@ async function runScraperAgent() {
                 date: d,
               };
             })
-            .filter((x: any) => x.imageUrl);
+            .filter((x: any) => x && x.imageUrl);
         }
       } catch {
         // Ignore Vue check error
@@ -317,6 +336,8 @@ async function runScraperAgent() {
         'events',
         'devices',
         'all birds',
+        'feeder visitor',
+        'visitor'
       ];
       const results: any[] = [];
       const seenImgs = new Set<string>();
@@ -343,23 +364,26 @@ async function runScraperAgent() {
         }
 
         if (seenImgs.has(url)) continue;
-        seenImgs.add(url);
 
         let species =
           card.querySelector('.moment-card__tag, .device-event-card__name')?.textContent?.trim() || '';
-        if (!species || JUNK.includes(species.toLowerCase())) {
+        if (!species || JUNK.some(j => species.toLowerCase().includes(j))) {
           const lines = (card.textContent || '')
             .split('\n')
             .map((l) => l.trim())
             .filter((l) => l.length > 2 && l.length < 35);
           for (const l of lines) {
-            if (!JUNK.includes(l.toLowerCase()) && !/^\d{1,2}:\d{2}/.test(l)) {
+            if (!JUNK.some(j => l.toLowerCase().includes(j)) && !/^\d{1,2}:\d{2}/.test(l)) {
               species = l;
               break;
             }
           }
         }
-        if (!species || JUNK.includes(species.toLowerCase())) species = 'Feeder Visitor';
+        
+        // Skip if still generic or Feeder Visitor
+        if (!species || JUNK.some(j => species.toLowerCase().includes(j))) continue;
+
+        seenImgs.add(url);
 
         let timeStr =
           card.querySelector('.moment-card__time, .device-event-card__shared')?.textContent?.trim() || '12:00 PM';

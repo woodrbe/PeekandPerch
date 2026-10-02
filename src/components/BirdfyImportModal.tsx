@@ -67,10 +67,33 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
     return ok;
   };
 
+  const isFeederVisitorOrJunk = (name) => {
+    if (!name) return true;
+    const s = name.toLowerCase().trim();
+    return (
+      s === 'feeder visitor' ||
+      s === 'visitor' ||
+      s === 'feeder bird' ||
+      s === 'motion' ||
+      s === 'unidentified' ||
+      s === 'all birds' ||
+      s === 'all' ||
+      s === 'today' ||
+      s === 'yesterday' ||
+      s === 'select' ||
+      s === 'delete' ||
+      s === 'download' ||
+      s === 'share' ||
+      s.includes('feeder visitor') ||
+      s.includes('visitor') ||
+      s.includes('motion')
+    );
+  };
+
   const toast = document.createElement('div');
   toast.id = 'birdfy-peek-toast';
   toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:999999;background:#0284c7;color:#fff;padding:14px 24px;border-radius:999px;font-family:system-ui,-apple-system,sans-serif;font-size:14px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,0.35);border:2px solid #fff;display:flex;align-items:center;gap:10px;transition:all 0.3s ease;';
-  toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed to load ALL birds on page...</span>';
+  toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed to load identified bird species (ignoring generic visitors)...</span>';
   document.body.appendChild(toast);
 
   const scrollTargets = [window, document.documentElement, document.body, ...Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]'))].filter(Boolean);
@@ -92,7 +115,7 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
     doScroll();
     await new Promise(r => setTimeout(r, 380));
     const currentCards = document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length;
-    toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed... Found <b>' + currentCards + '</b> birds so far (Step ' + step + '/25)...</span>';
+    toast.innerHTML = '<span style="font-size:18px">🦅</span><span>Auto-scrolling feed... Found <b>' + currentCards + '</b> cards so far (Step ' + step + '/25)...</span>';
     if (currentCards > 0 && currentCards === lastCount) {
       stagnantRounds++;
       if (stagnantRounds >= 3) break;
@@ -104,7 +127,6 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
 
   const allSightings = [];
   const seenUrls = new Set();
-  const JUNK = ['today', 'yesterday', 'feeder bird', 'all', 'select', 'delete', 'download', 'share', 'cancel', 'motion', 'video', 'events', 'devices', 'all birds'];
   
   const allElements = Array.from(document.querySelectorAll('*'));
   for (const el of allElements) {
@@ -113,7 +135,11 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
       v.events.forEach(ev => {
         const media = v.mediaFor ? v.mediaFor(ev) : null;
         const tags = media?.displayTags || [];
-        const species = tags[0]?.label || tags[0]?.rawName || ev.title || 'Feeder Visitor';
+        const species = tags[0]?.label || tags[0]?.rawName || ev.title || '';
+        
+        // Skip generic feeder visitor / motion cards
+        if (!species || isFeederVisitorOrJunk(species)) return;
+
         const img = media?.images?.[0]?.largeUrl || media?.images?.[0]?.listUrl || media?.images?.[0]?.url || ev.pic || ev.fileUrl || '';
         const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM';
         const d = ev.alertTime ? new Date(ev.alertTime).toISOString().split('T')[0] : (v.date || new Date().toISOString().split('T')[0]);
@@ -155,19 +181,22 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
       u = thumb?.currentSrc || thumb?.src || '';
     }
     if (!u || seenUrls.has(u)) continue;
-    seenUrls.add(u);
 
     let sp = vue?.displayTags?.[0]?.label || c.querySelector('.moment-card__tag, .device-event-card__name')?.innerText?.trim() || '';
-    if (!sp || JUNK.includes(sp.toLowerCase())) {
+    if (!sp || isFeederVisitorOrJunk(sp)) {
       const lines = (c.innerText || '').split('\\n').map(l => l.trim()).filter(l => l.length > 2 && l.length < 35);
       for (const l of lines) {
-        if (!JUNK.includes(l.toLowerCase()) && !/^\\d{1,2}:\\d{2}/.test(l)) {
+        if (!isFeederVisitorOrJunk(l) && !/^\\d{1,2}:\\d{2}/.test(l)) {
           sp = l;
           break;
         }
       }
     }
-    if (!sp || JUNK.includes(sp.toLowerCase())) sp = 'Feeder Visitor';
+
+    // Skip if still generic / Feeder Visitor
+    if (!sp || isFeederVisitorOrJunk(sp)) continue;
+
+    seenUrls.add(u);
 
     let tm = vue?.formatTime?.(vue?.event?.alertTime) || c.querySelector('.moment-card__time, .device-event-card__shared')?.innerText?.trim() || '12:00 PM';
     if (tm.toLowerCase().includes('today') || tm.toLowerCase().includes('yesterday')) {
@@ -179,13 +208,13 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   }
 
   window.__BIRDFY_CAPTURES__ = allSightings;
-  console.log('Birdfy Detections:', allSightings);
+  console.log('Identified Bird Detections:', allSightings);
   await copyToClipboard(allSightings);
 
   toast.style.background = '#059669';
-  toast.innerHTML = '<span style="font-size:18px">🎉</span><span>✓ Copied ALL <b>' + allSightings.length + '</b> bird detections! Paste into Peek & Perch.</span>';
+  toast.innerHTML = '<span style="font-size:18px">🎉</span><span>✓ Copied <b>' + allSightings.length + '</b> identified bird visits (ignored generic visitors)! Paste into Peek & Perch.</span>';
   setTimeout(() => toast.remove(), 6000);
-  alert('✓ Copied ALL ' + allSightings.length + ' bird detection(s) to your clipboard! Paste into Peek & Perch.');
+  alert('✓ Copied ' + allSightings.length + ' identified bird species detections (Feeder Visitor cards ignored) to your clipboard! Paste into Peek & Perch.');
   return allSightings;
 })()`.replace(/\\n/g, ' ').replace(/\\s+/g, ' ');
 
