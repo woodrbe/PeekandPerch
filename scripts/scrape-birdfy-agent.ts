@@ -19,6 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SIGHTINGS_FILE = path.resolve(__dirname, '../public/data/sightings.json');
+const DIST_SIGHTINGS_FILE = path.resolve(__dirname, '../dist/data/sightings.json');
 const CONFIG_FILE = path.resolve(__dirname, '../birdfy.config.json');
 
 interface ExtractedVisit {
@@ -31,6 +32,54 @@ interface ExtractedVisit {
   notes?: string;
 }
 
+function isGenericOrJunkSpecies(name?: string): boolean {
+  if (!name) return true;
+  const s = name.toLowerCase().trim();
+  if (
+    s === 'feeder visitor' ||
+    s === 'visitor' ||
+    s === 'feeder bird' ||
+    s === 'motion' ||
+    s === 'unidentified' ||
+    s === 'all birds' ||
+    s === 'backyard bird' ||
+    s === 'bird' ||
+    s === 'all' ||
+    s === 'hour' ||
+    s === 'hours' ||
+    s === 'minute' ||
+    s === 'minutes' ||
+    s === 'min' ||
+    s === 'mins' ||
+    s === 'sec' ||
+    s === 'second' ||
+    s === 'seconds' ||
+    s === 'today' ||
+    s === 'yesterday' ||
+    s === 'select' ||
+    s === 'delete' ||
+    s === 'download' ||
+    s === 'share' ||
+    s === 'cancel' ||
+    s === 'events' ||
+    s === 'devices' ||
+    s.includes('feeder visitor') ||
+    s.includes('visitor') ||
+    s.includes('motion')
+  ) {
+    return true;
+  }
+  if (
+    /\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\b/i.test(s) ||
+    /^\d+\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\b/i.test(s) ||
+    /^\d{1,2}:\d{2}/.test(s) ||
+    s.length < 3
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function parseCliArgs(): { headed: boolean; deviceId?: string; maxEvents?: number } {
   const args = process.argv.slice(2);
   const headed = args.includes('--headed') || process.env.HEADLESS === 'false';
@@ -39,7 +88,7 @@ function parseCliArgs(): { headed: boolean; deviceId?: string; maxEvents?: numbe
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--device' && args[i + 1]) {
-      deviceId = args[i + 1];
+      deviceId = args[i + 1].trim();
     }
     if (args[i] === '--max' && args[i + 1]) {
       maxEvents = parseInt(args[i + 1], 10);
@@ -47,6 +96,30 @@ function parseCliArgs(): { headed: boolean; deviceId?: string; maxEvents?: numbe
   }
 
   return { headed, deviceId, maxEvents };
+}
+
+async function launchBrowser(headed: boolean): Promise<Browser> {
+  const launchOptions = {
+    headless: !headed,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+  };
+
+  try {
+    return await chromium.launch(launchOptions);
+  } catch (err: any) {
+    console.log('⚠️ Bundled Chromium launch failed, attempting to launch system Chrome / Edge...');
+    try {
+      return await chromium.launch({ ...launchOptions, channel: 'chrome' });
+    } catch {
+      try {
+        return await chromium.launch({ ...launchOptions, channel: 'msedge' });
+      } catch {
+        throw new Error(
+          `Unable to launch browser. Please run "npx playwright install chromium" or ensure Google Chrome / Microsoft Edge is installed.\nOriginal error: ${err.message}`
+        );
+      }
+    }
+  }
 }
 
 async function runScraperAgent() {
@@ -66,9 +139,9 @@ async function runScraperAgent() {
     }
   }
 
-  const email = process.env.BIRDFY_EMAIL || config.email || '';
-  const password = process.env.BIRDFY_PASSWORD || config.password || '';
-  const deviceId = cliDeviceId || process.env.BIRDFY_DEVICE_ID || config.deviceId || '';
+  const email = (process.env.BIRDFY_EMAIL || config.email || '').trim();
+  const password = (process.env.BIRDFY_PASSWORD || config.password || '').trim();
+  const deviceId = (cliDeviceId || process.env.BIRDFY_DEVICE_ID || config.deviceId || '').trim();
   const feederName = config.feederName || 'Backyard Birdfy Feeder';
   const feederModel = config.feederModel || 'Birdfy Feeder Cam 2 Pro (2K AI)';
 
@@ -87,10 +160,7 @@ async function runScraperAgent() {
     console.log(`🎯 Target Device ID: ${deviceId}`);
   }
 
-  const browser: Browser = await chromium.launch({
-    headless: !headed,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
+  const browser: Browser = await launchBrowser(headed);
 
   const context = await browser.newContext({
     userAgent:
@@ -102,74 +172,98 @@ async function runScraperAgent() {
 
   const interceptedDetections: ExtractedVisit[] = [];
 
-  // 2. Intercept background API traffic from my.birdfy.com
+  // 2. Intercept background API traffic from my.birdfy.com / Netvue endpoints
   page.on('response', async (res) => {
-    const url = res.url();
-    if (
-      (url.includes('/moments/') || url.includes('/events') || url.includes('/device') || url.includes('/media')) &&
-      res.request().resourceType() === 'fetch'
-    ) {
-      try {
-        const text = await res.text();
-        const json = JSON.parse(text);
+    try {
+      const url = res.url();
+      if (
+        url.includes('nvts.co') ||
+        url.includes('birdfy.com') ||
+        url.includes('/moments') ||
+        url.includes('/events') ||
+        url.includes('/device') ||
+        url.includes('/media')
+      ) {
+        const text = await res.text().catch(() => '');
+        if (!text || (!text.startsWith('{') && !text.startsWith('['))) return;
 
-        // Check for list of events
-        const items = json.dataList || json.events || json.data?.events || json.data?.list || [];
-        if (Array.isArray(items) && items.length > 0) {
-          console.log(`📡 [API Intercept] Captured ${items.length} event items from ${new URL(url).pathname}`);
-          items.forEach((ev: any) => {
-            const speciesName =
-              ev.detectObject ||
-              ev.title ||
-              ev.displayTags?.[0]?.label ||
-              ev.tags?.[0]?.label ||
-              ev.rawName ||
-              '';
-
-            // Ignore Feeder Visitor and generic motion events
-            if (
-              !speciesName ||
-              speciesName.toLowerCase().includes('feeder visitor') ||
-              speciesName.toLowerCase() === 'visitor' ||
-              speciesName.toLowerCase() === 'motion' ||
-              speciesName.toLowerCase() === 'feeder bird' ||
-              speciesName.toLowerCase() === 'unidentified' ||
-              speciesName.toLowerCase() === 'all birds'
-            ) {
-              return;
-            }
-
-            const img =
-              ev.fileUrl ||
-              ev.coverKey ||
-              ev.pic ||
-              ev.largeUrl ||
-              ev.images?.[0]?.largeUrl ||
-              ev.images?.[0]?.url ||
-              '';
-            const timestamp = ev.createTime || ev.alertTime || ev.time || Date.now();
-            const dateObj = new Date(Number(timestamp));
-            const date = !isNaN(dateObj.getTime()) ? dateObj.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-            const time = !isNaN(dateObj.getTime())
-              ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-              : '12:00 PM';
-
-            if (img && !interceptedDetections.some((x) => x.imageUrl === img)) {
-              interceptedDetections.push({
-                speciesName,
-                imageUrl: img,
-                date,
-                time,
-                videoUrl: ev.videoUrl || (ev.fileUrl?.endsWith('.mp4') ? ev.fileUrl : undefined),
-                confidence: 99.2,
-                notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
-              });
-            }
-          });
+        let json: any;
+        try {
+          json = JSON.parse(text);
+        } catch {
+          return;
         }
-      } catch {
-        // Ignore non-JSON response
+
+        const candidateLists = [
+          json.dataList,
+          json.events,
+          json.data?.events,
+          json.data?.list,
+          json.data?.dataList,
+          json.data?.moments,
+          json.moments,
+          json.list,
+        ];
+
+        for (const items of candidateLists) {
+          if (Array.isArray(items) && items.length > 0) {
+            items.forEach((ev: any) => {
+              const speciesName =
+                ev.detectObject ||
+                ev.title ||
+                ev.displayTags?.[0]?.label ||
+                ev.tags?.[0]?.label ||
+                ev.rawName ||
+                '';
+
+              // Ignore Feeder Visitor, generic motion, and junk
+              if (!speciesName || isGenericOrJunkSpecies(speciesName)) {
+                return;
+              }
+
+              const img =
+                ev.fileUrl ||
+                ev.coverKey ||
+                ev.pic ||
+                ev.largeUrl ||
+                ev.images?.[0]?.largeUrl ||
+                ev.images?.[0]?.listUrl ||
+                ev.images?.[0]?.url ||
+                '';
+
+              if (!img) return;
+
+              const rawTime = ev.createTime || ev.alertTime || ev.time || ev.timestamp;
+              let date = new Date().toISOString().split('T')[0];
+              let time = '12:00 PM';
+
+              if (rawTime) {
+                const ts = Number(rawTime);
+                if (!isNaN(ts) && ts > 0) {
+                  const ms = ts < 1e11 ? ts * 1000 : ts;
+                  const dateObj = new Date(ms);
+                  date = dateObj.toISOString().split('T')[0];
+                  time = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                }
+              }
+
+              if (!interceptedDetections.some((x) => x.imageUrl === img)) {
+                interceptedDetections.push({
+                  speciesName,
+                  imageUrl: img,
+                  date,
+                  time,
+                  videoUrl: ev.videoUrl || (ev.fileUrl?.endsWith('.mp4') ? ev.fileUrl : undefined),
+                  confidence: 99.2,
+                  notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
+                });
+              }
+            });
+          }
+        }
       }
+    } catch {
+      // Ignore response read error
     }
   });
 
@@ -196,7 +290,7 @@ async function runScraperAgent() {
     await loginButton.click();
 
     // Wait for redirect or dashboard
-    await page.waitForURL((url) => !url.toString().includes('/login'), { timeout: 20000 });
+    await page.waitForURL((url) => !url.toString().includes('/login'), { timeout: 25000 });
     console.log(`✅ Login successful! Current page: ${page.url()}`);
 
     await page.waitForTimeout(2500);
@@ -206,7 +300,6 @@ async function runScraperAgent() {
     if (deviceId) {
       targetEventsUrl = `https://my.birdfy.com/en/devices/${deviceId}/events`;
     } else {
-      // Check if current URL is already on a device page or find first device link
       const deviceLink = page.locator('a[href*="/devices/"], .device-card, .device-item').first();
       const href = (await deviceLink.getAttribute('href').catch(() => null)) || '';
       if (href) {
@@ -224,7 +317,7 @@ async function runScraperAgent() {
 
     console.log(`🎯 Navigating to Feeder Events page: ${targetEventsUrl}...`);
     await page.goto(targetEventsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(3500);
 
     // Scroll down dynamically to trigger media, pagination, and lazy event loading across all pages
     console.log('📜 Deep-scrolling events timeline to load all moments...');
@@ -232,34 +325,30 @@ async function runScraperAgent() {
     let stagnantCount = 0;
 
     for (let i = 1; i <= 30; i++) {
-      await page.evaluate(() => {
+      await page.evaluate(`(() => {
         window.scrollBy(0, 1500);
-        const scrollTargets = [
+        var scrollTargets = [
           document.documentElement,
-          document.body,
-          ...Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]'))
-        ];
-        scrollTargets.forEach((t: any) => {
+          document.body
+        ].concat(Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]')));
+        scrollTargets.forEach(function(t) {
           try {
             if (t.scrollBy) t.scrollBy(0, 1500);
             if (t.scrollTop !== undefined) t.scrollTop += 1500;
-          } catch {}
+          } catch (e) {}
         });
 
-        // Click any "Load more" button if found
-        const loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter((b: any) =>
-          /load more|view more|more events/i.test(b.textContent || '')
-        );
-        loadBtns.forEach((b: any) => {
-          try { b.click(); } catch {}
+        var loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter(function(b) {
+          return /load more|view more|more events/i.test(b.textContent || '');
         });
-      });
+        loadBtns.forEach(function(b) {
+          try { b.click(); } catch (e) {}
+        });
+      })()`);
 
       await page.waitForTimeout(600);
 
-      const count = await page.evaluate(() => {
-        return document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length;
-      });
+      const count = Number(await page.evaluate(`document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length`));
 
       console.log(`   ↳ Step ${i}/30: Detected ${count} cards on page...`);
 
@@ -272,136 +361,196 @@ async function runScraperAgent() {
       } else {
         stagnantCount = 0;
       }
-      lastCardsFound = count;
+      lastCardsFound = Number(count);
     }
 
-    // 5. Run In-Page DOM Card Scraper as fallback / complementary extractor
-    const domSightings: ExtractedVisit[] = await page.evaluate(() => {
-      try {
-        // Method A: Check Vue component instance
-        const listEl = Array.from(document.querySelectorAll('*')).find(
-          (el: any) => el.__vue__ && Array.isArray(el.__vue__.events) && el.__vue__.events.length > 0
-        ) as any;
-
-        if (listEl && listEl.__vue__) {
-          const v = listEl.__vue__;
-          return v.events
-            .map((ev: any) => {
-              const media = v.mediaFor ? v.mediaFor(ev) : null;
-              const tags = media?.displayTags || [];
-              const species = tags[0]?.label || tags[0]?.rawName || ev.title || '';
-              
-              if (!species || species.toLowerCase().includes('feeder visitor') || species.toLowerCase() === 'visitor' || species.toLowerCase() === 'motion') {
-                return null;
-              }
-
-              const img =
-                media?.images?.[0]?.largeUrl ||
-                media?.images?.[0]?.listUrl ||
-                media?.images?.[0]?.url ||
-                ev.pic ||
-                ev.fileUrl ||
-                '';
-              const tm = v.formatTime ? v.formatTime(ev.alertTime) : '12:00 PM';
-              const d = ev.alertTime
-                ? new Date(ev.alertTime).toISOString().split('T')[0]
-                : v.date || new Date().toISOString().split('T')[0];
-              return {
-                speciesName: species,
-                imageUrl: img,
-                time: tm.replace(/^.*?(Today|Yesterday)\s*/i, '').trim() || '12:00 PM',
-                date: d,
-              };
-            })
-            .filter((x: any) => x && x.imageUrl);
+    const domSightings: ExtractedVisit[] = await page.evaluate(`(() => {
+      var isJunk = function(name) {
+        if (!name) return true;
+        var s = name.toLowerCase().trim();
+        if (
+          s === 'feeder visitor' ||
+          s === 'visitor' ||
+          s === 'feeder bird' ||
+          s === 'motion' ||
+          s === 'unidentified' ||
+          s === 'all birds' ||
+          s === 'backyard bird' ||
+          s === 'bird' ||
+          s === 'all' ||
+          s === 'hour' ||
+          s === 'hours' ||
+          s === 'minute' ||
+          s === 'minutes' ||
+          s === 'min' ||
+          s === 'mins' ||
+          s === 'sec' ||
+          s === 'second' ||
+          s === 'seconds' ||
+          s === 'today' ||
+          s === 'yesterday' ||
+          s === 'select' ||
+          s === 'delete' ||
+          s === 'download' ||
+          s === 'share' ||
+          s === 'cancel' ||
+          s === 'events' ||
+          s === 'devices' ||
+          s.indexOf('feeder visitor') !== -1 ||
+          s.indexOf('visitor') !== -1 ||
+          s.indexOf('motion') !== -1
+        ) {
+          return true;
         }
-      } catch {
-        // Ignore Vue check error
+        if (
+          /\\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\\b/i.test(s) ||
+          /^\\d+\\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\\b/i.test(s) ||
+          /^\\d{1,2}:\\d{2}/.test(s) ||
+          s.length < 3
+        ) {
+          return true;
+        }
+        return false;
+      };
+
+      var results = [];
+      var seenImgs = new Set();
+
+      // Method A: Check Vue component instances
+      var allElements = Array.from(document.querySelectorAll('*'));
+      for (var j = 0; j < allElements.length; j++) {
+        var el = allElements[j];
+        var v = el.__vue__;
+        if (v && Array.isArray(v.events) && v.events.length > 0) {
+          v.events.forEach(function(ev) {
+            var media = v.mediaFor ? v.mediaFor(ev) : null;
+            var tags = (media && media.displayTags) || ev.displayTags || ev.tags || [];
+            var species = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
+
+            if (!species || isJunk(species)) return;
+
+            var img =
+              (media && media.images && media.images[0] && (media.images[0].largeUrl || media.images[0].listUrl || media.images[0].url)) ||
+              ev.pic ||
+              ev.fileUrl ||
+              '';
+
+            if (!img || seenImgs.has(img)) return;
+            seenImgs.add(img);
+
+            var tm = '12:00 PM';
+            var alertTime = ev.alertTime || ev.createTime || ev.time;
+            if (alertTime) {
+              var dObj = new Date(Number(alertTime));
+              if (!isNaN(dObj.getTime())) {
+                tm = dObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+              }
+            } else if (v.formatTime) {
+              tm = v.formatTime(alertTime).replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
+            }
+
+            var d = alertTime
+              ? new Date(Number(alertTime)).toISOString().split('T')[0]
+              : (v.date || new Date().toISOString().split('T')[0]);
+
+            results.push({
+              speciesName: species,
+              imageUrl: img,
+              time: tm,
+              date: d,
+            });
+          });
+        }
       }
 
-      // Method B: DOM Elements
-      const cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main'));
-      const JUNK = [
-        'today',
-        'yesterday',
-        'feeder bird',
-        'all',
-        'select',
-        'delete',
-        'download',
-        'share',
-        'cancel',
-        'motion',
-        'video',
-        'events',
-        'devices',
-        'all birds',
-        'feeder visitor',
-        'visitor'
-      ];
-      const results: any[] = [];
-      const seenImgs = new Set<string>();
-
-      const tb = document.querySelector('.moment-toolbar__date')?.textContent?.trim() || '';
-      let defaultDate = new Date().toISOString().split('T')[0];
-      if (tb.toLowerCase().includes('yesterday')) {
-        const y = new Date();
+      // Method B: DOM Cards
+      var tb = (document.querySelector('.moment-toolbar__date') && document.querySelector('.moment-toolbar__date').textContent) || '';
+      var defaultDate = new Date().toISOString().split('T')[0];
+      if (tb.toLowerCase().indexOf('yesterday') !== -1) {
+        var y = new Date();
         y.setDate(y.getDate() - 1);
         defaultDate = y.toISOString().split('T')[0];
+      } else if (tb && tb.toLowerCase().indexOf('today') === -1) {
+        var p = new Date(tb);
+        if (!isNaN(p.getTime())) defaultDate = p.toISOString().split('T')[0];
       }
 
-      for (const card of cards) {
-        const imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img') as HTMLImageElement;
-        let url =
-          imgEl?.dataset?.mediaUrl ||
-          imgEl?.currentSrc ||
-          imgEl?.src ||
-          imgEl?.getAttribute('src') ||
+      var cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
+      if (!cards.length) {
+        cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button'))
+          .map(function(el) { return el.closest('.moment-card') || el.parentElement; })
+          .filter(Boolean);
+      }
+      cards = cards.filter(function(c) {
+        return !c.querySelector('.moment-card, .device-event-card') &&
+          !c.matches('.moment-toolbar, .moment-tags, .moment-selection-bar, .moment-empty, .device-events-grid');
+      });
+
+      for (var k = 0; k < cards.length; k++) {
+        var card = cards[k];
+        var vue = card.__vue__;
+        var imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
+        var url =
+          (vue && (vue.mainCoverUrl || vue.firstImageUrl)) ||
+          (imgEl && (imgEl.dataset.mediaUrl || imgEl.currentSrc || imgEl.src || imgEl.getAttribute('src'))) ||
           '';
 
-        if (!url || url.startsWith('data:image/svg') || url.includes('avatar') || url.includes('spin') || url.includes('icon') || url.includes('logo')) {
-          continue;
+        if (!url || url.indexOf('data:image/svg') === 0 || url.indexOf('avatar') !== -1 || url.indexOf('spin') !== -1 || url.indexOf('icon') !== -1 || url.indexOf('logo') !== -1) {
+          var thumb = card.querySelector('.moment-card__thumb img');
+          url = (thumb && (thumb.currentSrc || thumb.src)) || '';
         }
 
-        if (seenImgs.has(url)) continue;
+        if (!url || seenImgs.has(url)) continue;
 
-        let species =
-          card.querySelector('.moment-card__tag, .device-event-card__name')?.textContent?.trim() || '';
-        if (!species || JUNK.some(j => species.toLowerCase().includes(j))) {
-          const lines = (card.textContent || '')
-            .split('\n')
-            .map((l) => l.trim())
-            .filter((l) => l.length > 2 && l.length < 35);
-          for (const l of lines) {
-            if (!JUNK.some(j => l.toLowerCase().includes(j)) && !/^\d{1,2}:\d{2}/.test(l)) {
+        var species =
+          (vue && vue.displayTags && vue.displayTags[0] && vue.displayTags[0].label) ||
+          (card.querySelector('.moment-card__tag, .device-event-card__name') && card.querySelector('.moment-card__tag, .device-event-card__name').textContent.trim()) ||
+          '';
+
+        if (!species || isJunk(species)) {
+          var lines = (card.textContent || '')
+            .split('\\n')
+            .map(function(l) { return l.trim(); })
+            .filter(function(l) { return l.length > 2 && l.length < 35; });
+          for (var mIdx = 0; mIdx < lines.length; mIdx++) {
+            var l = lines[mIdx];
+            if (!isJunk(l) && !/^\\d{1,2}:\\d{2}/.test(l)) {
               species = l;
               break;
             }
           }
         }
-        
+
         // Skip if still generic or Feeder Visitor
-        if (!species || JUNK.some(j => species.toLowerCase().includes(j))) continue;
+        if (!species || isJunk(species)) continue;
 
         seenImgs.add(url);
 
-        let timeStr =
-          card.querySelector('.moment-card__time, .device-event-card__shared')?.textContent?.trim() || '12:00 PM';
-        const m = timeStr.match(/\d{1,2}:\d{2}(\s*(?:AM|PM|am|pm))?/i);
-        if (m) timeStr = m[0];
+        var timeStr =
+          (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
+          (card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]') && card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]').textContent.trim()) ||
+          '12:00 PM';
+
+        var mMatch = timeStr.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
+        if (mMatch) timeStr = mMatch[0];
+
+        var cardAlertTime = vue && vue.event && (vue.event.alertTime || vue.event.createTime);
+        var cardDate = cardAlertTime
+          ? new Date(Number(cardAlertTime)).toISOString().split('T')[0]
+          : defaultDate;
 
         results.push({
           speciesName: species,
           imageUrl: url,
           time: timeStr,
-          date: defaultDate,
+          date: cardDate,
         });
       }
 
       return results;
-    });
+    })()`);
 
-    console.log(`📸 DOM Scraper extracted ${domSightings.length} card detections.`);
+    console.log(`📸 DOM & Vue Scraper extracted ${domSightings.length} card detections.`);
 
     // 6. Combine Intercepted + DOM Sightings
     const combinedDetections: ExtractedVisit[] = [...interceptedDetections];
@@ -411,11 +560,14 @@ async function runScraperAgent() {
       }
     });
 
+    // Clean any remaining generic names
+    const filteredDetections = combinedDetections.filter((d) => !isGenericOrJunkSpecies(d.speciesName));
+
     if (maxEvents && maxEvents > 0) {
-      combinedDetections.splice(maxEvents);
+      filteredDetections.splice(maxEvents);
     }
 
-    console.log(`✨ Total unique detections collected: ${combinedDetections.length}`);
+    console.log(`✨ Total verified bird detections collected: ${filteredDetections.length}`);
 
     // 7. Load existing dataset & merge
     let existingSightings: any[] = [];
@@ -428,9 +580,12 @@ async function runScraperAgent() {
       }
     }
 
+    // Filter existing sightings from junk as well
+    existingSightings = existingSightings.filter((s) => !isGenericOrJunkSpecies(s?.speciesName));
+
     console.log(`📂 Current public/data/sightings.json count: ${existingSightings.length}`);
 
-    const newSightingsFormatted: any[] = combinedDetections.map((d, index) => {
+    const newSightingsFormatted: any[] = filteredDetections.map((d, index) => {
       const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
       const timestamp = new Date(`${d.date} ${d.time}`).getTime() || Date.now() - index * 60000;
       return {
@@ -470,7 +625,7 @@ async function runScraperAgent() {
     const finalMerged: any[] = [];
 
     const addUnique = (s: any) => {
-      if (!s || !s.speciesName) return;
+      if (!s || !s.speciesName || isGenericOrJunkSpecies(s.speciesName)) return;
       const key = `${s.speciesName.toLowerCase().trim()}_${s.date}_${s.time}_${s.imageUrl || ''}`;
       if (!seen.has(key)) {
         seen.add(key);
@@ -487,7 +642,17 @@ async function runScraperAgent() {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    fs.writeFileSync(SIGHTINGS_FILE, JSON.stringify(finalMerged, null, 2), 'utf-8');
+    const jsonContent = JSON.stringify(finalMerged, null, 2);
+    fs.writeFileSync(SIGHTINGS_FILE, jsonContent, 'utf-8');
+
+    // Also persist to dist/data/sightings.json if dist directory exists
+    if (fs.existsSync(path.dirname(DIST_SIGHTINGS_FILE))) {
+      try {
+        fs.writeFileSync(DIST_SIGHTINGS_FILE, jsonContent, 'utf-8');
+      } catch {
+        // ignore
+      }
+    }
 
     console.log('🎉 ========================================================');
     console.log(`✅ Success! public/data/sightings.json updated successfully.`);
@@ -499,14 +664,16 @@ async function runScraperAgent() {
     }
     console.log('🎉 ========================================================');
   } catch (err: any) {
-    console.error('❌ Scraper Agent encountered an error:', err.message || err);
+    console.error('❌ Scraper Agent encountered an error:');
+    console.error(err.stack || err.message || err);
     throw err;
   } finally {
     await browser.close();
   }
 }
 
-runScraperAgent().catch(() => {
+runScraperAgent().catch((err) => {
+  console.error('Fatal Scraper Agent Execution Error:', err);
   process.exit(1);
 });
 

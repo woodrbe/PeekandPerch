@@ -63,17 +63,60 @@ export default function App() {
   }, [sightings]);
 
   // Preload shared feeder data from public/data/sightings.json or /api/sightings on mount (source of truth)
+  const handleRefreshSightings = async (silent = false) => {
+    try {
+      const shared = await BirdfyService.fetchSharedSightings();
+      if (Array.isArray(shared)) {
+        setSightings(shared);
+        try {
+          localStorage.setItem('peep_perch_sightings', JSON.stringify(shared));
+        } catch {}
+        if (!silent && shared.length > 0) {
+          setSyncToastMessage(`Refreshed! Loaded ${shared.length} detections from sightings.json.`);
+          setTimeout(() => {
+            setSyncToastMessage(null);
+          }, 4000);
+        }
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     let isMounted = true;
     BirdfyService.fetchSharedSightings().then((sharedSightings) => {
       if (!isMounted) return;
-      setSightings(sharedSightings);
-      try {
-        localStorage.setItem('peep_perch_sightings', JSON.stringify(sharedSightings));
-      } catch {}
+      if (Array.isArray(sharedSightings)) {
+        setSightings(sharedSightings);
+        try {
+          localStorage.setItem('peep_perch_sightings', JSON.stringify(sharedSightings));
+        } catch {}
+      }
     });
+
+    const handleWindowFocus = () => {
+      if (!isMounted) return;
+      BirdfyService.fetchSharedSightings().then((shared) => {
+        if (isMounted && Array.isArray(shared) && shared.length > 0) {
+          setSightings(shared);
+          try {
+            localStorage.setItem('peep_perch_sightings', JSON.stringify(shared));
+          } catch {}
+        }
+      });
+    };
+
+    window.addEventListener('focus', handleWindowFocus);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        handleWindowFocus();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 
@@ -331,6 +374,7 @@ export default function App() {
             onOpenBirdfyInfo={() => setIsBirdfyFeederModalOpen(true)}
             onClearAllSightings={handleClearAllSightings}
             onApplySightings={handleApplySightings}
+            onRefreshSightings={() => handleRefreshSightings(false)}
           />
         )}
 

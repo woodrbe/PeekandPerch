@@ -23,6 +23,7 @@ interface SightingsGalleryProps {
   onOpenBirdfyInfo?: () => void;
   onClearAllSightings?: () => void;
   onApplySightings?: (sightings: BirdSighting[]) => void;
+  onRefreshSightings?: () => void;
 }
 
 export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
@@ -41,6 +42,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onOpenBirdfyInfo,
   onClearAllSightings,
   onApplySightings,
+  onRefreshSightings,
 }) => {
   const [selectedLocation, setSelectedLocation] = useState<string>('All');
   const [selectedBehavior, setSelectedBehavior] = useState<string>('All');
@@ -173,6 +175,18 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 Manual Logs ({sightings.length - birdfyCapturesCount})
               </button>
             </div>
+
+            {/* Refresh / Reload from disk button */}
+            {onRefreshSightings && (
+              <button
+                onClick={onRefreshSightings}
+                className="px-3 py-2 rounded-full border-2 border-stone-200 bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-950 transition-all flex items-center gap-1.5 cursor-pointer text-xs font-pixar-sub font-bold shrink-0 shadow-xs hover:scale-102"
+                title="Reload latest detections from sightings.json"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-sky-600" />
+                <span>Reload</span>
+              </button>
+            )}
 
             {/* Search & Filter Toggle Button Beside Header */}
             <button
