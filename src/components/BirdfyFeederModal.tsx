@@ -225,16 +225,16 @@ export const BirdfyFeederModal: React.FC<BirdfyFeederModalProps> = ({
             {onClearData && sightingsCount > 0 && (
               <button
                 onClick={() => {
-                  if (window.confirm('Delete all bird sightings from your gallery? This removes all records so you can start fresh.')) {
+                  if (window.confirm('Clear all bird sightings from sightings.json? This permanently empties the dataset file.')) {
                     onClearData();
                     onClose();
                   }
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-rose-600 hover:bg-rose-50 font-bold transition cursor-pointer"
-                title="Clear all bird sightings"
+                title="Clear sightings.json data file"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Clear Gallery Data</span>
+                <span>Clear sightings.json</span>
               </button>
             )}
           </div>

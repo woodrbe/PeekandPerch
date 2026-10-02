@@ -197,12 +197,12 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
             {onClearAllSightings && sightings.length > 0 && (
               <button
                 onClick={() => {
-                  if (window.confirm('Delete all bird sightings from your gallery? This permanently removes all saved detections so you can start fresh.')) {
+                  if (window.confirm('Clear all bird sightings from sightings.json? This permanently empties the dataset file and removes all detections.')) {
                     onClearAllSightings();
                   }
                 }}
                 className="px-3.5 py-2 rounded-full border-2 border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-900 transition-all flex items-center gap-1.5 cursor-pointer text-xs font-pixar-sub font-bold shrink-0 shadow-2xs hover:scale-102"
-                title="Delete all bird detections from gallery"
+                title="Clear all bird sightings from sightings.json"
               >
                 <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                 <span>Delete All Data</span>

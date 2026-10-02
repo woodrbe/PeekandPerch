@@ -212,11 +212,53 @@ async function runScraperAgent() {
     await page.goto(targetEventsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(4000);
 
-    // Scroll down slowly to trigger media and lazy event loading
-    console.log('📜 Scrolling events timeline to load moments...');
-    for (let i = 0; i < 4; i++) {
-      await page.evaluate(() => window.scrollBy(0, 800));
-      await page.waitForTimeout(1200);
+    // Scroll down dynamically to trigger media, pagination, and lazy event loading across all pages
+    console.log('📜 Deep-scrolling events timeline to load all moments...');
+    let lastCardsFound = 0;
+    let stagnantCount = 0;
+
+    for (let i = 1; i <= 30; i++) {
+      await page.evaluate(() => {
+        window.scrollBy(0, 1500);
+        const scrollTargets = [
+          document.documentElement,
+          document.body,
+          ...Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]'))
+        ];
+        scrollTargets.forEach((t: any) => {
+          try {
+            if (t.scrollBy) t.scrollBy(0, 1500);
+            if (t.scrollTop !== undefined) t.scrollTop += 1500;
+          } catch {}
+        });
+
+        // Click any "Load more" button if found
+        const loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter((b: any) =>
+          /load more|view more|more events/i.test(b.textContent || '')
+        );
+        loadBtns.forEach((b: any) => {
+          try { b.click(); } catch {}
+        });
+      });
+
+      await page.waitForTimeout(600);
+
+      const count = await page.evaluate(() => {
+        return document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length;
+      });
+
+      console.log(`   ↳ Step ${i}/30: Detected ${count} cards on page...`);
+
+      if (count > 0 && count === lastCardsFound) {
+        stagnantCount++;
+        if (stagnantCount >= 3) {
+          console.log(`✨ Reached bottom of timeline with ${count} total cards rendered.`);
+          break;
+        }
+      } else {
+        stagnantCount = 0;
+      }
+      lastCardsFound = count;
     }
 
     // 5. Run In-Page DOM Card Scraper as fallback / complementary extractor
@@ -443,3 +485,4 @@ async function runScraperAgent() {
 runScraperAgent().catch(() => {
   process.exit(1);
 });
+

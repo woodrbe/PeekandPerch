@@ -10,7 +10,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "agent:scrape": "tsx scripts/scrape-birdfy-agent.ts",
-    "sync:birdfy": "tsx scripts/sync-birdfy.ts"
+    "sync:birdfy": "tsx scripts/sync-birdfy.ts",
+    "clear:sightings": "tsx scripts/clear-sightings.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

@@ -39,13 +39,20 @@ export default function App() {
     return [];
   });
 
-  // Permanently delete all bird data (clears sample/cached data)
-  const handleClearAllSightings = () => {
+  // Permanently delete all bird data (clears public/data/sightings.json file and gallery state)
+  const handleClearAllSightings = async () => {
     setSightings([]);
     try {
       localStorage.removeItem('peep_perch_sightings');
     } catch (e) {
       console.warn('Failed to remove sightings from storage', e);
+    }
+    const res = await BirdfyService.clearSightingsJson();
+    if (res.success) {
+      setSyncToastMessage('Cleared sightings.json successfully!');
+      setTimeout(() => {
+        setSyncToastMessage(null);
+      }, 4000);
     }
   };
 
@@ -55,15 +62,15 @@ export default function App() {
     sightingsRef.current = sightings;
   }, [sightings]);
 
-  // Preload shared feeder data from public/data/sightings.json on mount (for all web clients/devices)
+  // Preload shared feeder data from public/data/sightings.json or /api/sightings on mount (source of truth)
   useEffect(() => {
     let isMounted = true;
     BirdfyService.fetchSharedSightings().then((sharedSightings) => {
-      if (!isMounted || sharedSightings.length === 0) return;
-      setSightings((prev) => {
-        const { merged } = BirdfyService.mergeSightings(prev, sharedSightings);
-        return merged;
-      });
+      if (!isMounted) return;
+      setSightings(sharedSightings);
+      try {
+        localStorage.setItem('peep_perch_sightings', JSON.stringify(sharedSightings));
+      } catch {}
     });
     return () => {
       isMounted = false;
@@ -143,6 +150,7 @@ export default function App() {
   const handleApplySightings = (newSightings: BirdSighting[]) => {
     setSightings((prev) => {
       const { merged } = BirdfyService.mergeSightings(prev, newSightings);
+      BirdfyService.saveSightingsToJsonFile(merged);
       return merged;
     });
     setSyncToastMessage(`Loaded ${newSightings.length} detection${newSightings.length > 1 ? 's' : ''} from Birdfy Feeder!`);
@@ -155,6 +163,7 @@ export default function App() {
   const handleAddSighting = (newSighting: BirdSighting) => {
     setSightings((prev) => {
       const { merged } = BirdfyService.mergeSightings(prev, [newSighting]);
+      BirdfyService.saveSightingsToJsonFile(merged);
       return merged;
     });
     setActiveTab('gallery');
@@ -163,9 +172,11 @@ export default function App() {
 
   // Toggle favorite star
   const handleToggleFavoriteSighting = (id: string) => {
-    setSightings((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, isFavorite: !s.isFavorite } : s))
-    );
+    setSightings((prev) => {
+      const updated = prev.map((s) => (s.id === id ? { ...s, isFavorite: !s.isFavorite } : s));
+      BirdfyService.saveSightingsToJsonFile(updated);
+      return updated;
+    });
     if (inspectedSighting && inspectedSighting.id === id) {
       setInspectedSighting((prev) => (prev ? { ...prev, isFavorite: !prev.isFavorite } : null));
     }
@@ -173,7 +184,11 @@ export default function App() {
 
   // Delete sighting
   const handleDeleteSighting = (id: string) => {
-    setSightings((prev) => prev.filter((s) => s.id !== id));
+    setSightings((prev) => {
+      const updated = prev.filter((s) => s.id !== id);
+      BirdfyService.saveSightingsToJsonFile(updated);
+      return updated;
+    });
   };
 
   // Lightbox Navigation

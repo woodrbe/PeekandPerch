@@ -933,11 +933,25 @@ export class BirdfyService {
     };
   }
   /**
-   * Fetches the globally shared sightings from public/data/sightings.json
+   * Fetches the globally shared sightings from /api/sightings or public/data/sightings.json
    */
   public static async fetchSharedSightings(): Promise<BirdSighting[]> {
     try {
-      const res = await fetch('./data/sightings.json', {
+      const res = await fetch('/api/sightings', {
+        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json)) {
+          return json;
+        }
+      }
+    } catch {
+      // fallback to static file if api is unavailable
+    }
+
+    try {
+      const res = await fetch('./data/sightings.json?t=' + Date.now(), {
         headers: { 'Accept': 'application/json' },
       });
       if (res.ok) {
@@ -950,6 +964,42 @@ export class BirdfyService {
       // Ignore network / offline error
     }
     return [];
+  }
+
+  /**
+   * Clears public/data/sightings.json file directly on server/disk
+   */
+  public static async clearSightingsJson(): Promise<{ success: boolean; message?: string }> {
+    try {
+      const res = await fetch('/api/sightings/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return { success: true, message: data.message };
+      }
+    } catch (e) {
+      console.warn('Failed to clear sightings.json via API endpoint', e);
+    }
+    return { success: false };
+  }
+
+  /**
+   * Persists active sightings dataset directly to public/data/sightings.json
+   */
+  public static async saveSightingsToJsonFile(sightings: BirdSighting[]): Promise<boolean> {
+    try {
+      const clean = BirdfyService.cleanAndDeduplicateSightings(sightings);
+      const res = await fetch('/api/sightings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clean),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
   }
 
   /**
