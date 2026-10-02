@@ -1,6 +1,10 @@
 import React from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
-import { X, Star, Calendar, MapPin, Feather, Trash2, ChevronLeft, ChevronRight, User, Sun } from 'lucide-react';
+import { 
+  X, Star, Calendar, MapPin, Feather, Trash2, ChevronLeft, 
+  ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
+  Wifi, Zap, ShieldCheck 
+} from 'lucide-react';
 
 interface SightingDetailModalProps {
   sighting: BirdSighting | null;
@@ -23,6 +27,8 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 }) => {
   if (!sighting) return null;
 
+  const isBirdfy = sighting.birdfy?.isBirdfyCapture;
+
   const handleDelete = () => {
     if (confirm(`Delete the "${sighting.speciesName}" sighting record from your garden log?`)) {
       onDeleteSighting(sighting.id);
@@ -32,7 +38,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fade-in font-pixar-body">
-      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[90vh]">
+      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[92vh]">
         
         {/* CLOSE BUTTON */}
         <button
@@ -43,13 +49,21 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
         </button>
 
         {/* LEFT / TOP: High Res Photo View */}
-        <div className="relative md:w-1/2 bg-stone-900 flex items-center justify-center overflow-hidden group">
+        <div className="relative md:w-1/2 bg-stone-950 flex items-center justify-center overflow-hidden group">
           <img
             src={sighting.imageUrl}
             alt={sighting.speciesName}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover max-h-80 md:max-h-full"
           />
+
+          {/* Birdfy AI Match Watermark Badge */}
+          {isBirdfy && (
+            <div className="absolute top-4 left-16 px-3 py-1 rounded-full bg-stone-900/90 text-amber-300 text-xs font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-amber-400/40">
+              <Camera className="w-3.5 h-3.5 text-sky-400" />
+              <span>Birdfy 1080p AI Capture</span>
+            </div>
+          )}
 
           {/* Quick Nav Chevron Overlay */}
           {onPrevSighting && (
@@ -83,7 +97,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           </button>
         </div>
 
-        {/* RIGHT / BOTTOM: Observations & Details */}
+        {/* RIGHT / BOTTOM: Observations, AI Identification & Hardware Details */}
         <div className="p-6 md:w-1/2 flex flex-col justify-between overflow-y-auto space-y-4">
           
           <div className="space-y-4">
@@ -97,6 +111,13 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 <span className="text-xs text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                   x{sighting.count} spotted
                 </span>
+
+                {isBirdfy && sighting.birdfy?.aiConfidence && (
+                  <span className="text-xs text-sky-950 bg-sky-100 px-3 py-1 rounded-full border border-sky-300 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-500 fill-amber-400" />
+                    <span>{sighting.birdfy.aiConfidence}% AI Confidence Match</span>
+                  </span>
+                )}
               </div>
 
               <h2 className="font-pixar-title text-3xl text-stone-900">
@@ -128,6 +149,47 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 <span className="text-sky-700 font-bold">{sighting.weather}</span>
               </div>
             </div>
+
+            {/* BIRDFY HARDWARE & AI TELEMETRY PANEL */}
+            {isBirdfy && sighting.birdfy && (
+              <div className="bg-sky-50/70 p-4 rounded-2xl border-2 border-sky-200 space-y-2.5 text-xs font-pixar-sub">
+                <div className="flex items-center justify-between">
+                  <span className="font-pixar-title text-sky-950 uppercase tracking-wide flex items-center gap-1.5">
+                    <Camera className="w-4 h-4 text-sky-600" />
+                    <span>BIRDFY HARDWARE TELEMETRY</span>
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold text-[10px] border border-emerald-300">
+                    PIR Motion Trigger
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-700 pt-1">
+                  <div>
+                    <span className="text-stone-500 block">Feeder Source:</span>
+                    <strong className="text-stone-900">{sighting.birdfy.feederName || 'Birdfy Feeder Cam'}</strong>
+                  </div>
+
+                  <div>
+                    <span className="text-stone-500 block">Resolution &amp; Lens:</span>
+                    <strong className="text-stone-900">{sighting.birdfy.resolution || '1080p Full HD'} (Wide Angle)</strong>
+                  </div>
+
+                  <div>
+                    <span className="text-stone-500 block">Device Power:</span>
+                    <strong className="text-emerald-700">
+                      {sighting.birdfy.batteryLevel || 96}% Battery • Solar Active
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span className="text-stone-500 block">AI Classification:</span>
+                    <strong className="text-amber-800">
+                      {sighting.birdfy.aiConfidence}% match • {sighting.speciesName}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Field Observation Notes */}
             <div className="space-y-1">

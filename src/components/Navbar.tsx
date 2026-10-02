@@ -9,13 +9,17 @@ interface NavbarProps {
   onOpenLogModal?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
+  birdfyStatus?: 'online' | 'syncing' | 'offline';
+  isSyncingBirdfy?: boolean;
+  onSyncBirdfy?: () => void;
+  onOpenBirdfySettings?: () => void;
+  onOpenBirdfyInfo?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onTabChange,
   onGoHome,
-  onOpenLogModal,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -40,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <p className="text-[11px] font-pixar-sub font-semibold text-stone-500 hidden sm:block tracking-wide">
-                See who is dropping by for a snack
+                Birdfy AI Feeder &amp; Backyard Journal
               </p>
             </div>
           </div>
@@ -98,10 +102,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Mobile Menu Toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2.5 rounded-2xl bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors"
+              className="p-2.5 rounded-2xl bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -129,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <Feather className="w-4 h-4" />
-              <span>Who Dropped By</span>
+              <span>Who Dropped By (Birdfy Gallery)</span>
             </button>
 
             <button
@@ -158,4 +162,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

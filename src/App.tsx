@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { BirdSighting } from './types';
+import React, { useState, useEffect, useRef } from 'react';
+import { BirdSighting, BirdfyDevice } from './types';
 import { INITIAL_SIGHTINGS, BACKYARD_SPECIES } from './data/birdsData';
+import { BirdfyService } from './services/birdfyService';
 
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -10,21 +11,49 @@ import { SightingDetailModal } from './components/SightingDetailModal';
 import { SpeciesCatalog } from './components/SpeciesCatalog';
 import { GardenAnalytics } from './components/GardenAnalytics';
 import { Footer } from './components/Footer';
+import { BirdfySettingsModal } from './components/BirdfySettingsModal';
+import { BirdfyImportModal } from './components/BirdfyImportModal';
+import { BirdfyFeederModal } from './components/BirdfyFeederModal';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'gallery' | 'species' | 'analytics'>('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isBirdfyFeederModalOpen, setIsBirdfyFeederModalOpen] = useState(false);
   
-  // Sightings state with localStorage persistence
+  // Sightings state with localStorage persistence: strictly real bird feeder sightings only
   const [sightings, setSightings] = useState<BirdSighting[]>(() => {
     try {
       const saved = localStorage.getItem('peep_perch_sightings');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Permanently strip out all sample/mock data and clean up duplicates
+          const realOnly = BirdfyService.filterOnlyRealFeederSightings(parsed);
+          return BirdfyService.cleanAndDeduplicateSightings(realOnly);
+        }
+      }
     } catch (e) {
       console.warn('Failed to parse saved sightings from localStorage', e);
     }
-    return INITIAL_SIGHTINGS;
+    return [];
   });
+
+  // Permanently delete all bird data (clears sample/cached data)
+  const handleClearAllSightings = () => {
+    setSightings([]);
+    try {
+      localStorage.removeItem('peep_perch_sightings');
+    } catch (e) {
+      console.warn('Failed to remove sightings from storage', e);
+    }
+  };
+
+  // Track latest sightings in a ref to prevent stale closures in sync intervals
+  const sightingsRef = useRef(sightings);
+  useEffect(() => {
+    sightingsRef.current = sightings;
+  }, [sightings]);
 
   useEffect(() => {
     try {
@@ -34,13 +63,85 @@ export default function App() {
     }
   }, [sightings]);
 
+  // Birdfy Feeder State (Auto-sync strictly disabled)
+  const [birdfyDevice, setBirdfyDevice] = useState<BirdfyDevice>(() => {
+    const dev = BirdfyService.getDevice();
+    return { ...dev, autoSyncEnabled: false };
+  });
+  const [isSyncingBirdfy, setIsSyncingBirdfy] = useState(false);
+  const [syncToastMessage, setSyncToastMessage] = useState<string | null>(null);
+
+  // Guarantee auto-sync is disabled across sessions and localStorage
+  useEffect(() => {
+    if (birdfyDevice.autoSyncEnabled) {
+      const disabled = { ...birdfyDevice, autoSyncEnabled: false };
+      setBirdfyDevice(disabled);
+      BirdfyService.saveDeviceState(disabled);
+    }
+  }, []);
+
   // Modal states
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [isBirdfySettingsOpen, setIsBirdfySettingsOpen] = useState(false);
+  const [isBirdfyImportOpen, setIsBirdfyImportOpen] = useState(false);
   const [inspectedSighting, setInspectedSighting] = useState<BirdSighting | null>(null);
 
-  // Add new sighting
+  // Birdfy Feeder Sync Function
+  // NOTE: Turned off per user request since API sync does not return data.
+  // Kept fully implemented in project for future use / reference.
+  const IS_BIRDFY_SYNC_ENABLED = false;
+
+  const handleSyncBirdfy = async () => {
+    if (!IS_BIRDFY_SYNC_ENABLED) {
+      console.log('Birdfy direct sync function is currently turned off. Use Web Scraper instead.');
+      return;
+    }
+    if (isSyncingBirdfy) return;
+    setIsSyncingBirdfy(true);
+    try {
+      const result = await BirdfyService.syncRecentCaptures(sightingsRef.current);
+      // Overwrite/update sightings with the cleanly merged and deduplicated list
+      setSightings(result.allSightings);
+      setBirdfyDevice(result.updatedDevice);
+      setSyncToastMessage(result.message);
+      setTimeout(() => {
+        setSyncToastMessage(null);
+      }, 5000);
+    } catch (err) {
+      console.error('Failed to sync Birdfy captures', err);
+    } finally {
+      setIsSyncingBirdfy(false);
+    }
+  };
+
+  // Auto-sync timer (turned off while direct sync is disabled)
+  useEffect(() => {
+    if (!IS_BIRDFY_SYNC_ENABLED) return;
+    if (!birdfyDevice.autoSyncEnabled || birdfyDevice.syncIntervalSeconds <= 0) return;
+    const interval = setInterval(() => {
+      handleSyncBirdfy();
+    }, birdfyDevice.syncIntervalSeconds * 1000);
+    return () => clearInterval(interval);
+  }, [birdfyDevice.autoSyncEnabled, birdfyDevice.syncIntervalSeconds]);
+
+  // Apply sightings directly into app state with intelligent deduplicating merge
+  const handleApplySightings = (newSightings: BirdSighting[]) => {
+    setSightings((prev) => {
+      const { merged } = BirdfyService.mergeSightings(prev, newSightings);
+      return merged;
+    });
+    setSyncToastMessage(`Loaded ${newSightings.length} detection${newSightings.length > 1 ? 's' : ''} from Birdfy Feeder!`);
+    setTimeout(() => {
+      setSyncToastMessage(null);
+    }, 5000);
+  };
+
+  // Add new sighting (manual or imported) with deduplication
   const handleAddSighting = (newSighting: BirdSighting) => {
-    setSightings((prev) => [newSighting, ...prev]);
+    setSightings((prev) => {
+      const { merged } = BirdfyService.mergeSightings(prev, [newSighting]);
+      return merged;
+    });
     setActiveTab('gallery');
     window.scrollTo({ top: 500, behavior: 'smooth' });
   };
@@ -147,12 +248,32 @@ export default function App() {
   return (
     <div id="app-top" className="min-h-screen bg-sky-50/20 text-stone-900 font-pixar-body selection:bg-amber-300 selection:text-stone-900 flex flex-col justify-between">
       
+      {/* GLOBAL TOAST NOTIFICATION FOR BIRDFY FEEDS */}
+      {syncToastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce max-w-md">
+          <div className="bg-stone-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center gap-3 backdrop-blur-md">
+            <div className="w-8 h-8 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold text-sm shrink-0">
+              📸
+            </div>
+            <div className="text-xs font-pixar-sub">
+              <span className="font-bold text-amber-300 block">Birdfy AI Feeder Alert</span>
+              <span className="font-semibold text-stone-200">{syncToastMessage}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* NAVBAR */}
       <Navbar
         activeTab={activeTab}
         onTabChange={handleTabChange}
         onGoHome={handleGoHome}
         onOpenLogModal={() => setIsLogModalOpen(true)}
+        birdfyStatus={birdfyDevice.status}
+        isSyncingBirdfy={isSyncingBirdfy}
+        onSyncBirdfy={handleSyncBirdfy}
+        onOpenBirdfySettings={() => setIsBirdfySettingsOpen(true)}
+        onOpenBirdfyInfo={() => setIsBirdfyFeederModalOpen(true)}
       />
 
       {/* HERO SECTION */}
@@ -172,6 +293,14 @@ export default function App() {
             onDeleteSighting={handleDeleteSighting}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
+            birdfyDevice={birdfyDevice}
+            isSyncingBirdfy={isSyncingBirdfy}
+            onSyncBirdfy={handleSyncBirdfy}
+            onOpenBirdfySettings={() => setIsBirdfySettingsOpen(true)}
+            onOpenBirdfyImport={() => setIsBirdfyImportOpen(true)}
+            onOpenBirdfyInfo={() => setIsBirdfyFeederModalOpen(true)}
+            onClearAllSightings={handleClearAllSightings}
+            onApplySightings={handleApplySightings}
           />
         )}
 
@@ -196,11 +325,45 @@ export default function App() {
         onOpenLogModal={() => setIsLogModalOpen(true)}
       />
 
-      {/* LOG SIGHTING MODAL */}
+      {/* MANUAL LOG SIGHTING MODAL */}
       <LogSightingModal
         isOpen={isLogModalOpen}
         onClose={() => setIsLogModalOpen(false)}
         onAddSighting={handleAddSighting}
+      />
+
+      {/* BIRDFY DEVICE SETTINGS MODAL */}
+      <BirdfySettingsModal
+        isOpen={isBirdfySettingsOpen}
+        onClose={() => setIsBirdfySettingsOpen(false)}
+        device={birdfyDevice}
+        onUpdateDevice={(updated) => setBirdfyDevice({ ...updated, autoSyncEnabled: false })}
+        onTriggerManualSync={handleSyncBirdfy}
+        onApplySightings={handleApplySightings}
+        onClearAllSightings={handleClearAllSightings}
+      />
+
+      {/* BIRDFY SD CARD / MEDIA IMPORT MODAL */}
+      <BirdfyImportModal
+        isOpen={isBirdfyImportOpen}
+        onClose={() => setIsBirdfyImportOpen(false)}
+        onAddSighting={handleAddSighting}
+        onApplySightings={handleApplySightings}
+        device={birdfyDevice}
+      />
+
+      {/* BIRDFY SMART FEEDER POPUP MODAL */}
+      <BirdfyFeederModal
+        isOpen={isBirdfyFeederModalOpen}
+        onClose={() => setIsBirdfyFeederModalOpen(false)}
+        device={birdfyDevice}
+        sightingsCount={sightings.filter(s => s.source === 'birdfy' || s.birdfy).length}
+        isSyncing={isSyncingBirdfy}
+        onSync={handleSyncBirdfy}
+        onOpenScraper={() => setIsBirdfyImportOpen(true)}
+        onLoadDemo={() => handleApplySightings(BirdfyService.getDemoSightings())}
+        onOpenSettings={() => setIsBirdfySettingsOpen(true)}
+        onClearData={handleClearAllSightings}
       />
 
       {/* PHOTO LIGHTBOX SIGHTING DETAIL MODAL */}

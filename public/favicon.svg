@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
+  <defs>
+    <!-- Background Sky Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+
+    <!-- Cardinal Body Gradient -->
+    <linearGradient id="cardinalRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="30%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+
+    <!-- Beak Gradient -->
+    <linearGradient id="beakGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <!-- Gold Border Ring -->
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3" flood-color="#0c4a6e" />
+    </filter>
+  </defs>
+
+  <!-- Outer Circle Frame -->
+  <circle cx="64" cy="64" r="62" fill="url(#ringGrad)" />
+  <circle cx="64" cy="64" r="58" fill="#ffffff" />
+  <circle cx="64" cy="64" r="56" fill="url(#skyGrad)" />
+
+  <!-- Cardinal Character Group -->
+  <g filter="url(#shadow)">
+    <!-- Cardinal Spiky Top Crest -->
+    <path d="M 64 8 C 58 22, 54 28, 48 38 C 55 36, 61 35, 64 36 C 68 26, 73 18, 77 15 C 73 24, 72 32, 74 38 C 77 34, 82 32, 85 34 C 79 42, 76 48, 74 54 Z" fill="url(#cardinalRed)" />
+
+    <!-- Head & Body Outline -->
+    <path d="M 64 28 C 42 28, 30 46, 30 68 C 30 92, 44 116, 64 116 C 84 116, 98 92, 98 68 C 98 46, 86 28, 64 28 Z" fill="url(#cardinalRed)" />
+
+    <!-- Cardinal Chest Fluff Highlights -->
+    <ellipse cx="64" cy="98" rx="20" ry="14" fill="#fecaca" opacity="0.4" />
+
+    <!-- Black Eye & Beak Mask -->
+    <path d="M 64 52 C 50 52, 40 56, 40 68 C 40 76, 48 88, 64 96 C 80 88, 88 76, 88 68 C 88 56, 78 52, 64 52 Z" fill="#1c1917" />
+
+    <!-- Big Friendly Eyes -->
+    <!-- Left Eye White -->
+    <ellipse cx="49" cy="64" rx="7" ry="8.5" fill="#ffffff" />
+    <!-- Left Iris/Pupil -->
+    <ellipse cx="50" cy="64" rx="5" ry="6" fill="#1e293b" />
+    <!-- Left Eye Highlight -->
+    <circle cx="48" cy="61.5" r="2.2" fill="#ffffff" />
+    <circle cx="51.5" cy="66" r="1.1" fill="#ffffff" />
+
+    <!-- Right Eye White -->
+    <ellipse cx="79" cy="64" rx="7" ry="8.5" fill="#ffffff" />
+    <!-- Right Iris/Pupil -->
+    <ellipse cx="78" cy="64" rx="5" ry="6" fill="#1e293b" />
+    <!-- Right Eye Highlight -->
+    <circle cx="76.5" cy="61.5" r="2.2" fill="#ffffff" />
+    <circle cx="80" cy="66" r="1.1" fill="#ffffff" />
+
+    <!-- Eyebrows / Cute Cheeks -->
+    <ellipse cx="43" cy="74" rx="4" ry="2.5" fill="#ef4444" opacity="0.5" />
+    <ellipse cx="85" cy="74" rx="4" ry="2.5" fill="#ef4444" opacity="0.5" />
+
+    <!-- Bright Orange Beak -->
+    <path d="M 64 68 C 57 68, 54 75, 54 77 C 54 83, 60 92, 64 94 C 68 92, 74 83, 74 77 C 74 75, 71 68, 64 68 Z" fill="url(#beakGrad)" />
+    <!-- Beak Center Ridge & Shadow -->
+    <path d="M 64 68 L 64 94 C 64 94, 71 83, 71 77 C 71 75, 68 68, 64 68 Z" fill="#c2410c" opacity="0.25" />
+    <!-- Beak Highlight -->
+    <path d="M 62 70 Q 64 69 66 70 Q 64 73 62 70 Z" fill="#ffedd5" opacity="0.8" />
+  </g>
+</svg>
