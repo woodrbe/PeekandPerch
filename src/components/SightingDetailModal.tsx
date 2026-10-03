@@ -4,7 +4,8 @@ import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   X, Star, Calendar, Trash2, ChevronLeft, 
   ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
-  Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink
+  Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink,
+  Download, Maximize2
 } from 'lucide-react';
 
 interface SightingDetailModalProps {
@@ -15,6 +16,14 @@ interface SightingDetailModalProps {
   onToggleFavorite: (id: string) => void;
   onNextSighting?: () => void;
   onPrevSighting?: () => void;
+}
+
+interface MediaItem {
+  id: string;
+  type: 'video' | 'photo';
+  url: string;
+  thumbnailUrl: string;
+  label: string;
 }
 
 export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
@@ -30,12 +39,71 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
   const isBirdfy = sighting.birdfy?.isBirdfyCapture;
   const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl;
+  const catalogFallback = speciesObj?.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === sighting.speciesName.toLowerCase())?.imageUrl;
 
-  const [activeMedia, setActiveMedia] = useState<'photo' | 'video'>('photo');
+  // Build media collection (video + all distinct snapshots)
+  const mediaList: MediaItem[] = [];
+
+  if (videoUrl) {
+    mediaList.push({
+      id: 'video-main',
+      type: 'video',
+      url: videoUrl,
+      thumbnailUrl: sighting.imageUrl || catalogFallback || '',
+      label: 'HD Video Clip',
+    });
+  }
+
+  const distinctImages = new Set<string>();
+  if (Array.isArray(sighting.images) && sighting.images.length > 0) {
+    sighting.images.forEach((img) => {
+      if (img && !distinctImages.has(img)) {
+        distinctImages.add(img);
+      }
+    });
+  }
+  if (sighting.imageUrl && !distinctImages.has(sighting.imageUrl)) {
+    distinctImages.add(sighting.imageUrl);
+  }
+
+  Array.from(distinctImages).forEach((imgUrl, index) => {
+    mediaList.push({
+      id: `photo-${index}`,
+      type: 'photo',
+      url: imgUrl,
+      thumbnailUrl: imgUrl,
+      label: distinctImages.size > 1 ? `Photo ${index + 1}` : 'Camera Snapshot',
+    });
+  });
+
+  if (mediaList.length === 0 && catalogFallback) {
+    mediaList.push({
+      id: 'photo-catalog',
+      type: 'photo',
+      url: catalogFallback,
+      thumbnailUrl: catalogFallback,
+      label: 'Species Reference',
+    });
+  }
+
+  const [selectedMediaId, setSelectedMediaId] = useState<string>(mediaList[0]?.id || 'photo-0');
 
   useEffect(() => {
-    setActiveMedia('photo');
+    setSelectedMediaId(mediaList[0]?.id || 'photo-0');
   }, [sighting.id]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight' && onNextSighting) onNextSighting();
+      if (e.key === 'ArrowLeft' && onPrevSighting) onPrevSighting();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, onNextSighting, onPrevSighting]);
+
+  const currentMedia = mediaList.find((m) => m.id === selectedMediaId) || mediaList[0];
 
   const handleDelete = () => {
     if (confirm(`Delete the "${sighting.speciesName}" sighting record from your garden log?`)) {
@@ -44,111 +112,143 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
     }
   };
 
-  const catalogFallback = speciesObj?.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === sighting.speciesName.toLowerCase())?.imageUrl;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fade-in font-pixar-body">
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/85 backdrop-blur-md animate-fade-in font-pixar-body">
+      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[94vh]">
         
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-stone-900/80 text-white hover:bg-stone-900 transition cursor-pointer"
+          className="absolute top-4 right-4 z-30 p-2.5 rounded-full bg-stone-900/80 text-white hover:bg-stone-900 transition cursor-pointer shadow-md hover:scale-105"
+          title="Close Lightbox (Esc)"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* LEFT / TOP: High Res Photo / Video View */}
-        <div className="relative md:w-1/2 bg-stone-950 flex items-center justify-center overflow-hidden group">
-          {activeMedia === 'video' && videoUrl ? (
-            <video
-              key={videoUrl}
-              src={videoUrl}
-              controls
-              autoPlay
-              playsInline
-              className="w-full h-full object-contain max-h-80 md:max-h-full bg-black"
-            />
-          ) : (
-            <img
-              src={sighting.imageUrl || catalogFallback}
-              alt={sighting.speciesName}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover max-h-80 md:max-h-full"
-              onError={(e) => {
-                if (catalogFallback && e.currentTarget.src !== catalogFallback) {
-                  e.currentTarget.src = catalogFallback;
-                }
-              }}
-            />
-          )}
+        {/* LEFT / TOP: High Res Photo / Video Player & Carousel Column */}
+        <div className="md:w-3/5 bg-stone-950 flex flex-col justify-between overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-stone-800">
+          
+          {/* Main Media Viewport */}
+          <div className="relative flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[460px] flex items-center justify-center bg-black overflow-hidden group">
+            
+            {currentMedia?.type === 'video' ? (
+              <video
+                key={currentMedia.url}
+                src={currentMedia.url}
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
+              />
+            ) : (
+              <img
+                key={currentMedia?.url}
+                src={currentMedia?.url || catalogFallback}
+                alt={sighting.speciesName}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] transition-transform duration-300"
+                onError={(e) => {
+                  if (catalogFallback && e.currentTarget.src !== catalogFallback) {
+                    e.currentTarget.src = catalogFallback;
+                  }
+                }}
+              />
+            )}
 
-          {/* Media Switcher Pill (Photo / Video) */}
-          {videoUrl && (
-            <div className="absolute top-4 left-16 z-20 flex items-center bg-stone-900/85 backdrop-blur-md p-1 rounded-full border border-stone-700 shadow-md">
+            {/* Media Overlay Badges */}
+            <div className="absolute top-4 left-16 z-20 flex items-center gap-2">
+              {currentMedia?.type === 'video' ? (
+                <div className="px-3 py-1 rounded-full bg-rose-600/90 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40">
+                  <Play className="w-3 h-3 fill-white" />
+                  <span>1080p Video Playing</span>
+                </div>
+              ) : isBirdfy ? (
+                <div className="px-3 py-1 rounded-full bg-stone-900/90 text-amber-300 text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-amber-400/40">
+                  <Camera className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Birdfy 1080p Snapshot</span>
+                </div>
+              ) : null}
+            </div>
+
+            {/* Quick Sighting Navigation (Prev / Next Record) */}
+            {onPrevSighting && (
               <button
-                onClick={() => setActiveMedia('photo')}
-                className={`px-3 py-1 rounded-full text-xs font-pixar-sub font-bold flex items-center gap-1 transition ${
-                  activeMedia === 'photo' ? 'bg-amber-400 text-stone-950 shadow-sm' : 'text-stone-300 hover:text-white'
-                }`}
+                onClick={onPrevSighting}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-stone-900/75 hover:bg-stone-900 text-white backdrop-blur-md transition cursor-pointer hover:scale-110 shadow-lg border border-stone-700"
+                title="Previous sighting (Left Arrow)"
               >
-                <ImageIcon className="w-3.5 h-3.5" />
-                <span>Photo</span>
+                <ChevronLeft className="w-5 h-5" />
               </button>
+            )}
+
+            {onNextSighting && (
               <button
-                onClick={() => setActiveMedia('video')}
-                className={`px-3 py-1 rounded-full text-xs font-pixar-sub font-bold flex items-center gap-1 transition ${
-                  activeMedia === 'video' ? 'bg-amber-400 text-stone-950 shadow-sm' : 'text-stone-300 hover:text-white'
-                }`}
+                onClick={onNextSighting}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-stone-900/75 hover:bg-stone-900 text-white backdrop-blur-md transition cursor-pointer hover:scale-110 shadow-lg border border-stone-700"
+                title="Next sighting (Right Arrow)"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Video</span>
+                <ChevronRight className="w-5 h-5" />
               </button>
+            )}
+
+            {/* Star Favorite Button */}
+            <button
+              onClick={() => onToggleFavorite(sighting.id)}
+              className={`absolute top-4 left-4 z-20 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer shadow-lg ${
+                sighting.isFavorite ? 'bg-rose-500 text-white scale-110 ring-2 ring-white' : 'bg-white/80 text-stone-800 hover:bg-white hover:scale-105'
+              }`}
+              title={sighting.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star className={`w-4 h-4 ${sighting.isFavorite ? 'fill-white' : ''}`} />
+            </button>
+          </div>
+
+          {/* Bottom Thumbnail Strip (Just like Birdfy modal) */}
+          {mediaList.length > 1 && (
+            <div className="p-3 bg-stone-900/95 border-t border-stone-800 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-thin">
+              {mediaList.map((item) => {
+                const isSelected = item.id === (currentMedia?.id || mediaList[0].id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedMediaId(item.id)}
+                    className={`relative rounded-xl overflow-hidden shrink-0 w-20 h-14 border-2 transition-all cursor-pointer group/thumb ${
+                      isSelected
+                        ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105 shadow-md shadow-amber-400/20'
+                        : 'border-stone-700 opacity-60 hover:opacity-100 hover:border-stone-400'
+                    }`}
+                  >
+                    <img
+                      src={item.thumbnailUrl}
+                      alt={item.label}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        if (catalogFallback && e.currentTarget.src !== catalogFallback) {
+                          e.currentTarget.src = catalogFallback;
+                        }
+                      }}
+                    />
+
+                    {item.type === 'video' ? (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Play className="w-4 h-4 fill-amber-400 text-amber-400 drop-shadow-md" />
+                      </div>
+                    ) : null}
+
+                    <span className="absolute bottom-0 inset-x-0 bg-stone-950/85 text-[9px] font-pixar-sub font-bold text-white text-center truncate py-0.5 px-1">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
-          {/* Birdfy AI Match Watermark Badge (when no video switcher) */}
-          {!videoUrl && isBirdfy && (
-            <div className="absolute top-4 left-16 px-3 py-1 rounded-full bg-stone-900/90 text-amber-300 text-xs font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-amber-400/40">
-              <Camera className="w-3.5 h-3.5 text-sky-400" />
-              <span>Birdfy 1080p AI Capture</span>
-            </div>
-          )}
-
-          {/* Quick Nav Chevron Overlay */}
-          {onPrevSighting && (
-            <button
-              onClick={onPrevSighting}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition cursor-pointer"
-              title="Previous photo"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          )}
-
-          {onNextSighting && (
-            <button
-              onClick={onNextSighting}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-stone-900/70 text-white hover:bg-stone-900 transition cursor-pointer"
-              title="Next photo"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          )}
-
-          {/* Star Favorite Badge */}
-          <button
-            onClick={() => onToggleFavorite(sighting.id)}
-            className={`absolute top-4 left-4 p-2.5 rounded-full backdrop-blur-md transition-all cursor-pointer ${
-              sighting.isFavorite ? 'bg-rose-500 text-white shadow-lg scale-110' : 'bg-white/80 text-stone-800 hover:bg-white'
-            }`}
-          >
-            <Star className={`w-4 h-4 ${sighting.isFavorite ? 'fill-white' : ''}`} />
-          </button>
         </div>
 
-        {/* RIGHT / BOTTOM: Observations, AI Identification & Hardware Details */}
-        <div className="p-6 md:w-1/2 flex flex-col justify-between overflow-y-auto space-y-4">
+        {/* RIGHT: Observations, AI Identification & Hardware Details */}
+        <div className="p-6 md:w-2/5 flex flex-col justify-between overflow-y-auto space-y-4">
           
           <div className="space-y-4">
             
@@ -158,7 +258,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 {isBirdfy ? (
                   <span className="text-xs text-sky-950 bg-sky-100 px-3 py-1 rounded-full border border-sky-300 flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-amber-500 fill-amber-400" />
-                    <span>{sighting.birdfy?.aiConfidence || 98}% AI Confidence Match</span>
+                    <span>{sighting.birdfy?.aiConfidence || 99}% AI Confidence Match</span>
                   </span>
                 ) : (
                   <span className="text-xs text-amber-950 bg-amber-200 px-3 py-1 rounded-full border border-amber-300">
@@ -243,19 +343,20 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 </div>
 
                 {videoUrl && (
-                  <div className="pt-2 border-t border-sky-200/80 flex items-center justify-between">
+                  <div className="pt-2.5 border-t border-sky-200/80 flex items-center justify-between">
                     <span className="text-[11px] text-sky-900 font-bold flex items-center gap-1">
                       <Play className="w-3 h-3 text-amber-500 fill-amber-500" />
-                      <span>HD Video Clip Available</span>
+                      <span>Recorded 1080p Video Clip</span>
                     </span>
                     <a
                       href={videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[11px] font-bold text-sky-700 hover:text-sky-950 underline cursor-pointer"
+                      title="Open full video in a new tab"
                     >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Open in New Tab</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Open Video</span>
                     </a>
                   </div>
                 )}
@@ -301,7 +402,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="px-6 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-pixar-title text-xs transition cursor-pointer"
+              className="px-6 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-pixar-title text-xs transition cursor-pointer shadow-md hover:scale-102"
             >
               Close Lightbox
             </button>

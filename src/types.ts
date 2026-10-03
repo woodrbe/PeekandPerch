@@ -64,6 +64,7 @@ export interface BirdfyCaptureMetadata {
   resolution?: string; // e.g. "1080p Full HD" or "2K Ultra"
   clipDurationSeconds?: number;
   videoUrl?: string;
+  images?: string[];
   batteryLevel?: number;
   isSolarCharging?: boolean;
   wifiSignal?: 'Excellent' | 'Good' | 'Fair';
@@ -75,6 +76,7 @@ export interface BirdSighting {
   speciesId: string;
   speciesName: string;
   imageUrl: string;
+  images?: string[];
   videoUrl?: string;
   date: string;
   time: string;

@@ -71,6 +71,7 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
 interface ExtractedVisit {
   speciesName: string;
   imageUrl: string;
+  images?: string[];
   date: string;
   time: string;
   videoUrl?: string;
@@ -458,6 +459,15 @@ async function runScraperAgent() {
 
               if (!img && !vid) return;
 
+              const allImages: string[] = [];
+              if (Array.isArray(ev.images)) {
+                ev.images.forEach((im: any) => {
+                  const u = im?.largeUrl || im?.listUrl || im?.url;
+                  if (u && !allImages.includes(u)) allImages.push(u);
+                });
+              }
+              if (img && !allImages.includes(img)) allImages.unshift(img);
+
               let timestamp = 0;
               const nvcMatch = (img || vid || '').match(/nvc_(\d{13})_/);
               if (nvcMatch) {
@@ -484,14 +494,21 @@ async function runScraperAgent() {
                 interceptedDetections.push({
                   speciesName,
                   imageUrl: img,
+                  images: allImages.length > 0 ? allImages : undefined,
                   date,
                   time,
                   videoUrl: vid,
                   confidence: 99.2,
                   notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
                 });
-              } else if (vid && !interceptedDetections[existingIdx].videoUrl) {
-                interceptedDetections[existingIdx].videoUrl = vid;
+              } else {
+                if (vid && !interceptedDetections[existingIdx].videoUrl) {
+                  interceptedDetections[existingIdx].videoUrl = vid;
+                }
+                if (allImages.length > 0) {
+                  const mergedImgs = Array.from(new Set([...(interceptedDetections[existingIdx].images || []), ...allImages]));
+                  interceptedDetections[existingIdx].images = mergedImgs;
+                }
               }
             });
           }
@@ -729,9 +746,25 @@ async function runScraperAgent() {
                 }
               }
 
+              var allImages = [];
+              if (media && Array.isArray(media.images)) {
+                media.images.forEach(function(im) {
+                  var u = im && (im.largeUrl || im.listUrl || im.url);
+                  if (u && allImages.indexOf(u) === -1) allImages.push(u);
+                });
+              }
+              if (ev.images && Array.isArray(ev.images)) {
+                ev.images.forEach(function(im) {
+                  var u = im && (im.largeUrl || im.listUrl || im.url);
+                  if (u && allImages.indexOf(u) === -1) allImages.push(u);
+                });
+              }
+              if (img && allImages.indexOf(img) === -1) allImages.unshift(img);
+
               results.push({
                 speciesName: species,
                 imageUrl: img,
+                images: allImages.length > 0 ? allImages : undefined,
                 videoUrl: video || undefined,
                 time: tm,
                 date: d,
@@ -787,6 +820,16 @@ async function runScraperAgent() {
             (card.getAttribute('data-video-url') || card.querySelector('[data-video-url]')?.getAttribute('data-video-url')) ||
             '';
 
+          var cardImages = [url];
+          var extraImgs = Array.from(card.querySelectorAll('img')).map(function(im) {
+            return im.dataset.mediaUrl || im.currentSrc || im.src || im.getAttribute('src');
+          }).filter(function(u) {
+            return u && u.indexOf('data:') !== 0 && u.indexOf('avatar') === -1 && u.indexOf('icon') === -1 && u.indexOf('logo') === -1;
+          });
+          extraImgs.forEach(function(u) {
+            if (cardImages.indexOf(u) === -1) cardImages.push(u);
+          });
+
           var timeStr = '12:00 PM';
           var cardDate = assignedFallbackDate;
 
@@ -807,6 +850,7 @@ async function runScraperAgent() {
           results.push({
             speciesName: species,
             imageUrl: url,
+            images: cardImages.length > 0 ? cardImages : undefined,
             videoUrl: video || undefined,
             time: timeStr,
             date: cardDate,
@@ -873,8 +917,13 @@ async function runScraperAgent() {
       const match = combinedDetections.find((cd) => cd.imageUrl === ds.imageUrl);
       if (!match) {
         combinedDetections.push(ds);
-      } else if (!match.videoUrl && ds.videoUrl) {
-        match.videoUrl = ds.videoUrl;
+      } else {
+        if (!match.videoUrl && ds.videoUrl) {
+          match.videoUrl = ds.videoUrl;
+        }
+        if (ds.images && ds.images.length > 0) {
+          match.images = Array.from(new Set([...(match.images || []), ...ds.images]));
+        }
       }
     });
 
@@ -944,6 +993,7 @@ async function runScraperAgent() {
           speciesId: spId || 'custom',
           speciesName: d.speciesName,
           imageUrl: d.imageUrl,
+          images: d.images,
           videoUrl: d.videoUrl,
           date: d.date,
           time: d.time,
@@ -964,6 +1014,7 @@ async function runScraperAgent() {
             triggerType: 'AI Bird Detected',
             resolution: '1080p Full HD',
             videoUrl: d.videoUrl,
+            images: d.images,
             batteryLevel: 96,
             isSolarCharging: true,
             wifiSignal: 'Excellent',
