@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BirdSighting, BirdSpecies, GardenLocation, BehaviorType } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
-import { X, Plus, Sparkles, MapPin, Camera, Calendar, Clock, User, Feather } from 'lucide-react';
+import { X, Plus, Sparkles, Camera, Calendar, Clock, User, Feather } from 'lucide-react';
 
 interface LogSightingModalProps {
   isOpen: boolean;
@@ -20,8 +20,8 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
   const [customSpeciesName, setCustomSpeciesName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState('08:30 AM');
-  const [location, setLocation] = useState<GardenLocation>('Tube Feeder');
-  const [behavior, setBehavior] = useState<BehaviorType>('Feeder Snack');
+  const [location] = useState<GardenLocation>('Tube Feeder');
+  const [behavior] = useState<BehaviorType>('Feeder Snack');
   const [count, setCount] = useState<number>(1);
   const [weather, setWeather] = useState('Sunny & Pleasant, 72°F');
   const [notes, setNotes] = useState('');
@@ -50,7 +50,7 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
       behavior,
       weather,
       count: Number(count),
-      notes: notes || `Spotted a cheerful ${speciesName} at the ${location}!`,
+      notes: notes || `Spotted a cheerful ${speciesName}!`,
       isFavorite: false,
       spottedBy: spottedBy || 'Yard Observer',
       temperature: weather.includes('°F') ? weather.split(',')[1] || '72°F' : '72°F',
@@ -139,45 +139,6 @@ export const LogSightingModal: React.FC<LogSightingModalProps> = ({
             </div>
           </div>
 
-          {/* Location & Behavior Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">
-                Garden Location
-              </label>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value as GardenLocation)}
-                className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-stone-900 cursor-pointer"
-              >
-                <option value="Tube Feeder">Tube Feeder 🌻</option>
-                <option value="Birdbath">Birdbath ⛲</option>
-                <option value="Berry Bush">Berry Bush 🌺</option>
-                <option value="Suet Station">Suet Station 🥜</option>
-                <option value="Lawn & Patio">Lawn & Patio 🏡</option>
-                <option value="Oak Branch">Oak Branch 🌳</option>
-                <option value="Nest Box">Nest Box 🪺</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">
-                Behavior Observed
-              </label>
-              <select
-                value={behavior}
-                onChange={(e) => setBehavior(e.target.value as BehaviorType)}
-                className="w-full px-4 py-2.5 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold text-stone-900 cursor-pointer"
-              >
-                <option value="Feeder Snack">Feeder Snack 🌽</option>
-                <option value="Water Bathing">Water Bathing 💦</option>
-                <option value="Perched & Singing">Perched & Singing 🎶</option>
-                <option value="Foraging on Ground">Foraging on Ground 🐛</option>
-                <option value="Preening Feathers">Preening Feathers 🪶</option>
-                <option value="Nesting Material">Nesting Material 🪹</option>
-              </select>
-            </div>
-          </div>
 
           {/* Date, Time & Count */}
           <div className="grid grid-cols-3 gap-3">

@@ -46,8 +46,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onApplySightings,
   onRefreshSightings,
 }) => {
-  const [selectedLocation, setSelectedLocation] = useState<string>('All');
-  const [selectedBehavior, setSelectedBehavior] = useState<string>('All');
   const [selectedSource, setSelectedSource] = useState<'all' | 'birdfy' | 'manual'>('all');
   const [onlyFavorites, setOnlyFavorites] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'count' | 'confidence'>('newest');
@@ -74,15 +72,10 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
 
   const activeFilterCount = 
     (searchQuery ? 1 : 0) + 
-    (selectedLocation !== 'All' ? 1 : 0) + 
-    (selectedBehavior !== 'All' ? 1 : 0) + 
     (selectedSource !== 'all' ? 1 : 0) + 
     (onlyFavorites ? 1 : 0) +
     (dateFilter !== 'today' ? 1 : 0) +
     (dateFilter === 'custom' && (customStartDate || customEndDate) ? 1 : 0);
-
-  const locations = ['All', 'Tube Feeder', 'Birdbath', 'Berry Bush', 'Suet Station', 'Lawn & Patio', 'Oak Branch'];
-  const behaviors = ['All', 'Feeder Snack', 'Water Bathing', 'Perched & Singing', 'Foraging on Ground', 'Preening Feathers'];
 
   // Count birdfy captures
   const birdfyCapturesCount = sightings.filter((s) => s.birdfy?.isBirdfyCapture).length;
@@ -94,16 +87,12 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
     const species = (s.speciesName || '').toLowerCase();
     const notes = (s.notes || '').toLowerCase();
     const spottedBy = (s.spottedBy || '').toLowerCase();
-    const loc = (s.location || '').toLowerCase();
 
     const matchesSearch = !query ||
       species.includes(query) ||
       notes.includes(query) ||
-      spottedBy.includes(query) ||
-      loc.includes(query);
+      spottedBy.includes(query);
     
-    const matchesLoc = selectedLocation === 'All' || s.location === selectedLocation;
-    const matchesBeh = selectedBehavior === 'All' || s.behavior === selectedBehavior;
     const matchesFav = !onlyFavorites || Boolean(s.isFavorite);
     
     const isBirdfy = Boolean(s.birdfy?.isBirdfyCapture);
@@ -137,7 +126,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       return true;
     })();
 
-    return matchesSearch && matchesLoc && matchesBeh && matchesFav && matchesSource && matchesDate;
+    return matchesSearch && matchesFav && matchesSource && matchesDate;
   }).sort((a, b) => {
     if (sortBy === 'newest') {
       const timeB = new Date(`${b.date} ${b.time || '12:00 PM'}`).getTime() || 0;
@@ -321,50 +310,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 </div>
               </div>
 
-            </div>
-
-            {/* Backyard Feeding Location Filter Pills */}
-            <div className="space-y-2 pt-3 border-t-2 border-stone-100">
-              <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider block">
-                BACKYARD SPOT:
-              </span>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {locations.map((loc) => (
-                  <button
-                    key={loc}
-                    onClick={() => setSelectedLocation(loc)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      selectedLocation === loc
-                        ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-102 border-b-2 border-sky-700'
-                        : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200 hover:scale-102'
-                    }`}
-                  >
-                    {loc}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Bird Behavior Filter Pills */}
-            <div className="space-y-2 pt-3 border-t-2 border-stone-100">
-              <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider block">
-                BIRD ACTIVITY:
-              </span>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {behaviors.map((beh) => (
-                  <button
-                    key={beh}
-                    onClick={() => setSelectedBehavior(beh)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all whitespace-nowrap cursor-pointer ${
-                      selectedBehavior === beh
-                        ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-102 border-b-2 border-sky-700'
-                        : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200 hover:scale-102'
-                    }`}
-                  >
-                    {beh}
-                  </button>
-                ))}
-              </div>
             </div>
 
           </div>
@@ -615,8 +560,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 {activeFilterCount > 0 && (
                   <button
                     onClick={() => {
-                      setSelectedLocation('All');
-                      setSelectedBehavior('All');
                       setSelectedSource('all');
                       setOnlyFavorites(false);
                       setDateFilter('all');
@@ -667,8 +610,8 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
 
                       {!isBirdfy && (
                         <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-stone-900/85 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
-                          <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                          <span>{s.location}</span>
+                          <Eye className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Field Observation</span>
                         </div>
                       )}
 

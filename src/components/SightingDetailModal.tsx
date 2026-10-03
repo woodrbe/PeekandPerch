@@ -1,7 +1,7 @@
 import React from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { 
-  X, Star, Calendar, MapPin, Feather, Trash2, ChevronLeft, 
+  X, Star, Calendar, Trash2, ChevronLeft, 
   ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
   Wifi, Zap, ShieldCheck 
 } from 'lucide-react';
@@ -105,19 +105,19 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
             {/* Species Header */}
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-1.5 font-pixar-sub font-bold">
-                <span className="text-xs text-amber-950 bg-amber-200 px-3 py-1 rounded-full border border-amber-300">
-                  {sighting.location}
-                </span>
+                {isBirdfy ? (
+                  <span className="text-xs text-sky-950 bg-sky-100 px-3 py-1 rounded-full border border-sky-300 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-500 fill-amber-400" />
+                    <span>{sighting.birdfy?.aiConfidence || 98}% AI Confidence Match</span>
+                  </span>
+                ) : (
+                  <span className="text-xs text-amber-950 bg-amber-200 px-3 py-1 rounded-full border border-amber-300">
+                    Field Observation
+                  </span>
+                )}
                 <span className="text-xs text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                   x{sighting.count} spotted
                 </span>
-
-                {isBirdfy && sighting.birdfy?.aiConfidence && (
-                  <span className="text-xs text-sky-950 bg-sky-100 px-3 py-1 rounded-full border border-sky-300 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-amber-500 fill-amber-400" />
-                    <span>{sighting.birdfy.aiConfidence}% AI Confidence Match</span>
-                  </span>
-                )}
               </div>
 
               <h2 className="font-pixar-title text-3xl text-stone-900">
@@ -145,8 +145,11 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
               </div>
 
               <div className="flex items-center justify-between text-stone-600 border-t-2 border-stone-200/60 pt-2">
-                <span>Behavior: <strong className="text-stone-900">{sighting.behavior}</strong></span>
-                <span className="text-sky-700 font-bold">{sighting.weather}</span>
+                <span className="text-stone-700 font-semibold">Conditions &amp; Environment</span>
+                <span className="text-sky-700 font-bold flex items-center gap-1.5">
+                  <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  {sighting.weather}
+                </span>
               </div>
             </div>
 
@@ -205,7 +208,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
             {speciesObj && (
               <div className="space-y-2 text-xs pt-2 border-t-2 border-stone-100 font-pixar-sub">
                 <div>
-                  <span className="font-bold text-stone-900">Favorite Backyard Treat: </span>
+                  <span className="font-bold text-stone-900">Favorite Feeder Treat: </span>
                   <span className="text-stone-700 font-semibold">{speciesObj.favoriteFood}</span>
                 </div>
 

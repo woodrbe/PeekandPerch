@@ -309,7 +309,7 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
   const [speciesId, setSpeciesId] = useState<string>(BACKYARD_SPECIES[0].id);
   const [customSpeciesName, setCustomSpeciesName] = useState<string>('');
   const [aiConfidence, setAiConfidence] = useState<number>(99.2);
-  const [location, setLocation] = useState<GardenLocation>('Tube Feeder');
+  const [location] = useState<GardenLocation>('Tube Feeder');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [notes, setNotes] = useState('');
@@ -665,8 +665,8 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
               </div>
             )}
 
-            {/* Date, Time & Station */}
-            <div className="grid grid-cols-3 gap-3">
+            {/* Date & Time */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-bold text-stone-700 mb-1">Date</label>
                 <input
@@ -686,21 +686,6 @@ export const BirdfyImportModal: React.FC<BirdfyImportModalProps> = ({
                   placeholder="08:30 AM"
                   className="w-full px-3 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold"
                 />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-stone-700 mb-1">Feeder Spot</label>
-                <select
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value as GardenLocation)}
-                  className="w-full px-3 py-2 rounded-full bg-stone-50 border-2 border-stone-200 text-xs font-bold"
-                >
-                  <option value="Tube Feeder">Tube Feeder 🌻</option>
-                  <option value="Berry Bush">Nectar Oasis 🌺</option>
-                  <option value="Suet Station">Suet Station 🥜</option>
-                  <option value="Birdbath">Birdbath ⛲</option>
-                  <option value="Lawn & Patio">Lawn &amp; Patio 🏡</option>
-                </select>
               </div>
             </div>
 

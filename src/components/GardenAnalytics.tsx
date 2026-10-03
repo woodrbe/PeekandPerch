@@ -1,6 +1,6 @@
 import React from 'react';
 import { BirdSighting } from '../types';
-import { BarChart3, Feather, MapPin, Sparkles, Trophy, Sun, Calendar, Plus } from 'lucide-react';
+import { BarChart3, Feather, Sparkles, Trophy, Sun, Calendar, Plus, Clock } from 'lucide-react';
 
 interface GardenAnalyticsProps {
   sightings: BirdSighting[];
@@ -25,20 +25,37 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
   const sortedSpecies = Object.entries(speciesCounts).sort((a, b) => b[1] - a[1]);
   const mostFrequentSpecies = sortedSpecies[0] ? sortedSpecies[0][0] : 'Northern Cardinal';
 
-  // Location frequency map
-  const locationCounts: Record<string, number> = {};
+  // Time of Day frequency map
+  const timeBuckets: Record<string, number> = {
+    'Early Morning (5-9 AM)': 0,
+    'Midday (9 AM-1 PM)': 0,
+    'Afternoon (1-5 PM)': 0,
+    'Evening & Dusk (5-9 PM)': 0,
+  };
+
   sightings.forEach((s) => {
-    locationCounts[s.location] = (locationCounts[s.location] || 0) + 1;
+    if (!s.time) return;
+    let hour = -1;
+    const ampmMatch = s.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (ampmMatch) {
+      let h = parseInt(ampmMatch[1], 10);
+      const isPM = (ampmMatch[3] || '').toUpperCase() === 'PM';
+      const isAM = (ampmMatch[3] || '').toUpperCase() === 'AM';
+      if (isPM && h < 12) h += 12;
+      if (isAM && h === 12) h = 0;
+      hour = h;
+    }
+    if (hour >= 5 && hour < 9) timeBuckets['Early Morning (5-9 AM)']++;
+    else if (hour >= 9 && hour < 13) timeBuckets['Midday (9 AM-1 PM)']++;
+    else if (hour >= 13 && hour < 17) timeBuckets['Afternoon (1-5 PM)']++;
+    else if (hour >= 17 && hour < 21) timeBuckets['Evening & Dusk (5-9 PM)']++;
+    else if (hour >= 0) timeBuckets['Early Morning (5-9 AM)']++;
   });
 
-  const sortedLocations = Object.entries(locationCounts).sort((a, b) => b[1] - a[1]);
-  const topLocation = sortedLocations[0] ? sortedLocations[0][0] : 'Tube Feeder';
-
-  // Behavior frequency map
-  const behaviorCounts: Record<string, number> = {};
-  sightings.forEach((s) => {
-    behaviorCounts[s.behavior] = (behaviorCounts[s.behavior] || 0) + 1;
-  });
+  const sortedTimeBuckets = Object.entries(timeBuckets).sort((a, b) => b[1] - a[1]);
+  const peakTimeSlot = sortedTimeBuckets[0] && sortedTimeBuckets[0][1] > 0 
+    ? sortedTimeBuckets[0][0].split(' (')[0] 
+    : 'Early Morning';
 
   return (
     <section id="analytics-section" className="py-12 bg-sky-50/40 border-b-2 border-sky-100 font-pixar-body">
@@ -48,13 +65,13 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-950 text-xs font-pixar-sub font-bold mb-3 border-2 border-indigo-200 shadow-xs">
             <BarChart3 className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Backyard Aviary Intelligence</span>
+            <span>Aviary Flock Intelligence</span>
           </div>
           <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
             FLOCK TRENDS 📊
           </h2>
           <p className="font-pixar-sub text-stone-600 text-sm sm:text-base mt-1.5 max-w-xl font-semibold">
-            Who’s trending, who’s ghosting, and all the juicy numbers behind our backyard visitors
+            Who’s trending, visitor time distributions, and flock statistics
           </p>
         </div>
 
@@ -83,7 +100,7 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
               {uniqueSpeciesNames.length}
             </div>
             <div className="text-[11px] font-pixar-sub font-bold text-sky-700">
-              Spotted in home garden
+              Cataloged in collection
             </div>
           </div>
 
@@ -102,14 +119,14 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
 
           <div className="bg-white p-5 rounded-3xl border-2 border-emerald-200 shadow-md shadow-emerald-500/5 space-y-2 hover:scale-102 transition-transform">
             <div className="flex items-center justify-between text-xs font-pixar-title text-stone-500">
-              <span>FAVORITE HOTSPOT</span>
-              <MapPin className="w-5 h-5 text-emerald-600" />
+              <span>PEAK VISITING TIME</span>
+              <Clock className="w-5 h-5 text-emerald-600" />
             </div>
             <div className="font-pixar-title text-2xl sm:text-3xl text-stone-900 line-clamp-1">
-              {topLocation}
+              {peakTimeSlot}
             </div>
             <div className="text-[11px] font-pixar-sub font-bold text-emerald-700">
-              Highest activity zone
+              Most active visitor window
             </div>
           </div>
 
@@ -148,21 +165,21 @@ export const GardenAnalytics: React.FC<GardenAnalyticsProps> = ({
             </div>
           </div>
 
-          {/* Backyard Feeding Spots Activity */}
+          {/* Time of Day Activity */}
           <div className="bg-white p-6 rounded-3xl border-2 border-sky-100 shadow-md space-y-4">
             <h3 className="text-lg font-pixar-title text-stone-900 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-emerald-500" />
-              <span>FEEDING SPOT ACTIVITY</span>
+              <Clock className="w-5 h-5 text-emerald-500" />
+              <span>VISITING TIME OF DAY</span>
             </h3>
 
             <div className="space-y-3.5 pt-2">
-              {sortedLocations.map(([locName, count]) => {
+              {sortedTimeBuckets.map(([timeSlot, count]) => {
                 const percentage = Math.round((count / (totalSightings || 1)) * 100);
 
                 return (
-                  <div key={locName} className="space-y-1.5">
+                  <div key={timeSlot} className="space-y-1.5">
                     <div className="flex justify-between text-xs font-bold text-stone-800">
-                      <span>{locName}</span>
+                      <span>{timeSlot}</span>
                       <span className="text-emerald-700">{count} visits ({percentage}%)</span>
                     </div>
 
