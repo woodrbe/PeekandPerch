@@ -328,7 +328,17 @@ export default function App() {
   }, [activeTab]);
 
   const inspectedSpeciesObj = inspectedSighting 
-    ? BACKYARD_SPECIES.find((sp) => sp.name === inspectedSighting.speciesName || sp.id === inspectedSighting.speciesId)
+    ? BACKYARD_SPECIES.find((sp) => {
+        const normTarget = sp.name.toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+        const normSighting = inspectedSighting.speciesName.toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+        return (
+          sp.id === inspectedSighting.speciesId ||
+          sp.name.toLowerCase() === inspectedSighting.speciesName.toLowerCase() ||
+          normSighting === normTarget ||
+          normSighting.startsWith(normTarget) ||
+          normTarget.startsWith(normSighting)
+        );
+      })
     : undefined;
 
   return (
