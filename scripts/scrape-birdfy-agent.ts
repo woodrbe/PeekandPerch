@@ -78,63 +78,63 @@ interface ExtractedVisit {
   notes?: string;
 }
 
-function cleanSpeciesName(rawName?: string): string {
+export function cleanSpeciesName(rawName?: string): string {
   if (!rawName) return '';
   return rawName
     .replace(/^help_outline\s*/i, '')
-    .replace(/^(tag|bird|icon|preview)\s*/i, '')
+    .replace(/^(tag|bird|icon|preview|label)\s*/i, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-function isGenericOrJunkSpecies(name?: string): boolean {
+export function isGenericOrJunkSpecies(name?: string): boolean {
   if (!name) return true;
   const s = cleanSpeciesName(name).toLowerCase().trim();
   if (
     !s ||
+    s.length < 3 ||
+    s === 'bird' ||
+    s === 'birds' ||
+    s === 'animal' ||
+    s === 'animals' ||
+    s === 'feeder' ||
+    s === 'feeder bird' ||
     s === 'feeder visitor' ||
     s === 'visitor' ||
-    s === 'feeder bird' ||
     s === 'motion' ||
     s === 'unidentified' ||
     s === 'all birds' ||
     s === 'backyard bird' ||
-    s === 'bird' ||
     s === 'all' ||
-    s === 'hour' ||
-    s === 'hours' ||
-    s === 'minute' ||
-    s === 'minutes' ||
-    s === 'min' ||
-    s === 'mins' ||
-    s === 'sec' ||
-    s === 'second' ||
-    s === 'seconds' ||
-    s === 'day' ||
-    s === 'days' ||
-    s === 'today' ||
-    s === 'yesterday' ||
+    s === 'unknown' ||
+    s === 'other' ||
+    s === 'retry' ||
+    s === 'events' ||
+    s === 'devices' ||
     s === 'select' ||
     s === 'delete' ||
     s === 'download' ||
     s === 'share' ||
-    s === 'cancel' ||
-    s === 'events' ||
-    s === 'devices' ||
-    s.includes('feeder visitor') ||
-    s.includes('visitor') ||
-    s.includes('motion') ||
-    s.includes('day')
+    s === 'cancel'
   ) {
     return true;
   }
+
+  // Reject anything containing dates, months, timestamps, time units, or device keywords
   if (
-    /\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(s) ||
+    /\b(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\b/i.test(s) ||
+    /\b(mon|monday|tue|tuesday|wed|wednesday|thu|thursday|fri|friday|sat|saturday|sun|sunday)\b/i.test(s) ||
+    /\b(today|yesterday|tomorrow|ago|hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days)\b/i.test(s) ||
+    /\b(am|pm|retry|device|feeder|espresso|cam|camera|motion|help_outline)\b/i.test(s) ||
     /^\d+\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\b/i.test(s) ||
-    /^\d{1,2}:\d{2}/.test(s) ||
-    s.length < 3
+    /\d{1,2}:\d{2}/.test(s) ||
+    /\d{1,2}\/\d{1,2}/.test(s) ||
+    /\d{4}-\d{2}-\d{2}/.test(s) ||
+    /^\d+$/.test(s)
   ) {
     return true;
   }
+
   return false;
 }
 
@@ -277,7 +277,6 @@ async function selectDateInCalendar(page: Page, targetDate: Date): Promise<boole
     }
 
     if (!(await targetBtn.isVisible().catch(() => false))) {
-      // Close calendar
       const closeBtn = page.locator('.moment-calendar__close').first();
       if (await closeBtn.isVisible().catch(() => false)) await closeBtn.click();
       return false;
@@ -428,7 +427,7 @@ async function runScraperAgent() {
 
               const speciesName = cleanSpeciesName(rawSpecies);
 
-              // Ignore Feeder Visitor, generic motion, and junk
+              // Ignore Feeder Visitor, generic motion, dates, and junk
               if (!speciesName || isGenericOrJunkSpecies(speciesName)) {
                 return;
               }
@@ -583,52 +582,58 @@ async function runScraperAgent() {
 
     const extractDomCards = async (fallbackDateStr: string): Promise<ExtractedVisit[]> => {
       return await page.evaluate(`((assignedFallbackDate) => {
+        var cleanSpecies = function(rawName) {
+          if (!rawName) return '';
+          return rawName
+            .replace(/^help_outline\\s*/i, '')
+            .replace(/^(tag|bird|icon|preview|label)\\s*/i, '')
+            .replace(/\\s+/g, ' ')
+            .trim();
+        };
+
         var isJunk = function(name) {
           if (!name) return true;
-          var s = name.replace(/^help_outline\\s*/i, '').replace(/^(tag|bird|icon|preview)\\s*/i, '').toLowerCase().trim();
+          var s = cleanSpecies(name).toLowerCase().trim();
           if (
             !s ||
+            s.length < 3 ||
+            s === 'bird' ||
+            s === 'birds' ||
+            s === 'animal' ||
+            s === 'animals' ||
+            s === 'feeder' ||
+            s === 'feeder bird' ||
             s === 'feeder visitor' ||
             s === 'visitor' ||
-            s === 'feeder bird' ||
             s === 'motion' ||
             s === 'unidentified' ||
             s === 'all birds' ||
             s === 'backyard bird' ||
-            s === 'bird' ||
             s === 'all' ||
-            s === 'hour' ||
-            s === 'hours' ||
-            s === 'minute' ||
-            s === 'minutes' ||
-            s === 'min' ||
-            s === 'mins' ||
-            s === 'sec' ||
-            s === 'second' ||
-            s === 'seconds' ||
-            s === 'day' ||
-            s === 'days' ||
-            s === 'today' ||
-            s === 'yesterday' ||
+            s === 'unknown' ||
+            s === 'other' ||
+            s === 'retry' ||
+            s === 'events' ||
+            s === 'devices' ||
             s === 'select' ||
             s === 'delete' ||
             s === 'download' ||
             s === 'share' ||
-            s === 'cancel' ||
-            s === 'events' ||
-            s === 'devices' ||
-            s.indexOf('feeder visitor') !== -1 ||
-            s.indexOf('visitor') !== -1 ||
-            s.indexOf('motion') !== -1 ||
-            s.indexOf('day') !== -1
+            s === 'cancel'
           ) {
             return true;
           }
+
           if (
-            /\\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\b/i.test(s) ||
+            /\\b(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\\b/i.test(s) ||
+            /\\b(mon|monday|tue|tuesday|wed|wednesday|thu|thursday|fri|friday|sat|saturday|sun|sunday)\\b/i.test(s) ||
+            /\\b(today|yesterday|tomorrow|ago|hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days)\\b/i.test(s) ||
+            /\\b(am|pm|retry|device|feeder|espresso|cam|camera|motion|help_outline)\\b/i.test(s) ||
             /^\\d+\\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\\b/i.test(s) ||
-            /^\\d{1,2}:\\d{2}/.test(s) ||
-            s.length < 3
+            /\\d{1,2}:\\d{2}/.test(s) ||
+            /\\d{1,2}\\/\\d{1,2}/.test(s) ||
+            /\\d{4}-\\d{2}-\\d{2}/.test(s) ||
+            /^\\d+$/.test(s)
           ) {
             return true;
           }
@@ -656,7 +661,7 @@ async function runScraperAgent() {
               var media = v.mediaFor ? v.mediaFor(ev) : null;
               var tags = (media && media.displayTags) || ev.displayTags || ev.tags || [];
               var rawSpecies = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
-              var species = rawSpecies.replace(/^help_outline\\s*/i, '').trim();
+              var species = cleanSpecies(rawSpecies);
 
               if (!species || isJunk(species)) return;
 
@@ -724,27 +729,15 @@ async function runScraperAgent() {
 
           if (!url || seenImgs.has(url)) continue;
 
+          // Only accept species from explicit tag button or Vue display tag
           var rawSpecies =
             (vue && vue.displayTags && vue.displayTags[0] && vue.displayTags[0].label) ||
-            (card.querySelector('.moment-card__tag, .device-event-card__name') && card.querySelector('.moment-card__tag, .device-event-card__name').textContent.trim()) ||
+            (card.querySelector('.moment-card__tag') && card.querySelector('.moment-card__tag').textContent.trim()) ||
             '';
 
-          var species = rawSpecies.replace(/^help_outline\\s*/i, '').trim();
+          var species = cleanSpecies(rawSpecies);
 
-          if (!species || isJunk(species)) {
-            var lines = (card.textContent || '')
-              .split('\\n')
-              .map(function(l) { return l.replace(/^help_outline\\s*/i, '').trim(); })
-              .filter(function(l) { return l.length > 2 && l.length < 35; });
-            for (var mIdx = 0; mIdx < lines.length; mIdx++) {
-              var l = lines[mIdx];
-              if (!isJunk(l) && !/^\\d{1,2}:\\d{2}/.test(l)) {
-                species = l;
-                break;
-              }
-            }
-          }
-
+          // Strictly skip if no genuine species tag was present
           if (!species || isJunk(species)) continue;
 
           seenImgs.add(url);
@@ -862,7 +855,12 @@ async function runScraperAgent() {
     }
 
     // Filter existing sightings from junk as well
-    existingSightings = existingSightings.filter((s) => !isGenericOrJunkSpecies(s?.speciesName));
+    existingSightings = existingSightings
+      .map((s) => ({
+        ...s,
+        speciesName: cleanSpeciesName(s?.speciesName),
+      }))
+      .filter((s) => !isGenericOrJunkSpecies(s?.speciesName));
 
     console.log(`📂 Current public/data/sightings.json count: ${existingSightings.length}`);
 

@@ -11,6 +11,7 @@
     "lint": "tsc --noEmit",
     "agent:scrape": "tsx scripts/scrape-birdfy-agent.ts",
     "agent:scrape:30days": "tsx scripts/scrape-birdfy-agent.ts --days 30",
+    "agent:scrape:7days": "tsx scripts/scrape-birdfy-agent.ts --days 7",
     "clear:sightings": "tsx scripts/clear-sightings.ts"
   },
   "dependencies": {
