@@ -4,7 +4,7 @@ import { BirdfyService, formatCentralDate } from '../services/birdfyService';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
   Sun, CloudSun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
-  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock
+  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock, Feather
 } from 'lucide-react';
 
 export type DateFilterPreset = 'today' | 'yesterday' | 'week' | 'month' | 'all' | 'custom';
@@ -15,8 +15,8 @@ interface SightingsGalleryProps {
   onOpenLogModal?: () => void;
   onToggleFavoriteSighting: (id: string) => void;
   onDeleteSighting: (id: string) => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
   birdfyDevice: BirdfyDevice;
   isSyncingBirdfy: boolean;
   onSyncBirdfy: () => void;
@@ -33,7 +33,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onOpenLogModal,
   onToggleFavoriteSighting,
   onDeleteSighting,
-  searchQuery,
+  searchQuery = '',
   onSearchChange,
   birdfyDevice,
   isSyncingBirdfy,
@@ -45,6 +45,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onRefreshSightings,
 }) => {
   const [selectedSource, setSelectedSource] = useState<'all' | 'birdfy' | 'manual'>('all');
+  const [selectedSpecies, setSelectedSpecies] = useState<string>('All');
   const [onlyFavorites, setOnlyFavorites] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'count' | 'confidence'>('newest');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -68,7 +69,46 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   const countMonth = sightings.filter((s) => s?.date && s.date >= thirtyDaysAgoStr && s.date <= todayStr).length;
   const countAll = sightings.length;
 
+  // Sightings matching current timeframe and source (current page dataset)
+  const currentPageSightings = sightings.filter((s) => {
+    if (!s) return false;
+    const isBirdfy = Boolean(s.birdfy?.isBirdfyCapture);
+    const matchesSource = 
+      selectedSource === 'all' || 
+      (selectedSource === 'birdfy' && isBirdfy) ||
+      (selectedSource === 'manual' && !isBirdfy);
+
+    const matchesDate = (() => {
+      if (!s.date) return dateFilter === 'all';
+      if (dateFilter === 'today') return s.date === todayStr;
+      if (dateFilter === 'yesterday') return s.date === yesterdayStr;
+      if (dateFilter === 'week') return s.date >= sevenDaysAgoStr && s.date <= todayStr;
+      if (dateFilter === 'month') return s.date >= thirtyDaysAgoStr && s.date <= todayStr;
+      if (dateFilter === 'custom') {
+        if (customStartDate && s.date < customStartDate) return false;
+        if (customEndDate && s.date > customEndDate) return false;
+        return true;
+      }
+      return true;
+    })();
+
+    return matchesSource && matchesDate;
+  });
+
+  // Calculate species counts from current page dataset
+  const speciesCountsMap: Record<string, number> = {};
+  currentPageSightings.forEach((s) => {
+    const sp = s.speciesName || 'Unknown Species';
+    speciesCountsMap[sp] = (speciesCountsMap[sp] || 0) + 1;
+  });
+
+  const availableSpecies = Object.entries(speciesCountsMap).sort((a, b) => {
+    if (b[1] !== a[1]) return b[1] - a[1];
+    return a[0].localeCompare(b[0]);
+  });
+
   const activeFilterCount = 
+    (selectedSpecies !== 'All' ? 1 : 0) + 
     (searchQuery ? 1 : 0) + 
     (selectedSource !== 'all' ? 1 : 0) + 
     (onlyFavorites ? 1 : 0) +
@@ -78,7 +118,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   // Count birdfy captures
   const birdfyCapturesCount = sightings.filter((s) => s.birdfy?.isBirdfyCapture).length;
 
-  // Filter logic with safe null/undefined handling and date matching
+  // Filter logic with safe null/undefined handling, species matching, and date matching
   const filteredSightings = sightings.filter((s) => {
     if (!s) return false;
     const query = (searchQuery || '').trim().toLowerCase();
@@ -91,6 +131,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       notes.includes(query) ||
       spottedBy.includes(query);
     
+    const matchesSpecies = selectedSpecies === 'All' || s.speciesName === selectedSpecies;
     const matchesFav = !onlyFavorites || Boolean(s.isFavorite);
     
     const isBirdfy = Boolean(s.birdfy?.isBirdfyCapture);
@@ -124,7 +165,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       return true;
     })();
 
-    return matchesSearch && matchesFav && matchesSource && matchesDate;
+    return matchesSearch && matchesSpecies && matchesFav && matchesSource && matchesDate;
   }).sort((a, b) => {
     if (sortBy === 'newest') {
       const timeB = new Date(`${b.date} ${b.time || '12:00 PM'}`).getTime() || 0;
@@ -232,7 +273,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                   : 'bg-white hover:bg-stone-50 text-stone-700 border-stone-200 shadow-xs'
               }`}
             >
-              <Search className="w-4 h-4 stroke-[2.5]" />
+              <Filter className="w-4 h-4 stroke-[2.5]" />
               <span>{isSearchOpen ? 'Hide Filters' : 'Filters'}</span>
               {activeFilterCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-bold text-[10px] uppercase shadow-xs">
@@ -251,20 +292,73 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               
-              {/* Search Input */}
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  placeholder="Search by species, notes, or observer..."
-                  className="w-full pl-10 pr-4 py-2.5 text-xs font-pixar-body font-semibold rounded-full bg-stone-50 border-2 border-stone-200 focus:outline-none focus:bg-white focus:border-sky-400 focus:ring-2 focus:ring-sky-200 text-stone-900 transition-all placeholder:text-stone-400"
-                />
+              {/* Species Toggle Pill Buttons with count from current page */}
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Feather className="w-3.5 h-3.5 text-amber-500" />
+                    <span>SPECIES ({availableSpecies.length}):</span>
+                  </span>
+                  {selectedSpecies !== 'All' && (
+                    <button
+                      onClick={() => setSelectedSpecies('All')}
+                      className="text-[11px] font-pixar-sub font-bold text-sky-600 hover:text-sky-800 cursor-pointer"
+                    >
+                      Clear Filter (Show All)
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 max-h-40 overflow-y-auto pr-1">
+                  {/* All Species Toggle Pill */}
+                  <button
+                    onClick={() => setSelectedSpecies('All')}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      selectedSpecies === 'All'
+                        ? 'bg-amber-400 text-stone-950 shadow-md shadow-amber-500/20 scale-102 border-b-2 border-amber-600 font-extrabold'
+                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
+                    }`}
+                  >
+                    <span>All Species</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      selectedSpecies === 'All' ? 'bg-amber-600 text-white' : 'bg-stone-200 text-stone-700'
+                    }`}>
+                      {currentPageSightings.length}
+                    </span>
+                  </button>
+
+                  {/* Individual Species Toggle Pills with Counts */}
+                  {availableSpecies.map(([speciesName, count]) => {
+                    const isSelected = selectedSpecies === speciesName;
+                    return (
+                      <button
+                        key={speciesName}
+                        onClick={() => setSelectedSpecies(isSelected ? 'All' : speciesName)}
+                        className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700 font-extrabold'
+                            : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
+                        }`}
+                        title={isSelected ? `Click to unselect ${speciesName}` : `Filter by ${speciesName}`}
+                      >
+                        <span>{speciesName}</span>
+                        <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                          isSelected ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  {availableSpecies.length === 0 && (
+                    <span className="text-xs text-stone-400 italic">No bird species found in this timeframe.</span>
+                  )}
+                </div>
               </div>
 
               {/* Sort & Favorites Toggle */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 self-start lg:self-center shrink-0 pt-2 lg:pt-0 border-t-2 lg:border-t-0 border-stone-100">
                 <button
                   onClick={() => setOnlyFavorites(!onlyFavorites)}
                   className={`px-4 py-2 rounded-full text-xs font-pixar-sub font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
@@ -542,12 +636,13 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 {activeFilterCount > 0 && (
                   <button
                     onClick={() => {
+                      setSelectedSpecies('All');
                       setSelectedSource('all');
                       setOnlyFavorites(false);
                       setDateFilter('all');
                       setCustomStartDate('');
                       setCustomEndDate('');
-                      onSearchChange('');
+                      if (onSearchChange) onSearchChange('');
                     }}
                     className="px-5 py-2.5 rounded-full bg-stone-100 text-stone-800 text-xs font-pixar-title hover:bg-stone-200 transition cursor-pointer border border-stone-300"
                   >
