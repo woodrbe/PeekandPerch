@@ -23,7 +23,6 @@ interface SightingsGalleryProps {
   onOpenBirdfySettings: () => void;
   onOpenBirdfyImport: () => void;
   onOpenBirdfyInfo?: () => void;
-  onClearAllSightings?: () => void;
   onApplySightings?: (sightings: BirdSighting[]) => void;
   onRefreshSightings?: () => void;
 }
@@ -42,7 +41,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onOpenBirdfySettings,
   onOpenBirdfyImport,
   onOpenBirdfyInfo,
-  onClearAllSightings,
   onApplySightings,
   onRefreshSightings,
 }) => {
@@ -243,22 +241,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
               )}
               {isSearchOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-
-            {/* Clear / Delete All Data Button */}
-            {onClearAllSightings && sightings.length > 0 && (
-              <button
-                onClick={() => {
-                  if (window.confirm('Clear all bird sightings from sightings.json? This permanently empties the dataset file and removes all detections.')) {
-                    onClearAllSightings();
-                  }
-                }}
-                className="px-3.5 py-2 rounded-full border-2 border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-900 transition-all flex items-center gap-1.5 cursor-pointer text-xs font-pixar-sub font-bold shrink-0 shadow-2xs hover:scale-102"
-                title="Clear all bird sightings from sightings.json"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                <span>Delete All Data</span>
-              </button>
-            )}
 
           </div>
         </div>

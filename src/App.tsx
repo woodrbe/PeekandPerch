@@ -385,7 +385,6 @@ export default function App() {
             onOpenBirdfySettings={() => setIsBirdfySettingsOpen(true)}
             onOpenBirdfyImport={() => setIsBirdfyImportOpen(true)}
             onOpenBirdfyInfo={() => setIsBirdfyFeederModalOpen(true)}
-            onClearAllSightings={handleClearAllSightings}
             onApplySightings={handleApplySightings}
             onRefreshSightings={() => handleRefreshSightings(false)}
           />
@@ -428,7 +427,6 @@ export default function App() {
         onUpdateDevice={(updated) => setBirdfyDevice({ ...updated, autoSyncEnabled: false })}
         onTriggerManualSync={handleSyncBirdfy}
         onApplySightings={handleApplySightings}
-        onClearAllSightings={handleClearAllSightings}
       />
 
       {/* BIRDFY SD CARD / MEDIA IMPORT MODAL */}
@@ -446,7 +444,7 @@ export default function App() {
         isOpen={isBirdfyFeederModalOpen}
         onClose={() => setIsBirdfyFeederModalOpen(false)}
         device={birdfyDevice}
-        sightingsCount={sightings.filter(s => s.source === 'birdfy' || s.birdfy).length}
+        sightingsCount={sightings.length}
         isSyncing={isSyncingBirdfy}
         onSync={handleSyncBirdfy}
         onOpenScraper={() => setIsBirdfyImportOpen(true)}

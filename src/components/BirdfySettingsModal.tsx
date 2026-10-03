@@ -15,7 +15,6 @@ interface BirdfySettingsModalProps {
   onUpdateDevice: (updated: BirdfyDevice) => void;
   onTriggerManualSync: () => void;
   onApplySightings?: (sightings: BirdSighting[]) => void;
-  onClearAllSightings?: () => void;
 }
 
 export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
@@ -25,7 +24,6 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
   currentSightings = [],
   onUpdateDevice,
   onTriggerManualSync,
-  onClearAllSightings,
 }) => {
   if (!isOpen) return null;
 
@@ -394,30 +392,6 @@ export const BirdfySettingsModal: React.FC<BirdfySettingsModalProps> = ({
               <span>Export sightings.json</span>
             </button>
           </div>
-
-          {/* Danger Zone: Clear All Data */}
-          {onClearAllSightings && (
-            <div className="p-3.5 rounded-2xl bg-rose-50/70 border border-rose-200 flex items-center justify-between gap-3 text-xs font-pixar-sub">
-              <div>
-                <span className="font-bold text-rose-950 block">Gallery Data Management</span>
-                <span className="text-rose-700 text-[11px]">Clear public/data/sightings.json dataset file to start fresh</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm('Are you sure you want to permanently clear sightings.json? This empties the dataset file and cannot be undone.')) {
-                    onClearAllSightings();
-                    setStatusMessage('✓ sightings.json file and active detections have been cleared.');
-                    setIsError(false);
-                  }
-                }}
-                className="px-3.5 py-1.5 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs transition flex items-center gap-1.5 border border-rose-300 cursor-pointer shrink-0 hover:scale-102"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                <span>Clear sightings.json</span>
-              </button>
-            </div>
-          )}
 
           {/* Action Buttons */}
           <div className="pt-3 border-t-2 border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-3">

@@ -230,11 +230,11 @@ export const BirdfyFeederModal: React.FC<BirdfyFeederModalProps> = ({
                     onClose();
                   }
                 }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-rose-600 hover:bg-rose-50 font-bold transition cursor-pointer"
-                title="Clear sightings.json data file"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-rose-600 hover:bg-rose-50 font-bold transition cursor-pointer"
+                title="Clear all bird sightings from sightings.json"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Clear sightings.json</span>
+                <span>Clear Sightings</span>
               </button>
             )}
           </div>
