@@ -71,29 +71,6 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
 export function deriveVideoUrlFromImageUrl(imgUrl?: string): string | undefined {
   if (!imgUrl) return undefined;
   if (imgUrl.includes('.mp4')) return imgUrl;
-
-  if (imgUrl.includes('url=')) {
-    try {
-      const match = imgUrl.match(/url=([^&]+)/);
-      if (match) {
-        const decoded = decodeURIComponent(match[1]);
-        return decoded
-          .replace('nvs-pic-', 'nvs-video-')
-          .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-          .replace(/\.jpg(\?|$)/i, '.mp4$1');
-      }
-    } catch {
-      // Ignore
-    }
-  }
-
-  if (imgUrl.includes('nvs-pic-') || imgUrl.includes('.blob.core.windows.net') || imgUrl.includes('nvts.co') || imgUrl.includes('birdfy')) {
-    return imgUrl
-      .replace('nvs-pic-', 'nvs-video-')
-      .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-      .replace(/\.jpg(\?|$)/i, '.mp4$1');
-  }
-
   return undefined;
 }
 
@@ -410,11 +387,39 @@ async function runScraperAgent() {
   const page: Page = await context.newPage();
 
   const interceptedDetections: ExtractedVisit[] = [];
+  const downloadLinksMap = new Map<string, { videoUrl?: string; picList?: string[] }>();
 
   // 2. Intercept background API traffic from my.birdfy.com / Netvue endpoints
   page.on('response', async (res) => {
     try {
       const url = res.url();
+
+      if (url.includes('downloadLink')) {
+        const text = await res.text().catch(() => '');
+        if (text && (text.startsWith('{') || text.startsWith('['))) {
+          try {
+            const json = JSON.parse(text);
+            if (Array.isArray(json?.eventList)) {
+              json.eventList.forEach((ev: any) => {
+                const vUrl = ev.videoFileList?.[0] || undefined;
+                const pList = Array.isArray(ev.picList) ? ev.picList : undefined;
+                if (ev.alarmId) {
+                  downloadLinksMap.set(ev.alarmId, { videoUrl: vUrl, picList: pList });
+                }
+                if (Array.isArray(ev.picList)) {
+                  ev.picList.forEach((p: string) => {
+                    const m = p.match(/nvc_(\d{13})_/);
+                    if (m) {
+                      downloadLinksMap.set(m[1], { videoUrl: vUrl, picList: pList });
+                    }
+                  });
+                }
+              });
+            }
+          } catch {}
+        }
+      }
+
       if (
         url.includes('nvts.co') ||
         url.includes('birdfy.com') ||
@@ -480,20 +485,9 @@ async function runScraperAgent() {
                 ev.playUrl ||
                 (ev.fileUrl && (ev.fileUrl.includes('.mp4') || ev.fileUrl.includes('video')) ? ev.fileUrl : undefined);
 
-              if (!vid && img) {
-                vid = deriveVideoUrlFromImageUrl(img);
+              if (vid && vid.includes('blob.core.windows.net/nvs-video-')) {
+                vid = undefined;
               }
-
-              if (!img && !vid) return;
-
-              const allImages: string[] = [];
-              if (Array.isArray(ev.images)) {
-                ev.images.forEach((im: any) => {
-                  const u = im?.largeUrl || im?.listUrl || im?.url;
-                  if (u && !allImages.includes(u)) allImages.push(u);
-                });
-              }
-              if (img && !allImages.includes(img)) allImages.unshift(img);
 
               let timestamp = 0;
               const nvcMatch = (img || vid || '').match(/nvc_(\d{13})_/);
@@ -508,6 +502,40 @@ async function runScraperAgent() {
                   timestamp = ts < 1e11 ? ts * 1000 : ts;
                 }
               }
+
+              // Check downloadLinksMap for real video CDN URL
+              let alarmId = ev.alarmId || '';
+              if (!alarmId && typeof ev.description === 'string') {
+                try {
+                  const dObj = JSON.parse(ev.description);
+                  if (dObj.alarmID || dObj.alarmId) alarmId = dObj.alarmID || dObj.alarmId;
+                } catch {}
+              }
+              if (!alarmId && img) {
+                const m = img.match(/\/(\d{14})\//);
+                if (m) alarmId = m[1];
+              }
+
+              const mapped = (alarmId && downloadLinksMap.get(alarmId)) || (timestamp && downloadLinksMap.get(String(timestamp)));
+              if (mapped?.videoUrl) {
+                vid = mapped.videoUrl;
+              }
+
+              if (!img && !vid) return;
+
+              const allImages: string[] = [];
+              if (Array.isArray(ev.images)) {
+                ev.images.forEach((im: any) => {
+                  const u = im?.largeUrl || im?.listUrl || im?.url;
+                  if (u && !allImages.includes(u)) allImages.push(u);
+                });
+              }
+              if (mapped?.picList && Array.isArray(mapped.picList)) {
+                mapped.picList.forEach((p) => {
+                  if (p && !allImages.includes(p)) allImages.push(p);
+                });
+              }
+              if (img && !allImages.includes(img)) allImages.unshift(img);
 
               let date = formatCentralDate(new Date());
               let time = '12:00 PM';
@@ -715,24 +743,6 @@ async function runScraperAgent() {
         var deriveVid = function(imgUrl) {
           if (!imgUrl) return undefined;
           if (imgUrl.indexOf('.mp4') !== -1) return imgUrl;
-          if (imgUrl.indexOf('url=') !== -1) {
-            try {
-              var m = imgUrl.match(/url=([^&]+)/);
-              if (m) {
-                var decoded = decodeURIComponent(m[1]);
-                return decoded
-                  .replace('nvs-pic-', 'nvs-video-')
-                  .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-                  .replace(/\.jpg(\?|$)/i, '.mp4$1');
-              }
-            } catch (e) {}
-          }
-          if (imgUrl.indexOf('nvs-pic-') !== -1 || imgUrl.indexOf('.blob.core.windows.net') !== -1 || imgUrl.indexOf('nvts.co') !== -1 || imgUrl.indexOf('birdfy') !== -1) {
-            return imgUrl
-              .replace('nvs-pic-', 'nvs-video-')
-              .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-              .replace(/\.jpg(\?|$)/i, '.mp4$1');
-          }
           return undefined;
         };
 
@@ -970,7 +980,7 @@ async function runScraperAgent() {
     console.log(`\n📸 Total DOM detections extracted across all days: ${domSightings.length}`);
     console.log(`🌐 Total Network Intercepted detections: ${interceptedDetections.length}`);
 
-    // 6. Combine Intercepted + DOM Sightings
+    // 6. Combine Intercepted + DOM Sightings and attach downloadLink media
     const combinedDetections: ExtractedVisit[] = [...interceptedDetections];
     domSightings.forEach((ds) => {
       const match = combinedDetections.find((cd) => cd.imageUrl === ds.imageUrl);
@@ -982,6 +992,21 @@ async function runScraperAgent() {
         }
         if (ds.images && ds.images.length > 0) {
           match.images = Array.from(new Set([...(match.images || []), ...ds.images]));
+        }
+      }
+    });
+
+    // Check all combined detections against downloadLinksMap
+    combinedDetections.forEach((d) => {
+      const nvcMatch = (d.imageUrl || '').match(/nvc_(\d{13})_/);
+      const mapped = nvcMatch ? downloadLinksMap.get(nvcMatch[1]) : undefined;
+      if (mapped) {
+        if (!d.videoUrl && mapped.videoUrl) {
+          d.videoUrl = mapped.videoUrl;
+        }
+        if (mapped.picList && mapped.picList.length > 0) {
+          const merged = Array.from(new Set([...(d.images || [d.imageUrl]), ...mapped.picList]));
+          d.images = merged;
         }
       }
     });
@@ -1011,10 +1036,17 @@ async function runScraperAgent() {
       }
     }
 
-    // Filter existing sightings from junk as well and ensure videoUrl is populated
+    // Filter existing sightings from junk as well, clean up invalid Azure SAS video URLs, and refresh with fresh JWT CDN video URLs
     existingSightings = existingSightings
       .map((s) => {
-        const vid = s.videoUrl || s.birdfy?.videoUrl || deriveVideoUrlFromImageUrl(s.imageUrl);
+        let vid = s.videoUrl || s.birdfy?.videoUrl;
+        if (vid && vid.includes('blob.core.windows.net') && vid.includes('nvs-video-')) {
+          vid = undefined;
+        }
+        const nvcMatch = (s.imageUrl || '').match(/nvc_(\d{13})_/);
+        if (!vid && nvcMatch && downloadLinksMap.has(nvcMatch[1])) {
+          vid = downloadLinksMap.get(nvcMatch[1])?.videoUrl;
+        }
         return {
           ...s,
           speciesName: cleanSpeciesName(s?.speciesName),
@@ -1031,10 +1063,13 @@ async function runScraperAgent() {
       filteredDetections.map(async (d, index) => {
         const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
         let timestamp = Date.now() - index * 60000;
-        const finalVideoUrl = d.videoUrl || deriveVideoUrlFromImageUrl(d.imageUrl);
+        let finalVideoUrl = d.videoUrl && !d.videoUrl.includes('blob.core.windows.net/nvs-video-') ? d.videoUrl : undefined;
         const nvcMatch = (d.imageUrl || finalVideoUrl || '').match(/nvc_(\d{13})_/);
         if (nvcMatch) {
           timestamp = Number(nvcMatch[1]);
+          if (!finalVideoUrl && downloadLinksMap.has(nvcMatch[1])) {
+            finalVideoUrl = downloadLinksMap.get(nvcMatch[1])?.videoUrl;
+          }
         }
 
         let weatherString = 'Sunny & Pleasant, 72°F';

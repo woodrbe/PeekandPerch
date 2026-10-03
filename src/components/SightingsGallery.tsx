@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BirdSighting, BirdfyDevice } from '../types';
-import { BirdfyService, formatCentralDate, deriveVideoUrlFromImageUrl } from '../services/birdfyService';
+import { BirdfyService, formatCentralDate } from '../services/birdfyService';
 import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
@@ -640,7 +640,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                       )}
 
                       {/* Video Clip Indicator Badge */}
-                      {(s.videoUrl || s.birdfy?.videoUrl || deriveVideoUrlFromImageUrl(s.imageUrl)) && (
+                      {(s.videoUrl || s.birdfy?.videoUrl) && (
                         <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-stone-900/85 text-amber-300 text-[10px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1 shadow-md border border-amber-400/30">
                           <Play className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                           <span>Video Clip</span>

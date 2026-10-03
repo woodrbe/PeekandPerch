@@ -138,34 +138,13 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
 }
 
 /**
- * Derives the direct 1080p MP4 video URL from a Birdfy camera snapshot/thumbnail URL.
+ * Derives or validates an MP4 video URL. Returns the URL if already an MP4, or undefined.
+ * Note: Azure Blob Storage SAS tokens cannot be rewritten from .jpeg to .mp4 because
+ * signatures are path-specific and cause HTTP 403 errors.
  */
 export function deriveVideoUrlFromImageUrl(imgUrl?: string): string | undefined {
   if (!imgUrl) return undefined;
   if (imgUrl.includes('.mp4')) return imgUrl;
-
-  if (imgUrl.includes('url=')) {
-    try {
-      const match = imgUrl.match(/url=([^&]+)/);
-      if (match) {
-        const decoded = decodeURIComponent(match[1]);
-        return decoded
-          .replace('nvs-pic-', 'nvs-video-')
-          .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-          .replace(/\.jpg(\?|$)/i, '.mp4$1');
-      }
-    } catch {
-      // Ignore
-    }
-  }
-
-  if (imgUrl.includes('nvs-pic-') || imgUrl.includes('.blob.core.windows.net') || imgUrl.includes('nvts.co') || imgUrl.includes('birdfy')) {
-    return imgUrl
-      .replace('nvs-pic-', 'nvs-video-')
-      .replace(/\.jpeg(\?|$)/i, '.mp4$1')
-      .replace(/\.jpg(\?|$)/i, '.mp4$1');
-  }
-
   return undefined;
 }
 

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
-import { deriveVideoUrlFromImageUrl } from '../services/birdfyService';
 import { 
   X, Star, Calendar, Trash2, ChevronLeft, 
   ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
   Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink,
-  Download, Maximize2
+  Download, Maximize2, AlertCircle
 } from 'lucide-react';
 
 interface SightingDetailModalProps {
@@ -39,7 +38,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   if (!sighting) return null;
 
   const isBirdfy = sighting.birdfy?.isBirdfyCapture;
-  const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl || deriveVideoUrlFromImageUrl(sighting.imageUrl);
+  const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl;
   const catalogFallback = speciesObj?.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === sighting.speciesName.toLowerCase())?.imageUrl;
 
   // Build media collection (video + all distinct snapshots)
@@ -88,8 +87,10 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   }
 
   const [selectedMediaId, setSelectedMediaId] = useState<string>(mediaList[0]?.id || 'photo-0');
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
+    setVideoError(false);
     setSelectedMediaId(mediaList[0]?.id || 'photo-0');
   }, [sighting.id]);
 
@@ -133,14 +134,40 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
           <div className="relative flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[460px] flex items-center justify-center bg-black overflow-hidden group">
             
             {currentMedia?.type === 'video' ? (
-              <video
-                key={currentMedia.url}
-                src={currentMedia.url}
-                controls
-                autoPlay
-                playsInline
-                className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
-              />
+              videoError ? (
+                <div className="flex flex-col items-center justify-center p-6 text-center text-white space-y-3 max-w-sm">
+                  <div className="p-3 bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/40">
+                    <AlertCircle className="w-8 h-8" />
+                  </div>
+                  <p className="font-pixar-sub text-sm font-bold text-stone-200">
+                    Video stream preview unavailable or token expired
+                  </p>
+                  <p className="text-xs text-stone-400">
+                    Birdfy video sessions expire after 72 hours. You can still inspect the full high-resolution AI snapshots below.
+                  </p>
+                  {mediaList.some(m => m.type === 'photo') && (
+                    <button
+                      onClick={() => {
+                        const firstPhoto = mediaList.find(m => m.type === 'photo');
+                        if (firstPhoto) setSelectedMediaId(firstPhoto.id);
+                      }}
+                      className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-full text-xs font-bold font-pixar-sub transition cursor-pointer shadow-md"
+                    >
+                      View AI Snapshot Photos
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <video
+                  key={currentMedia.url}
+                  src={currentMedia.url}
+                  controls
+                  autoPlay
+                  playsInline
+                  onError={() => setVideoError(true)}
+                  className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
+                />
+              )
             ) : (
               <img
                 key={currentMedia?.url}
@@ -158,7 +185,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
             {/* Media Overlay Badges */}
             <div className="absolute top-4 left-16 z-20 flex items-center gap-2">
-              {currentMedia?.type === 'video' ? (
+              {currentMedia?.type === 'video' && !videoError ? (
                 <div className="px-3 py-1 rounded-full bg-rose-600/90 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40">
                   <Play className="w-3 h-3 fill-white" />
                   <span>1080p Video Playing</span>
