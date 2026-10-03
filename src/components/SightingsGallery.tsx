@@ -97,7 +97,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   });
 
   const availableSpecies = Object.entries(speciesCountsMap).sort((a, b) => {
-    if (b[1] !== a[1]) return b[1] - a[1];
     return a[0].localeCompare(b[0]);
   });
 
@@ -241,95 +240,46 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
 
         {/* COLLAPSIBLE CONTROLS & FILTERS PANEL */}
         {isSearchOpen && (
-          <div className="bg-white p-5 rounded-3xl border-2 border-sky-100 shadow-md shadow-sky-900/5 space-y-4 transition-all">
+          <div className="bg-white p-5 rounded-3xl border-2 border-sky-100 shadow-md shadow-sky-900/5 space-y-3.5 transition-all">
             
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Header Control Row: Species Label + Favorites & Sort Buttons */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-stone-100">
               
-              {/* Species Toggle Pill Buttons with count from current page */}
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <Feather className="w-3.5 h-3.5 text-amber-500" />
-                    <span>SPECIES ({availableSpecies.length}):</span>
-                  </span>
-                  {selectedSpecies !== 'All' && (
-                    <button
-                      onClick={() => setSelectedSpecies('All')}
-                      className="text-[11px] font-pixar-sub font-bold text-sky-600 hover:text-sky-800 cursor-pointer"
-                    >
-                      Clear Filter (Show All)
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 max-h-40 overflow-y-auto pr-1">
-                  {/* All Species Toggle Pill */}
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Feather className="w-3.5 h-3.5 text-amber-500" />
+                  <span>FILTER BY SPECIES ({availableSpecies.length}):</span>
+                </span>
+                {selectedSpecies !== 'All' && (
                   <button
                     onClick={() => setSelectedSpecies('All')}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                      selectedSpecies === 'All'
-                        ? 'bg-amber-400 text-stone-950 shadow-md shadow-amber-500/20 scale-102 border-b-2 border-amber-600 font-extrabold'
-                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
-                    }`}
+                    className="text-[11px] font-pixar-sub font-bold text-sky-600 hover:text-sky-800 cursor-pointer underline"
                   >
-                    <span>All Species</span>
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                      selectedSpecies === 'All' ? 'bg-amber-600 text-white' : 'bg-stone-200 text-stone-700'
-                    }`}>
-                      {currentPageSightings.length}
-                    </span>
+                    Clear Filter (Show All)
                   </button>
-
-                  {/* Individual Species Toggle Pills with Counts */}
-                  {availableSpecies.map(([speciesName, count]) => {
-                    const isSelected = selectedSpecies === speciesName;
-                    return (
-                      <button
-                        key={speciesName}
-                        onClick={() => setSelectedSpecies(isSelected ? 'All' : speciesName)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                          isSelected
-                            ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700 font-extrabold'
-                            : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
-                        }`}
-                        title={isSelected ? `Click to unselect ${speciesName}` : `Filter by ${speciesName}`}
-                      >
-                        <span>{speciesName}</span>
-                        <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                          isSelected ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'
-                        }`}>
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
-
-                  {availableSpecies.length === 0 && (
-                    <span className="text-xs text-stone-400 italic">No bird species found in this timeframe.</span>
-                  )}
-                </div>
+                )}
               </div>
 
-              {/* Sort & Favorites Toggle */}
-              <div className="flex flex-wrap items-center gap-3 self-start lg:self-center shrink-0 pt-2 lg:pt-0 border-t-2 lg:border-t-0 border-stone-100">
+              {/* Sort & Favorites Controls */}
+              <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   onClick={() => setOnlyFavorites(!onlyFavorites)}
-                  className={`px-4 py-2 rounded-full text-xs font-pixar-sub font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
                     onlyFavorites
                       ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30 border-b-2 border-rose-700 scale-102'
-                      : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200'
+                      : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200 hover:scale-102'
                   }`}
                 >
                   <Star className={`w-3.5 h-3.5 ${onlyFavorites ? 'fill-white' : ''}`} />
                   <span>Favorites Only</span>
                 </button>
 
-                <div className="flex items-center gap-2 text-xs font-pixar-sub font-bold text-stone-600">
+                <div className="flex items-center gap-1.5 text-xs font-pixar-sub font-bold text-stone-600">
                   <span>Sort:</span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="bg-stone-50 border-2 border-stone-200 text-stone-800 text-xs font-pixar-sub font-bold rounded-full px-4 py-2 focus:outline-none focus:border-sky-400 cursor-pointer"
+                    className="bg-stone-50 border-2 border-stone-200 text-stone-800 text-xs font-pixar-sub font-bold rounded-full px-3 py-1.5 focus:outline-none focus:border-sky-400 cursor-pointer"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -339,6 +289,54 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 </div>
               </div>
 
+            </div>
+
+            {/* Species Toggle Pill Buttons spanning full width across the whole filter */}
+            <div className="flex flex-wrap items-center gap-2 max-h-48 overflow-y-auto pr-1 w-full pt-1">
+              {/* All Species Toggle Pill */}
+              <button
+                onClick={() => setSelectedSpecies('All')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  selectedSpecies === 'All'
+                    ? 'bg-amber-400 text-stone-950 shadow-md shadow-amber-500/20 scale-102 border-b-2 border-amber-600 font-extrabold'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
+                }`}
+              >
+                <span>All Species</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                  selectedSpecies === 'All' ? 'bg-amber-600 text-white' : 'bg-stone-200 text-stone-700'
+                }`}>
+                  {currentPageSightings.length}
+                </span>
+              </button>
+
+              {/* Individual Species Toggle Pills (Alphabetical A-Z) with Counts */}
+              {availableSpecies.map(([speciesName, count]) => {
+                const isSelected = selectedSpecies === speciesName;
+                return (
+                  <button
+                    key={speciesName}
+                    onClick={() => setSelectedSpecies(isSelected ? 'All' : speciesName)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      isSelected
+                        ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700 font-extrabold'
+                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 hover:scale-102'
+                    }`}
+                    title={isSelected ? `Click to unselect ${speciesName}` : `Filter by ${speciesName}`}
+                  >
+                    <span>{speciesName}</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
+                      isSelected ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+
+              {availableSpecies.length === 0 && (
+                <span className="text-xs text-stone-400 italic">No bird species found in this timeframe.</span>
+              )}
             </div>
 
           </div>
