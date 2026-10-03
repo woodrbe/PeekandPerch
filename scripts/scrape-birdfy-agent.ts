@@ -5,7 +5,7 @@
  * extracts high-resolution bird visit events, photos, and species tags,
  * and automatically updates public/data/sightings.json.
  * 
- * Supports single-day (default) or multi-day historical backfilling (e.g., --days 30 or --last-30-days).
+ * Supports single-day (default) or multi-day deep historical backfilling (e.g., --days 30 or --last-30-days).
  */
 
 import { chromium, Browser, Page } from 'playwright';
@@ -26,6 +26,11 @@ const DIST_SIGHTINGS_FILE = path.resolve(__dirname, '../dist/data/sightings.json
 const CONFIG_FILE = path.resolve(__dirname, '../birdfy.config.json');
 
 const TIMEZONE = 'America/Chicago';
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 export function formatCentralDate(dateOrTs: Date | number | string): string {
   let ms: number;
@@ -73,10 +78,19 @@ interface ExtractedVisit {
   notes?: string;
 }
 
+function cleanSpeciesName(rawName?: string): string {
+  if (!rawName) return '';
+  return rawName
+    .replace(/^help_outline\s*/i, '')
+    .replace(/^(tag|bird|icon|preview)\s*/i, '')
+    .trim();
+}
+
 function isGenericOrJunkSpecies(name?: string): boolean {
   if (!name) return true;
-  const s = name.toLowerCase().trim();
+  const s = cleanSpeciesName(name).toLowerCase().trim();
   if (
+    !s ||
     s === 'feeder visitor' ||
     s === 'visitor' ||
     s === 'feeder bird' ||
@@ -215,6 +229,76 @@ async function launchBrowser(headed: boolean): Promise<Browser> {
   }
 }
 
+/**
+ * Interacts with the Birdfy web portal calendar dropdown to select a specific date.
+ */
+async function selectDateInCalendar(page: Page, targetDate: Date): Promise<boolean> {
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = targetDate.getMonth(); // 0-indexed
+  const targetDay = targetDate.getDate();
+  const targetMonthName = MONTH_NAMES[targetMonth];
+  const targetAriaLabel = `${targetMonthName} ${targetDay}, ${targetYear}`;
+
+  try {
+    // 1. Ensure calendar popup is open
+    let isCalendarOpen = await page.locator('.moment-calendar').isVisible().catch(() => false);
+    if (!isCalendarOpen) {
+      const dateBtn = page.locator('.moment-toolbar__date').first();
+      if (await dateBtn.isVisible().catch(() => false)) {
+        await dateBtn.click();
+        await page.waitForSelector('.moment-calendar', { timeout: 5000 });
+      }
+    }
+
+    // 2. Adjust month if necessary
+    for (let m = 0; m < 12; m++) {
+      const currentMonthText = await page.locator('.moment-calendar__month-row span').first().textContent().catch(() => '');
+      if (currentMonthText && currentMonthText.includes(targetMonthName) && currentMonthText.includes(String(targetYear))) {
+        break;
+      }
+
+      // Check if target is before current month
+      const prevMonthBtn = page.locator('.moment-calendar__month-row button[aria-label="Previous"], .moment-calendar__month-row button').filter({ hasText: '‹' }).first();
+      if (await prevMonthBtn.isVisible().catch(() => false)) {
+        await prevMonthBtn.click();
+        await page.waitForTimeout(500);
+      } else {
+        break;
+      }
+    }
+
+    // 3. Find day button
+    const dayBtnByAria = page.locator(`.moment-calendar__days button[aria-label="${targetAriaLabel}"]`).first();
+    const dayBtnByText = page.locator('.moment-calendar__days button:not([disabled])').filter({ hasText: new RegExp(`^${targetDay}$`) }).first();
+
+    let targetBtn = dayBtnByAria;
+    if (!(await targetBtn.isVisible().catch(() => false))) {
+      targetBtn = dayBtnByText;
+    }
+
+    if (!(await targetBtn.isVisible().catch(() => false))) {
+      // Close calendar
+      const closeBtn = page.locator('.moment-calendar__close').first();
+      if (await closeBtn.isVisible().catch(() => false)) await closeBtn.click();
+      return false;
+    }
+
+    const isDisabled = await targetBtn.getAttribute('disabled');
+    if (isDisabled !== null) {
+      const closeBtn = page.locator('.moment-calendar__close').first();
+      if (await closeBtn.isVisible().catch(() => false)) await closeBtn.click();
+      return false;
+    }
+
+    await targetBtn.click();
+    await page.waitForTimeout(2000);
+    return true;
+  } catch (e) {
+    console.warn(`⚠️ Calendar date selection failed for ${targetAriaLabel}:`, e);
+    return false;
+  }
+}
+
 async function runScraperAgent() {
   console.log('🦅 ========================================================');
   console.log('🤖 Starting Birdfy Autonomous Headless Scraper Agent');
@@ -279,7 +363,7 @@ async function runScraperAgent() {
 
   console.log(`👤 User: ${email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}`);
   console.log(`🖥️ Mode: ${headed ? 'Visible Browser (Headed)' : 'Headless (Background)'}`);
-  console.log(`📅 Date Scope: Last ${days} day(s) ${days === 30 ? '(30-day historical range)' : ''}`);
+  console.log(`📅 Date Scope: Last ${days} day(s) ${days >= 30 ? '(Deep 30-day historical range)' : ''}`);
   if (deviceId) {
     console.log(`🎯 Target Device ID: ${deviceId}`);
   }
@@ -334,13 +418,15 @@ async function runScraperAgent() {
         for (const items of candidateLists) {
           if (Array.isArray(items) && items.length > 0) {
             items.forEach((ev: any) => {
-              const speciesName =
+              const rawSpecies =
                 ev.detectObject ||
                 ev.title ||
                 ev.displayTags?.[0]?.label ||
                 ev.tags?.[0]?.label ||
                 ev.rawName ||
                 '';
+
+              const speciesName = cleanSpeciesName(rawSpecies);
 
               // Ignore Feeder Visitor, generic motion, and junk
               if (!speciesName || isGenericOrJunkSpecies(speciesName)) {
@@ -359,16 +445,25 @@ async function runScraperAgent() {
 
               if (!img) return;
 
-              const rawTime = ev.createTime || ev.alertTime || ev.time || ev.timestamp;
-              let date = formatCentralDate(new Date());
-              let time = '12:00 PM';
+              let timestamp = 0;
+              const nvcMatch = img.match(/nvc_(\d{13})_/);
+              if (nvcMatch) {
+                timestamp = Number(nvcMatch[1]);
+              }
 
-              if (rawTime) {
+              const rawTime = ev.createTime || ev.alertTime || ev.time || ev.timestamp;
+              if (!timestamp && rawTime) {
                 const ts = Number(rawTime);
                 if (!isNaN(ts) && ts > 0) {
-                  date = formatCentralDate(ts);
-                  time = formatCentralTime(ts);
+                  timestamp = ts < 1e11 ? ts * 1000 : ts;
                 }
+              }
+
+              let date = formatCentralDate(new Date());
+              let time = '12:00 PM';
+              if (timestamp > 0) {
+                date = formatCentralDate(timestamp);
+                time = formatCentralTime(timestamp);
               }
 
               if (!interceptedDetections.some((x) => x.imageUrl === img)) {
@@ -443,17 +538,7 @@ async function runScraperAgent() {
     await page.goto(targetEventsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(3500);
 
-    // 5. Deep scroll and extract across target dates
-    const daysToScrape = Math.max(1, days);
-    const targetDates: string[] = [];
-    for (let dIdx = 0; dIdx < daysToScrape; dIdx++) {
-      const d = new Date();
-      d.setDate(d.getDate() - dIdx);
-      targetDates.push(formatCentralDate(d));
-    }
-
-    console.log(`📅 Target Date Range: ${targetDates[0]} back to ${targetDates[targetDates.length - 1]} (${targetDates.length} day(s))`);
-
+    // Deep scroll function
     const deepScrollTimeline = async (maxSteps = 25) => {
       let lastCardsFound = 0;
       let stagnantCount = 0;
@@ -496,12 +581,13 @@ async function runScraperAgent() {
       }
     };
 
-    const extractDomCards = async (assignedDate?: string): Promise<ExtractedVisit[]> => {
-      return await page.evaluate(`((explicitDate) => {
+    const extractDomCards = async (fallbackDateStr: string): Promise<ExtractedVisit[]> => {
+      return await page.evaluate(`((assignedFallbackDate) => {
         var isJunk = function(name) {
           if (!name) return true;
-          var s = name.toLowerCase().trim();
+          var s = name.replace(/^help_outline\\s*/i, '').replace(/^(tag|bird|icon|preview)\\s*/i, '').toLowerCase().trim();
           if (
+            !s ||
             s === 'feeder visitor' ||
             s === 'visitor' ||
             s === 'feeder bird' ||
@@ -569,7 +655,8 @@ async function runScraperAgent() {
             v.events.forEach(function(ev) {
               var media = v.mediaFor ? v.mediaFor(ev) : null;
               var tags = (media && media.displayTags) || ev.displayTags || ev.tags || [];
-              var species = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
+              var rawSpecies = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
+              var species = rawSpecies.replace(/^help_outline\\s*/i, '').trim();
 
               if (!species || isJunk(species)) return;
 
@@ -583,15 +670,20 @@ async function runScraperAgent() {
               seenImgs.add(img);
 
               var tm = '12:00 PM';
-              var d = explicitDate || formatToCentral(Date.now()).date;
-              var alertTime = ev.alertTime || ev.createTime || ev.time;
-              if (alertTime) {
-                var formatted = formatToCentral(alertTime);
-                tm = formatted.time;
-                d = formatted.date;
-              } else if (v.formatTime) {
-                tm = v.formatTime(alertTime).replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
-                if (v.date) d = v.date;
+              var d = assignedFallbackDate;
+
+              var nvcMatch = img.match(/nvc_(\\d{13})_/);
+              if (nvcMatch) {
+                var f = formatToCentral(Number(nvcMatch[1]));
+                tm = f.time;
+                d = f.date;
+              } else {
+                var alertTime = ev.alertTime || ev.createTime || ev.time;
+                if (alertTime) {
+                  var formatted = formatToCentral(alertTime);
+                  tm = formatted.time;
+                  d = formatted.date;
+                }
               }
 
               results.push({
@@ -605,19 +697,6 @@ async function runScraperAgent() {
         }
 
         // Method B: DOM Cards
-        var tb = (document.querySelector('.moment-toolbar__date') && document.querySelector('.moment-toolbar__date').textContent) || '';
-        var defaultDate = explicitDate || formatToCentral(Date.now()).date;
-        if (!explicitDate) {
-          if (tb.toLowerCase().indexOf('yesterday') !== -1) {
-            var y = new Date();
-            y.setDate(y.getDate() - 1);
-            defaultDate = formatToCentral(y).date;
-          } else if (tb && tb.toLowerCase().indexOf('today') === -1) {
-            var p = new Date(tb);
-            if (!isNaN(p.getTime())) defaultDate = formatToCentral(p).date;
-          }
-        }
-
         var cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
         if (!cards.length) {
           cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button'))
@@ -645,15 +724,17 @@ async function runScraperAgent() {
 
           if (!url || seenImgs.has(url)) continue;
 
-          var species =
+          var rawSpecies =
             (vue && vue.displayTags && vue.displayTags[0] && vue.displayTags[0].label) ||
             (card.querySelector('.moment-card__tag, .device-event-card__name') && card.querySelector('.moment-card__tag, .device-event-card__name').textContent.trim()) ||
             '';
 
+          var species = rawSpecies.replace(/^help_outline\\s*/i, '').trim();
+
           if (!species || isJunk(species)) {
             var lines = (card.textContent || '')
               .split('\\n')
-              .map(function(l) { return l.trim(); })
+              .map(function(l) { return l.replace(/^help_outline\\s*/i, '').trim(); })
               .filter(function(l) { return l.length > 2 && l.length < 35; });
             for (var mIdx = 0; mIdx < lines.length; mIdx++) {
               var l = lines[mIdx];
@@ -668,22 +749,21 @@ async function runScraperAgent() {
 
           seenImgs.add(url);
 
-          var timeStr =
-            (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
-            (card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]') && card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]').textContent.trim()) ||
-            '12:00 PM';
+          var timeStr = '12:00 PM';
+          var cardDate = assignedFallbackDate;
 
-          var mMatch = timeStr.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
-          if (mMatch) timeStr = mMatch[0];
-
-          var cardAlertTime = vue && vue.event && (vue.event.alertTime || vue.event.createTime);
-          var cardDate = defaultDate;
-          if (cardAlertTime) {
-            var formattedCard = formatToCentral(cardAlertTime);
-            cardDate = formattedCard.date;
-            if (!timeStr || timeStr === '12:00 PM') {
-              timeStr = formattedCard.time;
-            }
+          var nvcM = url.match(/nvc_(\\d{13})_/);
+          if (nvcM) {
+            var fc = formatToCentral(Number(nvcM[1]));
+            timeStr = fc.time;
+            cardDate = fc.date;
+          } else {
+            var rawTimeText =
+              (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
+              (card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]') && card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]').textContent.trim()) ||
+              '';
+            var mMatch = rawTimeText.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
+            if (mMatch) timeStr = mMatch[0];
           }
 
           results.push({
@@ -695,129 +775,57 @@ async function runScraperAgent() {
         }
 
         return results;
-      })(${JSON.stringify(assignedDate)})`);
+      })(${JSON.stringify(fallbackDateStr)})`);
     };
 
     const domSightings: ExtractedVisit[] = [];
+    const daysToScrape = Math.max(1, days);
 
+    // 5. Multi-Day Deep Extraction Cycle
     if (daysToScrape === 1) {
       console.log('📜 Deep-scrolling events timeline for current day...');
       await deepScrollTimeline(30);
-      const cards = await extractDomCards(targetDates[0]);
-      console.log(`📸 Extracted ${cards.length} card detections for today (${targetDates[0]}).`);
+      const cards = await extractDomCards(formatCentralDate(new Date()));
+      console.log(`📸 Extracted ${cards.length} card detections for today.`);
       cards.forEach((c) => domSightings.push(c));
     } else {
-      console.log(`⏳ Iterating across ${daysToScrape} days timeline...`);
-      for (let dayIdx = 0; dayIdx < targetDates.length; dayIdx++) {
-        const currentDate = targetDates[dayIdx];
-        console.log(`\n🗓️ [Day ${dayIdx + 1}/${daysToScrape}] Scanning date: ${currentDate}...`);
+      console.log(`⏳ Starting deep multi-day scraping cycle for the last ${daysToScrape} days...`);
 
+      const targetDateObjects: Date[] = [];
+      for (let dIdx = 0; dIdx < daysToScrape; dIdx++) {
+        const d = new Date();
+        d.setDate(d.getDate() - dIdx);
+        targetDateObjects.push(d);
+      }
+
+      for (let dayIdx = 0; dayIdx < targetDateObjects.length; dayIdx++) {
+        const targetDate = targetDateObjects[dayIdx];
+        const dateString = formatCentralDate(targetDate);
+        const dayLabel = `${MONTH_NAMES[targetDate.getMonth()]} ${targetDate.getDate()}, ${targetDate.getFullYear()}`;
+
+        console.log(`\n🗓️ [Day ${dayIdx + 1}/${daysToScrape}] Navigating to date: ${dayLabel} (${dateString})...`);
+
+        let dateAvailable = true;
         if (dayIdx > 0) {
-          // Attempt UI date navigation to previous day
-          await page.evaluate((dStr) => {
-            // 1. Try clicking previous day arrow in toolbar
-            const prevBtns = Array.from(document.querySelectorAll('.moment-toolbar button, .moment-toolbar .el-icon-arrow-left, button.prev-date, button[aria-label="Previous day"], .moment-toolbar__arrow--left, .moment-toolbar__date-prev, [class*="prev"]'));
-            for (const b of prevBtns) {
-              const el = (b.closest('button') || b) as HTMLElement;
-              if (el && typeof el.click === 'function') {
-                el.click();
-                break;
-              }
-            }
-
-            // 2. Set input datepicker value & dispatch change
-            const dateInput = document.querySelector('.el-date-editor input, input[placeholder*="date" i], .moment-toolbar input') as HTMLInputElement | null;
-            if (dateInput) {
-              dateInput.value = dStr;
-              dateInput.dispatchEvent(new Event('input', { bubbles: true }));
-              dateInput.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-
-            // 3. Dispatch to Vue instances
-            const allVueEls = Array.from(document.querySelectorAll('*')).filter((el: any) => el.__vue__);
-            for (const el of allVueEls) {
-              const v = (el as any).__vue__;
-              if (typeof v.handleDateChange === 'function') {
-                try { v.handleDateChange(dStr); } catch {}
-              }
-              if (typeof v.changeDate === 'function') {
-                try { v.changeDate(dStr); } catch {}
-              }
-              if (typeof v.loadEvents === 'function') {
-                try { v.loadEvents(dStr); } catch {}
-              }
-              if (typeof v.fetchEvents === 'function') {
-                try { v.fetchEvents(dStr); } catch {}
-              }
-            }
-          }, currentDate);
-
-          await page.waitForTimeout(1200);
+          dateAvailable = await selectDateInCalendar(page, targetDate);
         }
 
-        await deepScrollTimeline(15);
-        const cards = await extractDomCards(currentDate);
-        console.log(`   ↳ Found ${cards.length} card detections for ${currentDate}.`);
-        cards.forEach((c) => domSightings.push(c));
+        if (!dateAvailable) {
+          console.log(`   ℹ️ No recorded feeder activity for ${dateString}, skipping.`);
+          continue;
+        }
+
+        // Deep scroll this specific day until all cards are loaded
+        console.log(`   📜 Deep-scrolling events for ${dateString}...`);
+        await deepScrollTimeline(25);
+
+        const dayCards = await extractDomCards(dateString);
+        console.log(`   ✨ Extracted ${dayCards.length} detections for ${dateString}.`);
+        dayCards.forEach((c) => domSightings.push(c));
       }
     }
 
-    // 5b. Direct Session Ingestion for date range (if supported by session endpoint)
-    try {
-      const startMs = Date.now() - (daysToScrape * 86400000);
-      const endMs = Date.now();
-      const directApiDetections = await page.evaluate(async ({ startTimestamp, endTimestamp }) => {
-        const results: any[] = [];
-        try {
-          const candidateUrls = [
-            `https://api2.nvts.co/moments/h5CuratedData?startTime=${startTimestamp}&endTime=${endTimestamp}`,
-            `https://api2.nvts.co/moments/h5CuratedData`,
-          ];
-          for (const u of candidateUrls) {
-            try {
-              const res = await fetch(u, { credentials: 'include' });
-              if (res.ok) {
-                const j = await res.json();
-                const list = j.dataList || j.events || j.data?.events || j.data?.list || j.moments || [];
-                if (Array.isArray(list)) {
-                  list.forEach((ev: any) => results.push(ev));
-                }
-              }
-            } catch {}
-          }
-        } catch {}
-        return results;
-      }, { startTimestamp: startMs, endTimestamp: endMs });
-
-      if (directApiDetections && directApiDetections.length > 0) {
-        console.log(`📡 Direct Session API extracted ${directApiDetections.length} detections.`);
-        directApiDetections.forEach((ev: any) => {
-          const speciesName = ev.detectObject || ev.title || ev.displayTags?.[0]?.label || ev.tags?.[0]?.label || '';
-          const img = ev.fileUrl || ev.coverKey || ev.pic || ev.largeUrl || ev.images?.[0]?.largeUrl || '';
-          if (speciesName && img && !isGenericOrJunkSpecies(speciesName)) {
-            const rawTime = ev.createTime || ev.alertTime || ev.time;
-            const ts = Number(rawTime);
-            const date = !isNaN(ts) && ts > 0 ? formatCentralDate(ts) : formatCentralDate(new Date());
-            const time = !isNaN(ts) && ts > 0 ? formatCentralTime(ts) : '12:00 PM';
-            if (!interceptedDetections.some((x) => x.imageUrl === img)) {
-              interceptedDetections.push({
-                speciesName,
-                imageUrl: img,
-                date,
-                time,
-                videoUrl: ev.videoUrl || (ev.fileUrl?.endsWith('.mp4') ? ev.fileUrl : undefined),
-                confidence: 99.2,
-                notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
-              });
-            }
-          }
-        });
-      }
-    } catch {
-      // Ignore direct fetch failure
-    }
-
-    console.log(`📸 Total DOM detections across all days: ${domSightings.length}`);
+    console.log(`\n📸 Total DOM detections extracted across all days: ${domSightings.length}`);
     console.log(`🌐 Total Network Intercepted detections: ${interceptedDetections.length}`);
 
     // 6. Combine Intercepted + DOM Sightings
@@ -828,8 +836,13 @@ async function runScraperAgent() {
       }
     });
 
-    // Clean any remaining generic names
-    const filteredDetections = combinedDetections.filter((d) => !isGenericOrJunkSpecies(d.speciesName));
+    // Clean any remaining generic names and duplicates
+    const filteredDetections = combinedDetections
+      .map((d) => ({
+        ...d,
+        speciesName: cleanSpeciesName(d.speciesName),
+      }))
+      .filter((d) => !isGenericOrJunkSpecies(d.speciesName));
 
     if (maxEvents && maxEvents > 0) {
       filteredDetections.splice(maxEvents);
@@ -906,7 +919,7 @@ async function runScraperAgent() {
             batteryLevel: 96,
             isSolarCharging: true,
             wifiSignal: 'Excellent',
-            rawPIRTimestamp: new Date().toISOString(),
+            rawPIRTimestamp: new Date(timestamp > 0 ? timestamp : Date.now()).toISOString(),
           },
         };
       })
@@ -947,14 +960,20 @@ async function runScraperAgent() {
       return clean.toUpperCase();
     }
 
-    function getSightingKey(s: { speciesName?: string; date?: string; time?: string }): string {
+    function getSightingKey(s: { speciesName?: string; date?: string; time?: string; imageUrl?: string }): string {
+      if (s.imageUrl) {
+        const nvcMatch = s.imageUrl.match(/nvc_(\d{13})_/);
+        if (nvcMatch) {
+          return `img_ts_${nvcMatch[1]}`;
+        }
+      }
       const sp = (s.speciesName || '').toLowerCase().trim();
       const dt = (s.date || '').trim();
       const tm = normalizeTime(s.time);
       return `${sp}__${dt}__${tm}`;
     }
 
-    // Deduplicate against existing strictly by bird species + date + time
+    // Deduplicate against existing strictly by unique capture timestamp or species + date + time
     const seen = new Set<string>();
     const finalMerged: any[] = [];
 
@@ -969,6 +988,13 @@ async function runScraperAgent() {
 
     newSightingsFormatted.forEach(addUnique);
     existingSightings.forEach(addUnique);
+
+    // Sort by date and time descending (newest first)
+    finalMerged.sort((a, b) => {
+      const aTime = a.birdfy?.rawPIRTimestamp ? new Date(a.birdfy.rawPIRTimestamp).getTime() : new Date(`${a.date} ${a.time}`).getTime();
+      const bTime = b.birdfy?.rawPIRTimestamp ? new Date(b.birdfy.rawPIRTimestamp).getTime() : new Date(`${b.date} ${b.time}`).getTime();
+      return bTime - aTime;
+    });
 
     // Ensure data directory exists
     const dataDir = path.dirname(SIGHTINGS_FILE);
