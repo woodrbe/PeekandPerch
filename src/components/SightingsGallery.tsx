@@ -5,7 +5,8 @@ import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
   Sun, CloudSun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
-  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock, Feather
+  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock, Feather,
+  Video, Play
 } from 'lucide-react';
 
 export type DateFilterPreset = 'today' | 'yesterday' | 'week' | 'month' | 'all' | 'custom';
@@ -611,18 +612,16 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                     {/* Real Bird Photograph Container */}
                     <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-900 border-2 border-stone-100">
                       <img
-                        src={
-                          s.imageUrl && s.imageUrl.trim() !== ''
-                            ? s.imageUrl
-                            : BACKYARD_SPECIES.find((sp) => {
-                                const clean = (s.speciesName || '').toLowerCase().replace(/\s*\(.*\)$/, '').trim();
-                                const spClean = sp.name.toLowerCase().replace(/\s*\(.*\)$/, '').trim();
-                                return spClean === clean || clean.includes(spClean) || spClean.includes(clean);
-                              })?.imageUrl || BACKYARD_SPECIES[0].imageUrl
-                        }
+                        src={s.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === s.speciesName.toLowerCase())?.imageUrl}
                         alt={s.speciesName}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                        onError={(e) => {
+                          const fallback = BACKYARD_SPECIES.find(b => b.name.toLowerCase() === s.speciesName.toLowerCase())?.imageUrl;
+                          if (fallback && e.currentTarget.src !== fallback) {
+                            e.currentTarget.src = fallback;
+                          }
+                        }}
                       />
 
                       {/* Birdfy AI Confidence Badge */}
@@ -637,6 +636,14 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-stone-900/85 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
                           <Eye className="w-3.5 h-3.5 text-amber-400" />
                           <span>Field Observation</span>
+                        </div>
+                      )}
+
+                      {/* Video Clip Indicator Badge */}
+                      {(s.videoUrl || s.birdfy?.videoUrl) && (
+                        <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-stone-900/85 text-amber-300 text-[10px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1 shadow-md border border-amber-400/30">
+                          <Play className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                          <span>Video Clip</span>
                         </div>
                       )}
 

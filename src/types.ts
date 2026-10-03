@@ -75,6 +75,7 @@ export interface BirdSighting {
   speciesId: string;
   speciesName: string;
   imageUrl: string;
+  videoUrl?: string;
   date: string;
   time: string;
   location: GardenLocation;
