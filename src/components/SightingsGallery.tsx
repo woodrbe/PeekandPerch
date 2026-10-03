@@ -729,10 +729,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         <CloudSun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                         <span>Weather: <strong className="text-sky-700 font-extrabold">{s.weather || s.temperature || 'Sunny & Pleasant'}</strong></span>
                       </div>
-
-                      <p className="text-xs font-pixar-body font-semibold text-stone-600 line-clamp-2 leading-relaxed pt-1">
-                        "{s.notes}"
-                      </p>
                     </div>
                   </div>
 
