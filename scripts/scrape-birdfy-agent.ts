@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { WeatherService } from '../src/services/weatherService.js';
+import { WeatherService, DEFAULT_FEEDER_COORDINATES } from '../src/services/weatherService.js';
 
 // Load local .env if present
 dotenv.config();
@@ -216,7 +216,7 @@ async function runScraperAgent() {
   let city = cliArgs.city || config.city;
   let zip = cliArgs.zip || config.zip;
 
-  let locationLabel = 'Central US Default (Chicago, IL)';
+  let locationLabel = 'Backyard Feeder (Configured Location)';
   if (city || zip) {
     const geoQuery = city ? (zip ? `${city} ${zip}` : city) : zip!;
     try {
@@ -232,12 +232,12 @@ async function runScraperAgent() {
   }
 
   if (latitude === undefined || longitude === undefined || isNaN(latitude) || isNaN(longitude)) {
-    latitude = 41.85003;
-    longitude = -87.65005;
-    locationLabel = 'Chicago, IL (Central Time Default)';
+    latitude = DEFAULT_FEEDER_COORDINATES.latitude;
+    longitude = DEFAULT_FEEDER_COORDINATES.longitude;
+    locationLabel = 'Backyard Feeder (Default Coordinates)';
   }
 
-  console.log(`📍 Feeder Weather Location: ${locationLabel} (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+  console.log(`📍 Feeder Weather Location: ${locationLabel} (${latitude.toFixed(6)}, ${longitude.toFixed(6)})`);
 
   const email = (process.env.BIRDFY_EMAIL || config.email || '').trim();
   const password = (process.env.BIRDFY_PASSWORD || config.password || '').trim();

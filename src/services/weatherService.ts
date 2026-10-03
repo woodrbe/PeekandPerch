@@ -3,9 +3,14 @@
  * Provides real-time and historical hourly weather lookups by location, date, and time.
  */
 
+export const DEFAULT_FEEDER_COORDINATES = {
+  latitude: 35.6931871284108,
+  longitude: -86.975496947958,
+};
+
 export interface WeatherLookupParams {
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
   date: string; // YYYY-MM-DD
   time?: string; // e.g. "08:30 AM", "6:49 AM", "14:30"
   timezone?: string; // e.g. "America/Chicago"
@@ -165,7 +170,9 @@ export class WeatherService {
   }
 
   public static async getWeatherForDateTime(params: WeatherLookupParams): Promise<WeatherResult> {
-    const { latitude, longitude, date, time, timezone = 'America/Chicago' } = params;
+    const latitude = params.latitude ?? DEFAULT_FEEDER_COORDINATES.latitude;
+    const longitude = params.longitude ?? DEFAULT_FEEDER_COORDINATES.longitude;
+    const { date, time, timezone = 'America/Chicago' } = params;
     const hour = this.parseHourFromTime(time);
     const hourly = await this.fetchHourlyForDate(latitude, longitude, date, timezone);
 
@@ -208,3 +215,4 @@ export class WeatherService {
     };
   }
 }
+
