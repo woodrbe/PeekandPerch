@@ -92,6 +92,8 @@ function isGenericOrJunkSpecies(name?: string): boolean {
     s === 'sec' ||
     s === 'second' ||
     s === 'seconds' ||
+    s === 'day' ||
+    s === 'days' ||
     s === 'today' ||
     s === 'yesterday' ||
     s === 'select' ||
@@ -103,12 +105,13 @@ function isGenericOrJunkSpecies(name?: string): boolean {
     s === 'devices' ||
     s.includes('feeder visitor') ||
     s.includes('visitor') ||
-    s.includes('motion')
+    s.includes('motion') ||
+    s.includes('day')
   ) {
     return true;
   }
   if (
-    /\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\b/i.test(s) ||
+    /\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(s) ||
     /^\d+\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\b/i.test(s) ||
     /^\d{1,2}:\d{2}/.test(s) ||
     s.length < 3
@@ -425,6 +428,8 @@ async function runScraperAgent() {
           s === 'sec' ||
           s === 'second' ||
           s === 'seconds' ||
+          s === 'day' ||
+          s === 'days' ||
           s === 'today' ||
           s === 'yesterday' ||
           s === 'select' ||
@@ -436,12 +441,13 @@ async function runScraperAgent() {
           s === 'devices' ||
           s.indexOf('feeder visitor') !== -1 ||
           s.indexOf('visitor') !== -1 ||
-          s.indexOf('motion') !== -1
+          s.indexOf('motion') !== -1 ||
+          s.indexOf('day') !== -1
         ) {
           return true;
         }
         if (
-          /\\b(hour|hours|minute|minutes|min|mins|sec|seconds|ago)\\b/i.test(s) ||
+          /\\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\b/i.test(s) ||
           /^\\d+\\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\\b/i.test(s) ||
           /^\\d{1,2}:\\d{2}/.test(s) ||
           s.length < 3
