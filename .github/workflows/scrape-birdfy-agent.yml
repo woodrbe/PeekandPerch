@@ -47,6 +47,10 @@ jobs:
           BIRDFY_EMAIL: ${{ secrets.BIRDFY_EMAIL }}
           BIRDFY_PASSWORD: ${{ secrets.BIRDFY_PASSWORD }}
           BIRDFY_DEVICE_ID: ${{ inputs.device_id || secrets.BIRDFY_DEVICE_ID }}
+          FEEDER_LAT: ${{ secrets.FEEDER_LAT || vars.FEEDER_LAT }}
+          FEEDER_LON: ${{ secrets.FEEDER_LON || vars.FEEDER_LON }}
+          FEEDER_CITY: ${{ secrets.FEEDER_CITY || vars.FEEDER_CITY }}
+          FEEDER_ZIP: ${{ secrets.FEEDER_ZIP || vars.FEEDER_ZIP }}
           HEADLESS: "true"
         run: |
           if [ -n "${{ inputs.max_events }}" ]; then

@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { WeatherService } from '../src/services/weatherService.js';
 
 // Load local .env if present
 dotenv.config();
@@ -121,11 +122,27 @@ function isGenericOrJunkSpecies(name?: string): boolean {
   return false;
 }
 
-function parseCliArgs(): { headed: boolean; deviceId?: string; maxEvents?: number } {
+interface ScraperCliArgs {
+  headed: boolean;
+  deviceId?: string;
+  maxEvents?: number;
+  lat?: number;
+  lon?: number;
+  city?: string;
+  zip?: string;
+  backfillWeather?: boolean;
+}
+
+function parseCliArgs(): ScraperCliArgs {
   const args = process.argv.slice(2);
   const headed = args.includes('--headed') || process.env.HEADLESS === 'false';
+  const backfillWeather = args.includes('--backfill-weather') || process.env.BACKFILL_WEATHER === 'true';
   let deviceId: string | undefined = process.env.BIRDFY_DEVICE_ID;
   let maxEvents: number | undefined;
+  let lat: number | undefined = process.env.FEEDER_LAT ? parseFloat(process.env.FEEDER_LAT) : (process.env.BIRDFY_LAT ? parseFloat(process.env.BIRDFY_LAT) : undefined);
+  let lon: number | undefined = process.env.FEEDER_LON ? parseFloat(process.env.FEEDER_LON) : (process.env.BIRDFY_LON ? parseFloat(process.env.BIRDFY_LON) : undefined);
+  let city: string | undefined = process.env.FEEDER_CITY || process.env.BIRDFY_CITY;
+  let zip: string | undefined = process.env.FEEDER_ZIP || process.env.BIRDFY_ZIP;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--device' && args[i + 1]) {
@@ -134,9 +151,21 @@ function parseCliArgs(): { headed: boolean; deviceId?: string; maxEvents?: numbe
     if (args[i] === '--max' && args[i + 1]) {
       maxEvents = parseInt(args[i + 1], 10);
     }
+    if (args[i] === '--lat' && args[i + 1]) {
+      lat = parseFloat(args[i + 1]);
+    }
+    if (args[i] === '--lon' && args[i + 1]) {
+      lon = parseFloat(args[i + 1]);
+    }
+    if (args[i] === '--city' && args[i + 1]) {
+      city = args[i + 1].trim();
+    }
+    if (args[i] === '--zip' && args[i + 1]) {
+      zip = args[i + 1].trim();
+    }
   }
 
-  return { headed, deviceId, maxEvents };
+  return { headed, deviceId, maxEvents, lat, lon, city, zip, backfillWeather };
 }
 
 async function launchBrowser(headed: boolean): Promise<Browser> {
@@ -168,7 +197,8 @@ async function runScraperAgent() {
   console.log('🤖 Starting Birdfy Autonomous Headless Scraper Agent');
   console.log('🦅 ========================================================');
 
-  const { headed, deviceId: cliDeviceId, maxEvents } = parseCliArgs();
+  const cliArgs = parseCliArgs();
+  const { headed, deviceId: cliDeviceId, maxEvents } = cliArgs;
 
   // 1. Read credentials & configuration
   let config: Record<string, any> = {};
@@ -179,6 +209,35 @@ async function runScraperAgent() {
       // Ignore config error
     }
   }
+
+  // Resolve feeder geographic location for dynamic weather
+  let latitude = cliArgs.lat ?? (config.latitude !== undefined ? Number(config.latitude) : undefined);
+  let longitude = cliArgs.lon ?? (config.longitude !== undefined ? Number(config.longitude) : undefined);
+  let city = cliArgs.city || config.city;
+  let zip = cliArgs.zip || config.zip;
+
+  let locationLabel = 'Central US Default (Chicago, IL)';
+  if (city || zip) {
+    const geoQuery = city ? (zip ? `${city} ${zip}` : city) : zip!;
+    try {
+      const geocoded = await WeatherService.geocodeLocation(geoQuery);
+      if (geocoded) {
+        latitude = geocoded.latitude;
+        longitude = geocoded.longitude;
+        locationLabel = `${geocoded.name}${geocoded.admin1 ? ', ' + geocoded.admin1 : ''}`;
+      }
+    } catch (e) {
+      console.warn('⚠️ Could not geocode city/zip location, falling back to coordinates:', e);
+    }
+  }
+
+  if (latitude === undefined || longitude === undefined || isNaN(latitude) || isNaN(longitude)) {
+    latitude = 41.85003;
+    longitude = -87.65005;
+    locationLabel = 'Chicago, IL (Central Time Default)';
+  }
+
+  console.log(`📍 Feeder Weather Location: ${locationLabel} (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
 
   const email = (process.env.BIRDFY_EMAIL || config.email || '').trim();
   const password = (process.env.BIRDFY_PASSWORD || config.password || '').trim();
@@ -639,44 +698,86 @@ async function runScraperAgent() {
 
     console.log(`📂 Current public/data/sightings.json count: ${existingSightings.length}`);
 
-    const newSightingsFormatted: any[] = filteredDetections.map((d, index) => {
-      const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      let timestamp = Date.now() - index * 60000;
-      const nvcMatch = d.imageUrl.match(/nvc_(\d{13})_/);
-      if (nvcMatch) {
-        timestamp = Number(nvcMatch[1]);
+    console.log(`🌤️ Fetching dynamic historical/current weather for ${filteredDetections.length} detections from Open-Meteo...`);
+    const newSightingsFormatted: any[] = await Promise.all(
+      filteredDetections.map(async (d, index) => {
+        const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        let timestamp = Date.now() - index * 60000;
+        const nvcMatch = d.imageUrl.match(/nvc_(\d{13})_/);
+        if (nvcMatch) {
+          timestamp = Number(nvcMatch[1]);
+        }
+
+        let weatherString = 'Sunny & Pleasant, 72°F';
+        let tempString = '72°F';
+        try {
+          const wInfo = await WeatherService.getWeatherForDateTime({
+            latitude,
+            longitude,
+            date: d.date,
+            time: d.time,
+            timezone: TIMEZONE,
+          });
+          weatherString = wInfo.weather;
+          tempString = wInfo.temperature;
+        } catch (e) {
+          console.warn(`⚠️ Weather fetch failed for ${d.date} ${d.time}:`, e);
+        }
+
+        return {
+          id: `birdfy-scrape-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
+          speciesId: spId || 'custom',
+          speciesName: d.speciesName,
+          imageUrl: d.imageUrl,
+          date: d.date,
+          time: d.time,
+          location: 'Tube Feeder',
+          behavior: 'Feeder Snack',
+          weather: weatherString,
+          count: 1,
+          notes: d.notes || `Scraped from Birdfy Feeder: ${d.speciesName} visit recorded.`,
+          isFavorite: index === 0,
+          spottedBy: `Birdfy Scraper Agent (${feederName})`,
+          temperature: tempString,
+          birdfy: {
+            isBirdfyCapture: true,
+            feederName,
+            feederModel,
+            aiConfidence: d.confidence || 99.2,
+            aiDetectedSpecies: d.speciesName,
+            triggerType: 'AI Bird Detected',
+            resolution: '1080p Full HD',
+            videoUrl: d.videoUrl,
+            batteryLevel: 96,
+            isSolarCharging: true,
+            wifiSignal: 'Excellent',
+            rawPIRTimestamp: new Date().toISOString(),
+          },
+        };
+      })
+    );
+
+    if (cliArgs.backfillWeather && existingSightings.length > 0) {
+      console.log(`🔄 Backfilling dynamic weather for ${existingSightings.length} existing sightings...`);
+      for (const s of existingSightings) {
+        if (s.date && s.time) {
+          try {
+            const w = await WeatherService.getWeatherForDateTime({
+              latitude,
+              longitude,
+              date: s.date,
+              time: s.time,
+              timezone: TIMEZONE,
+            });
+            s.weather = w.weather;
+            s.temperature = w.temperature;
+          } catch {
+            // keep existing
+          }
+        }
       }
-      return {
-        id: `birdfy-scrape-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
-        speciesId: spId || 'custom',
-        speciesName: d.speciesName,
-        imageUrl: d.imageUrl,
-        date: d.date,
-        time: d.time,
-        location: 'Tube Feeder',
-        behavior: 'Feeder Snack',
-        weather: 'Sunny & Pleasant, 75°F',
-        count: 1,
-        notes: d.notes || `Scraped from Birdfy Feeder: ${d.speciesName} visit recorded.`,
-        isFavorite: index === 0,
-        spottedBy: `Birdfy Scraper Agent (${feederName})`,
-        temperature: '75°F',
-        birdfy: {
-          isBirdfyCapture: true,
-          feederName,
-          feederModel,
-          aiConfidence: d.confidence || 99.2,
-          aiDetectedSpecies: d.speciesName,
-          triggerType: 'AI Bird Detected',
-          resolution: '1080p Full HD',
-          videoUrl: d.videoUrl,
-          batteryLevel: 96,
-          isSolarCharging: true,
-          wifiSignal: 'Excellent',
-          rawPIRTimestamp: new Date().toISOString(),
-        },
-      };
-    });
+      console.log(`✅ Completed weather backfill for existing sightings.`);
+    }
 
 function normalizeTime(t?: string): string {
   if (!t) return '12:00 PM';

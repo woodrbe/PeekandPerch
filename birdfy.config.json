@@ -3,6 +3,9 @@
   "feederModel": "Birdfy Feeder Cam 2 Pro (2K AI)",
   "highlightUuid": "",
   "recapUuid": "",
-  "dateRange": "last_7_days"
+  "dateRange": "last_7_days",
+  "latitude": 41.85003,
+  "longitude": -87.65005,
+  "city": "Chicago, IL"
 }
 
