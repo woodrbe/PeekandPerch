@@ -44,7 +44,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   onApplySightings,
   onRefreshSightings,
 }) => {
-  const [selectedSource, setSelectedSource] = useState<'all' | 'birdfy' | 'manual'>('all');
   const [selectedSpecies, setSelectedSpecies] = useState<string>('All');
   const [onlyFavorites, setOnlyFavorites] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'count' | 'confidence'>('newest');
@@ -69,14 +68,9 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   const countMonth = sightings.filter((s) => s?.date && s.date >= thirtyDaysAgoStr && s.date <= todayStr).length;
   const countAll = sightings.length;
 
-  // Sightings matching current timeframe and source (current page dataset)
+  // Sightings matching current timeframe (current page dataset)
   const currentPageSightings = sightings.filter((s) => {
     if (!s) return false;
-    const isBirdfy = Boolean(s.birdfy?.isBirdfyCapture);
-    const matchesSource = 
-      selectedSource === 'all' || 
-      (selectedSource === 'birdfy' && isBirdfy) ||
-      (selectedSource === 'manual' && !isBirdfy);
 
     const matchesDate = (() => {
       if (!s.date) return dateFilter === 'all';
@@ -92,7 +86,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       return true;
     })();
 
-    return matchesSource && matchesDate;
+    return matchesDate;
   });
 
   // Calculate species counts from current page dataset
@@ -110,13 +104,9 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   const activeFilterCount = 
     (selectedSpecies !== 'All' ? 1 : 0) + 
     (searchQuery ? 1 : 0) + 
-    (selectedSource !== 'all' ? 1 : 0) + 
     (onlyFavorites ? 1 : 0) +
     (dateFilter !== 'today' ? 1 : 0) +
     (dateFilter === 'custom' && (customStartDate || customEndDate) ? 1 : 0);
-
-  // Count birdfy captures
-  const birdfyCapturesCount = sightings.filter((s) => s.birdfy?.isBirdfyCapture).length;
 
   // Filter logic with safe null/undefined handling, species matching, and date matching
   const filteredSightings = sightings.filter((s) => {
@@ -133,12 +123,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
     
     const matchesSpecies = selectedSpecies === 'All' || s.speciesName === selectedSpecies;
     const matchesFav = !onlyFavorites || Boolean(s.isFavorite);
-    
-    const isBirdfy = Boolean(s.birdfy?.isBirdfyCapture);
-    const matchesSource = 
-      selectedSource === 'all' || 
-      (selectedSource === 'birdfy' && isBirdfy) ||
-      (selectedSource === 'manual' && !isBirdfy);
 
     const matchesDate = (() => {
       if (!s.date) return dateFilter === 'all';
@@ -165,7 +149,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       return true;
     })();
 
-    return matchesSearch && matchesSpecies && matchesFav && matchesSource && matchesDate;
+    return matchesSearch && matchesSpecies && matchesFav && matchesDate;
   }).sort((a, b) => {
     if (sortBy === 'newest') {
       const timeB = new Date(`${b.date} ${b.time || '12:00 PM'}`).getTime() || 0;
@@ -218,39 +202,8 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
             </p>
           </div>
 
-          {/* Source Tabs & Search Toggle */}
+          {/* Action Buttons: Reload & Filters Toggle */}
           <div className="flex flex-wrap items-center gap-2.5">
-            
-            {/* Source Segment Filter */}
-            <div className="flex items-center bg-white p-1 rounded-full border-2 border-stone-200 shadow-xs text-xs font-pixar-sub font-bold">
-              <button
-                onClick={() => setSelectedSource('all')}
-                className={`px-3 py-1.5 rounded-full transition cursor-pointer ${
-                  selectedSource === 'all' ? 'bg-sky-500 text-white shadow-xs' : 'text-stone-600 hover:text-stone-900'
-                }`}
-              >
-                All ({sightings.length})
-              </button>
-
-              <button
-                onClick={() => setSelectedSource('birdfy')}
-                className={`px-3 py-1.5 rounded-full transition flex items-center gap-1.5 cursor-pointer ${
-                  selectedSource === 'birdfy' ? 'bg-amber-400 text-stone-950 shadow-xs' : 'text-stone-600 hover:text-stone-900'
-                }`}
-              >
-                <Camera className="w-3 h-3" />
-                <span>Birdfy Cam ({birdfyCapturesCount})</span>
-              </button>
-
-              <button
-                onClick={() => setSelectedSource('manual')}
-                className={`px-3 py-1.5 rounded-full transition cursor-pointer ${
-                  selectedSource === 'manual' ? 'bg-sky-500 text-white shadow-xs' : 'text-stone-600 hover:text-stone-900'
-                }`}
-              >
-                Manual Logs ({sightings.length - birdfyCapturesCount})
-              </button>
-            </div>
 
             {/* Refresh / Reload from disk button */}
             {onRefreshSightings && (
@@ -637,7 +590,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                   <button
                     onClick={() => {
                       setSelectedSpecies('All');
-                      setSelectedSource('all');
                       setOnlyFavorites(false);
                       setDateFilter('all');
                       setCustomStartDate('');
