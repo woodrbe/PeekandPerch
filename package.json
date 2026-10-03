@@ -10,7 +10,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "agent:scrape": "tsx scripts/scrape-birdfy-agent.ts",
-    "sync:birdfy": "tsx scripts/sync-birdfy.ts",
+    "agent:scrape:30days": "tsx scripts/scrape-birdfy-agent.ts --days 30",
     "clear:sightings": "tsx scripts/clear-sightings.ts"
   },
   "dependencies": {

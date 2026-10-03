@@ -6,6 +6,11 @@ on:
     - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
+      days:
+        description: 'Number of past days to scrape (e.g., 30 for last 30 days, default: 1)'
+        required: false
+        type: string
+        default: '1'
       device_id:
         description: 'Target Feeder Device ID (optional, overrides secret)'
         required: false
@@ -53,11 +58,14 @@ jobs:
           FEEDER_ZIP: ${{ secrets.FEEDER_ZIP || vars.FEEDER_ZIP }}
           HEADLESS: "true"
         run: |
+          CLI_ARGS=""
           if [ -n "${{ inputs.max_events }}" ]; then
-            npx tsx scripts/scrape-birdfy-agent.ts --max "${{ inputs.max_events }}"
-          else
-            npx tsx scripts/scrape-birdfy-agent.ts
+            CLI_ARGS="$CLI_ARGS --max \"${{ inputs.max_events }}\""
           fi
+          if [ -n "${{ inputs.days }}" ]; then
+            CLI_ARGS="$CLI_ARGS --days \"${{ inputs.days }}\""
+          fi
+          eval "npx tsx scripts/scrape-birdfy-agent.ts $CLI_ARGS"
 
       - name: Commit & Push Updated Feeder Detections
         run: |
@@ -73,4 +81,3 @@ jobs:
           else
             echo "✓ Dataset is already up to date with latest feeder captures."
           fi
-

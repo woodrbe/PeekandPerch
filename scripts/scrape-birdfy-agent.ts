@@ -4,6 +4,8 @@
  * Logs into the Birdfy web portal, navigates to your feeder camera,
  * extracts high-resolution bird visit events, photos, and species tags,
  * and automatically updates public/data/sightings.json.
+ * 
+ * Supports single-day (default) or multi-day historical backfilling (e.g., --days 30 or --last-30-days).
  */
 
 import { chromium, Browser, Page } from 'playwright';
@@ -131,6 +133,7 @@ interface ScraperCliArgs {
   city?: string;
   zip?: string;
   backfillWeather?: boolean;
+  days: number;
 }
 
 function parseCliArgs(): ScraperCliArgs {
@@ -143,6 +146,16 @@ function parseCliArgs(): ScraperCliArgs {
   let lon: number | undefined = process.env.FEEDER_LON ? parseFloat(process.env.FEEDER_LON) : (process.env.BIRDFY_LON ? parseFloat(process.env.BIRDFY_LON) : undefined);
   let city: string | undefined = process.env.FEEDER_CITY || process.env.BIRDFY_CITY;
   let zip: string | undefined = process.env.FEEDER_ZIP || process.env.BIRDFY_ZIP;
+
+  // Days configuration (default: 1 day, or 30 days if requested)
+  let days = 1;
+  if (process.env.SCRAPE_DAYS) {
+    days = parseInt(process.env.SCRAPE_DAYS, 10);
+  } else if (process.env.DAYS) {
+    days = parseInt(process.env.DAYS, 10);
+  } else if (process.env.LAST_30_DAYS === 'true' || process.env.THIRTY_DAYS === 'true') {
+    days = 30;
+  }
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--device' && args[i + 1]) {
@@ -163,9 +176,19 @@ function parseCliArgs(): ScraperCliArgs {
     if (args[i] === '--zip' && args[i + 1]) {
       zip = args[i + 1].trim();
     }
+    if ((args[i] === '--days' || args[i] === '-d' || args[i] === '--history') && args[i + 1]) {
+      days = parseInt(args[i + 1], 10);
+    }
+    if (args[i] === '--last-30-days' || args[i] === '--30days' || args[i] === '--30-days') {
+      days = 30;
+    }
   }
 
-  return { headed, deviceId, maxEvents, lat, lon, city, zip, backfillWeather };
+  if (isNaN(days) || days < 1) {
+    days = 1;
+  }
+
+  return { headed, deviceId, maxEvents, lat, lon, city, zip, backfillWeather, days };
 }
 
 async function launchBrowser(headed: boolean): Promise<Browser> {
@@ -198,7 +221,7 @@ async function runScraperAgent() {
   console.log('🦅 ========================================================');
 
   const cliArgs = parseCliArgs();
-  const { headed, deviceId: cliDeviceId, maxEvents } = cliArgs;
+  const { headed, deviceId: cliDeviceId, maxEvents, days } = cliArgs;
 
   // 1. Read credentials & configuration
   let config: Record<string, any> = {};
@@ -256,6 +279,7 @@ async function runScraperAgent() {
 
   console.log(`👤 User: ${email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}`);
   console.log(`🖥️ Mode: ${headed ? 'Visible Browser (Headed)' : 'Headless (Background)'}`);
+  console.log(`📅 Date Scope: Last ${days} day(s) ${days === 30 ? '(30-day historical range)' : ''}`);
   if (deviceId) {
     console.log(`🎯 Target Device ID: ${deviceId}`);
   }
@@ -419,251 +443,382 @@ async function runScraperAgent() {
     await page.goto(targetEventsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(3500);
 
-    // Scroll down dynamically to trigger media, pagination, and lazy event loading across all pages
-    console.log('📜 Deep-scrolling events timeline to load all moments...');
-    let lastCardsFound = 0;
-    let stagnantCount = 0;
-
-    for (let i = 1; i <= 30; i++) {
-      await page.evaluate(`(() => {
-        window.scrollBy(0, 1500);
-        var scrollTargets = [
-          document.documentElement,
-          document.body
-        ].concat(Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]')));
-        scrollTargets.forEach(function(t) {
-          try {
-            if (t.scrollBy) t.scrollBy(0, 1500);
-            if (t.scrollTop !== undefined) t.scrollTop += 1500;
-          } catch (e) {}
-        });
-
-        var loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter(function(b) {
-          return /load more|view more|more events/i.test(b.textContent || '');
-        });
-        loadBtns.forEach(function(b) {
-          try { b.click(); } catch (e) {}
-        });
-      })()`);
-
-      await page.waitForTimeout(600);
-
-      const count = Number(await page.evaluate(`document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length`));
-
-      console.log(`   ↳ Step ${i}/30: Detected ${count} cards on page...`);
-
-      if (count > 0 && count === lastCardsFound) {
-        stagnantCount++;
-        if (stagnantCount >= 3) {
-          console.log(`✨ Reached bottom of timeline with ${count} total cards rendered.`);
-          break;
-        }
-      } else {
-        stagnantCount = 0;
-      }
-      lastCardsFound = Number(count);
+    // 5. Deep scroll and extract across target dates
+    const daysToScrape = Math.max(1, days);
+    const targetDates: string[] = [];
+    for (let dIdx = 0; dIdx < daysToScrape; dIdx++) {
+      const d = new Date();
+      d.setDate(d.getDate() - dIdx);
+      targetDates.push(formatCentralDate(d));
     }
 
-    const domSightings: ExtractedVisit[] = await page.evaluate(`(() => {
-      var isJunk = function(name) {
-        if (!name) return true;
-        var s = name.toLowerCase().trim();
-        if (
-          s === 'feeder visitor' ||
-          s === 'visitor' ||
-          s === 'feeder bird' ||
-          s === 'motion' ||
-          s === 'unidentified' ||
-          s === 'all birds' ||
-          s === 'backyard bird' ||
-          s === 'bird' ||
-          s === 'all' ||
-          s === 'hour' ||
-          s === 'hours' ||
-          s === 'minute' ||
-          s === 'minutes' ||
-          s === 'min' ||
-          s === 'mins' ||
-          s === 'sec' ||
-          s === 'second' ||
-          s === 'seconds' ||
-          s === 'day' ||
-          s === 'days' ||
-          s === 'today' ||
-          s === 'yesterday' ||
-          s === 'select' ||
-          s === 'delete' ||
-          s === 'download' ||
-          s === 'share' ||
-          s === 'cancel' ||
-          s === 'events' ||
-          s === 'devices' ||
-          s.indexOf('feeder visitor') !== -1 ||
-          s.indexOf('visitor') !== -1 ||
-          s.indexOf('motion') !== -1 ||
-          s.indexOf('day') !== -1
-        ) {
-          return true;
-        }
-        if (
-          /\\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\b/i.test(s) ||
-          /^\\d+\\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\\b/i.test(s) ||
-          /^\\d{1,2}:\\d{2}/.test(s) ||
-          s.length < 3
-        ) {
-          return true;
-        }
-        return false;
-      };
+    console.log(`📅 Target Date Range: ${targetDates[0]} back to ${targetDates[targetDates.length - 1]} (${targetDates.length} day(s))`);
 
-      var results = [];
-      var seenImgs = new Set();
+    const deepScrollTimeline = async (maxSteps = 25) => {
+      let lastCardsFound = 0;
+      let stagnantCount = 0;
 
-      var formatToCentral = function(ts) {
-        var d = new Date(Number(ts) < 1e11 ? Number(ts) * 1000 : Number(ts));
-        return {
-          date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
-          time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true })
+      for (let i = 1; i <= maxSteps; i++) {
+        await page.evaluate(`(() => {
+          window.scrollBy(0, 1500);
+          var scrollTargets = [
+            document.documentElement,
+            document.body
+          ].concat(Array.from(document.querySelectorAll('.el-scrollbar__wrap, .device-events-grid, .moment-content, .events-wrapper, main, [class*="scroll"], [class*="events"]')));
+          scrollTargets.forEach(function(t) {
+            try {
+              if (t.scrollBy) t.scrollBy(0, 1500);
+              if (t.scrollTop !== undefined) t.scrollTop += 1500;
+            } catch (e) {}
+          });
+
+          var loadBtns = Array.from(document.querySelectorAll('button, a, .el-button')).filter(function(b) {
+            return /load more|view more|more events/i.test(b.textContent || '');
+          });
+          loadBtns.forEach(function(b) {
+            try { b.click(); } catch (e) {}
+          });
+        })()`);
+
+        await page.waitForTimeout(400);
+
+        const count = Number(await page.evaluate(`document.querySelectorAll('.moment-card, .device-event-card, .moment-card__main, img[data-media-url]').length`));
+
+        if (count > 0 && count === lastCardsFound) {
+          stagnantCount++;
+          if (stagnantCount >= 3) {
+            break;
+          }
+        } else {
+          stagnantCount = 0;
+        }
+        lastCardsFound = Number(count);
+      }
+    };
+
+    const extractDomCards = async (assignedDate?: string): Promise<ExtractedVisit[]> => {
+      return await page.evaluate(`((explicitDate) => {
+        var isJunk = function(name) {
+          if (!name) return true;
+          var s = name.toLowerCase().trim();
+          if (
+            s === 'feeder visitor' ||
+            s === 'visitor' ||
+            s === 'feeder bird' ||
+            s === 'motion' ||
+            s === 'unidentified' ||
+            s === 'all birds' ||
+            s === 'backyard bird' ||
+            s === 'bird' ||
+            s === 'all' ||
+            s === 'hour' ||
+            s === 'hours' ||
+            s === 'minute' ||
+            s === 'minutes' ||
+            s === 'min' ||
+            s === 'mins' ||
+            s === 'sec' ||
+            s === 'second' ||
+            s === 'seconds' ||
+            s === 'day' ||
+            s === 'days' ||
+            s === 'today' ||
+            s === 'yesterday' ||
+            s === 'select' ||
+            s === 'delete' ||
+            s === 'download' ||
+            s === 'share' ||
+            s === 'cancel' ||
+            s === 'events' ||
+            s === 'devices' ||
+            s.indexOf('feeder visitor') !== -1 ||
+            s.indexOf('visitor') !== -1 ||
+            s.indexOf('motion') !== -1 ||
+            s.indexOf('day') !== -1
+          ) {
+            return true;
+          }
+          if (
+            /\\b(hour|hours|minute|minutes|min|mins|sec|second|seconds|day|days|today|yesterday|ago|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\b/i.test(s) ||
+            /^\\d+\\s*(h|hr|hrs|m|min|mins|s|sec|seconds|d|day|days)\\b/i.test(s) ||
+            /^\\d{1,2}:\\d{2}/.test(s) ||
+            s.length < 3
+          ) {
+            return true;
+          }
+          return false;
         };
-      };
 
-      // Method A: Check Vue component instances
-      var allElements = Array.from(document.querySelectorAll('*'));
-      for (var j = 0; j < allElements.length; j++) {
-        var el = allElements[j];
-        var v = el.__vue__;
-        if (v && Array.isArray(v.events) && v.events.length > 0) {
-          v.events.forEach(function(ev) {
-            var media = v.mediaFor ? v.mediaFor(ev) : null;
-            var tags = (media && media.displayTags) || ev.displayTags || ev.tags || [];
-            var species = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
+        var results = [];
+        var seenImgs = new Set();
 
-            if (!species || isJunk(species)) return;
+        var formatToCentral = function(ts) {
+          var d = new Date(Number(ts) < 1e11 ? Number(ts) * 1000 : Number(ts));
+          return {
+            date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
+            time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true })
+          };
+        };
 
-            var img =
-              (media && media.images && media.images[0] && (media.images[0].largeUrl || media.images[0].listUrl || media.images[0].url)) ||
-              ev.pic ||
-              ev.fileUrl ||
-              '';
+        // Method A: Check Vue component instances
+        var allElements = Array.from(document.querySelectorAll('*'));
+        for (var j = 0; j < allElements.length; j++) {
+          var el = allElements[j];
+          var v = el.__vue__;
+          if (v && Array.isArray(v.events) && v.events.length > 0) {
+            v.events.forEach(function(ev) {
+              var media = v.mediaFor ? v.mediaFor(ev) : null;
+              var tags = (media && media.displayTags) || ev.displayTags || ev.tags || [];
+              var species = (tags[0] && (tags[0].label || tags[0].rawName)) || ev.detectObject || ev.title || '';
 
-            if (!img || seenImgs.has(img)) return;
-            seenImgs.add(img);
+              if (!species || isJunk(species)) return;
 
-            var tm = '12:00 PM';
-            var d = formatToCentral(Date.now()).date;
-            var alertTime = ev.alertTime || ev.createTime || ev.time;
-            if (alertTime) {
-              var formatted = formatToCentral(alertTime);
-              tm = formatted.time;
-              d = formatted.date;
-            } else if (v.formatTime) {
-              tm = v.formatTime(alertTime).replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
-              if (v.date) d = v.date;
-            }
+              var img =
+                (media && media.images && media.images[0] && (media.images[0].largeUrl || media.images[0].listUrl || media.images[0].url)) ||
+                ev.pic ||
+                ev.fileUrl ||
+                '';
 
-            results.push({
-              speciesName: species,
-              imageUrl: img,
-              time: tm,
-              date: d,
+              if (!img || seenImgs.has(img)) return;
+              seenImgs.add(img);
+
+              var tm = '12:00 PM';
+              var d = explicitDate || formatToCentral(Date.now()).date;
+              var alertTime = ev.alertTime || ev.createTime || ev.time;
+              if (alertTime) {
+                var formatted = formatToCentral(alertTime);
+                tm = formatted.time;
+                d = formatted.date;
+              } else if (v.formatTime) {
+                tm = v.formatTime(alertTime).replace(/^.*?(Today|Yesterday)\\s*/i, '').trim() || '12:00 PM';
+                if (v.date) d = v.date;
+              }
+
+              results.push({
+                speciesName: species,
+                imageUrl: img,
+                time: tm,
+                date: d,
+              });
             });
+          }
+        }
+
+        // Method B: DOM Cards
+        var tb = (document.querySelector('.moment-toolbar__date') && document.querySelector('.moment-toolbar__date').textContent) || '';
+        var defaultDate = explicitDate || formatToCentral(Date.now()).date;
+        if (!explicitDate) {
+          if (tb.toLowerCase().indexOf('yesterday') !== -1) {
+            var y = new Date();
+            y.setDate(y.getDate() - 1);
+            defaultDate = formatToCentral(y).date;
+          } else if (tb && tb.toLowerCase().indexOf('today') === -1) {
+            var p = new Date(tb);
+            if (!isNaN(p.getTime())) defaultDate = formatToCentral(p).date;
+          }
+        }
+
+        var cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
+        if (!cards.length) {
+          cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button'))
+            .map(function(el) { return el.closest('.moment-card') || el.parentElement; })
+            .filter(Boolean);
+        }
+        cards = cards.filter(function(c) {
+          return !c.querySelector('.moment-card, .device-event-card') &&
+            !c.matches('.moment-toolbar, .moment-tags, .moment-selection-bar, .moment-empty, .device-events-grid');
+        });
+
+        for (var k = 0; k < cards.length; k++) {
+          var card = cards[k];
+          var vue = card.__vue__;
+          var imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
+          var url =
+            (vue && (vue.mainCoverUrl || vue.firstImageUrl)) ||
+            (imgEl && (imgEl.dataset.mediaUrl || imgEl.currentSrc || imgEl.src || imgEl.getAttribute('src'))) ||
+            '';
+
+          if (!url || url.indexOf('data:image/svg') === 0 || url.indexOf('avatar') !== -1 || url.indexOf('spin') !== -1 || url.indexOf('icon') !== -1 || url.indexOf('logo') !== -1) {
+            var thumb = card.querySelector('.moment-card__thumb img');
+            url = (thumb && (thumb.currentSrc || thumb.src)) || '';
+          }
+
+          if (!url || seenImgs.has(url)) continue;
+
+          var species =
+            (vue && vue.displayTags && vue.displayTags[0] && vue.displayTags[0].label) ||
+            (card.querySelector('.moment-card__tag, .device-event-card__name') && card.querySelector('.moment-card__tag, .device-event-card__name').textContent.trim()) ||
+            '';
+
+          if (!species || isJunk(species)) {
+            var lines = (card.textContent || '')
+              .split('\\n')
+              .map(function(l) { return l.trim(); })
+              .filter(function(l) { return l.length > 2 && l.length < 35; });
+            for (var mIdx = 0; mIdx < lines.length; mIdx++) {
+              var l = lines[mIdx];
+              if (!isJunk(l) && !/^\\d{1,2}:\\d{2}/.test(l)) {
+                species = l;
+                break;
+              }
+            }
+          }
+
+          if (!species || isJunk(species)) continue;
+
+          seenImgs.add(url);
+
+          var timeStr =
+            (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
+            (card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]') && card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]').textContent.trim()) ||
+            '12:00 PM';
+
+          var mMatch = timeStr.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
+          if (mMatch) timeStr = mMatch[0];
+
+          var cardAlertTime = vue && vue.event && (vue.event.alertTime || vue.event.createTime);
+          var cardDate = defaultDate;
+          if (cardAlertTime) {
+            var formattedCard = formatToCentral(cardAlertTime);
+            cardDate = formattedCard.date;
+            if (!timeStr || timeStr === '12:00 PM') {
+              timeStr = formattedCard.time;
+            }
+          }
+
+          results.push({
+            speciesName: species,
+            imageUrl: url,
+            time: timeStr,
+            date: cardDate,
           });
         }
-      }
 
-      // Method B: DOM Cards
-      var tb = (document.querySelector('.moment-toolbar__date') && document.querySelector('.moment-toolbar__date').textContent) || '';
-      var defaultDate = formatToCentral(Date.now()).date;
-      if (tb.toLowerCase().indexOf('yesterday') !== -1) {
-        var y = new Date();
-        y.setDate(y.getDate() - 1);
-        defaultDate = formatToCentral(y).date;
-      } else if (tb && tb.toLowerCase().indexOf('today') === -1) {
-        var p = new Date(tb);
-        if (!isNaN(p.getTime())) defaultDate = formatToCentral(p).date;
-      }
+        return results;
+      })(${JSON.stringify(assignedDate)})`);
+    };
 
-      var cards = Array.from(document.querySelectorAll('.moment-card, .device-event-card'));
-      if (!cards.length) {
-        cards = Array.from(document.querySelectorAll('.moment-card__main, .moment-card__image-button'))
-          .map(function(el) { return el.closest('.moment-card') || el.parentElement; })
-          .filter(Boolean);
-      }
-      cards = cards.filter(function(c) {
-        return !c.querySelector('.moment-card, .device-event-card') &&
-          !c.matches('.moment-toolbar, .moment-tags, .moment-selection-bar, .moment-empty, .device-events-grid');
-      });
+    const domSightings: ExtractedVisit[] = [];
 
-      for (var k = 0; k < cards.length; k++) {
-        var card = cards[k];
-        var vue = card.__vue__;
-        var imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
-        var url =
-          (vue && (vue.mainCoverUrl || vue.firstImageUrl)) ||
-          (imgEl && (imgEl.dataset.mediaUrl || imgEl.currentSrc || imgEl.src || imgEl.getAttribute('src'))) ||
-          '';
+    if (daysToScrape === 1) {
+      console.log('📜 Deep-scrolling events timeline for current day...');
+      await deepScrollTimeline(30);
+      const cards = await extractDomCards(targetDates[0]);
+      console.log(`📸 Extracted ${cards.length} card detections for today (${targetDates[0]}).`);
+      cards.forEach((c) => domSightings.push(c));
+    } else {
+      console.log(`⏳ Iterating across ${daysToScrape} days timeline...`);
+      for (let dayIdx = 0; dayIdx < targetDates.length; dayIdx++) {
+        const currentDate = targetDates[dayIdx];
+        console.log(`\n🗓️ [Day ${dayIdx + 1}/${daysToScrape}] Scanning date: ${currentDate}...`);
 
-        if (!url || url.indexOf('data:image/svg') === 0 || url.indexOf('avatar') !== -1 || url.indexOf('spin') !== -1 || url.indexOf('icon') !== -1 || url.indexOf('logo') !== -1) {
-          var thumb = card.querySelector('.moment-card__thumb img');
-          url = (thumb && (thumb.currentSrc || thumb.src)) || '';
+        if (dayIdx > 0) {
+          // Attempt UI date navigation to previous day
+          await page.evaluate((dStr) => {
+            // 1. Try clicking previous day arrow in toolbar
+            const prevBtns = Array.from(document.querySelectorAll('.moment-toolbar button, .moment-toolbar .el-icon-arrow-left, button.prev-date, button[aria-label="Previous day"], .moment-toolbar__arrow--left, .moment-toolbar__date-prev, [class*="prev"]'));
+            for (const b of prevBtns) {
+              const el = (b.closest('button') || b) as HTMLElement;
+              if (el && typeof el.click === 'function') {
+                el.click();
+                break;
+              }
+            }
+
+            // 2. Set input datepicker value & dispatch change
+            const dateInput = document.querySelector('.el-date-editor input, input[placeholder*="date" i], .moment-toolbar input') as HTMLInputElement | null;
+            if (dateInput) {
+              dateInput.value = dStr;
+              dateInput.dispatchEvent(new Event('input', { bubbles: true }));
+              dateInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // 3. Dispatch to Vue instances
+            const allVueEls = Array.from(document.querySelectorAll('*')).filter((el: any) => el.__vue__);
+            for (const el of allVueEls) {
+              const v = (el as any).__vue__;
+              if (typeof v.handleDateChange === 'function') {
+                try { v.handleDateChange(dStr); } catch {}
+              }
+              if (typeof v.changeDate === 'function') {
+                try { v.changeDate(dStr); } catch {}
+              }
+              if (typeof v.loadEvents === 'function') {
+                try { v.loadEvents(dStr); } catch {}
+              }
+              if (typeof v.fetchEvents === 'function') {
+                try { v.fetchEvents(dStr); } catch {}
+              }
+            }
+          }, currentDate);
+
+          await page.waitForTimeout(1200);
         }
 
-        if (!url || seenImgs.has(url)) continue;
+        await deepScrollTimeline(15);
+        const cards = await extractDomCards(currentDate);
+        console.log(`   ↳ Found ${cards.length} card detections for ${currentDate}.`);
+        cards.forEach((c) => domSightings.push(c));
+      }
+    }
 
-        var species =
-          (vue && vue.displayTags && vue.displayTags[0] && vue.displayTags[0].label) ||
-          (card.querySelector('.moment-card__tag, .device-event-card__name') && card.querySelector('.moment-card__tag, .device-event-card__name').textContent.trim()) ||
-          '';
+    // 5b. Direct Session Ingestion for date range (if supported by session endpoint)
+    try {
+      const startMs = Date.now() - (daysToScrape * 86400000);
+      const endMs = Date.now();
+      const directApiDetections = await page.evaluate(async ({ startTimestamp, endTimestamp }) => {
+        const results: any[] = [];
+        try {
+          const candidateUrls = [
+            `https://api2.nvts.co/moments/h5CuratedData?startTime=${startTimestamp}&endTime=${endTimestamp}`,
+            `https://api2.nvts.co/moments/h5CuratedData`,
+          ];
+          for (const u of candidateUrls) {
+            try {
+              const res = await fetch(u, { credentials: 'include' });
+              if (res.ok) {
+                const j = await res.json();
+                const list = j.dataList || j.events || j.data?.events || j.data?.list || j.moments || [];
+                if (Array.isArray(list)) {
+                  list.forEach((ev: any) => results.push(ev));
+                }
+              }
+            } catch {}
+          }
+        } catch {}
+        return results;
+      }, { startTimestamp: startMs, endTimestamp: endMs });
 
-        if (!species || isJunk(species)) {
-          var lines = (card.textContent || '')
-            .split('\\n')
-            .map(function(l) { return l.trim(); })
-            .filter(function(l) { return l.length > 2 && l.length < 35; });
-          for (var mIdx = 0; mIdx < lines.length; mIdx++) {
-            var l = lines[mIdx];
-            if (!isJunk(l) && !/^\\d{1,2}:\\d{2}/.test(l)) {
-              species = l;
-              break;
+      if (directApiDetections && directApiDetections.length > 0) {
+        console.log(`📡 Direct Session API extracted ${directApiDetections.length} detections.`);
+        directApiDetections.forEach((ev: any) => {
+          const speciesName = ev.detectObject || ev.title || ev.displayTags?.[0]?.label || ev.tags?.[0]?.label || '';
+          const img = ev.fileUrl || ev.coverKey || ev.pic || ev.largeUrl || ev.images?.[0]?.largeUrl || '';
+          if (speciesName && img && !isGenericOrJunkSpecies(speciesName)) {
+            const rawTime = ev.createTime || ev.alertTime || ev.time;
+            const ts = Number(rawTime);
+            const date = !isNaN(ts) && ts > 0 ? formatCentralDate(ts) : formatCentralDate(new Date());
+            const time = !isNaN(ts) && ts > 0 ? formatCentralTime(ts) : '12:00 PM';
+            if (!interceptedDetections.some((x) => x.imageUrl === img)) {
+              interceptedDetections.push({
+                speciesName,
+                imageUrl: img,
+                date,
+                time,
+                videoUrl: ev.videoUrl || (ev.fileUrl?.endsWith('.mp4') ? ev.fileUrl : undefined),
+                confidence: 99.2,
+                notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
+              });
             }
           }
-        }
-
-        // Skip if still generic or Feeder Visitor
-        if (!species || isJunk(species)) continue;
-
-        seenImgs.add(url);
-
-        var timeStr =
-          (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
-          (card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]') && card.querySelector('.moment-card__time, .device-event-card__shared, [class*="time"]').textContent.trim()) ||
-          '12:00 PM';
-
-        var mMatch = timeStr.match(/\\d{1,2}:\\d{2}(\\s*(?:AM|PM|am|pm))?/i);
-        if (mMatch) timeStr = mMatch[0];
-
-        var cardAlertTime = vue && vue.event && (vue.event.alertTime || vue.event.createTime);
-        var cardDate = defaultDate;
-        if (cardAlertTime) {
-          var formattedCard = formatToCentral(cardAlertTime);
-          cardDate = formattedCard.date;
-          if (!timeStr || timeStr === '12:00 PM') {
-            timeStr = formattedCard.time;
-          }
-        }
-
-        results.push({
-          speciesName: species,
-          imageUrl: url,
-          time: timeStr,
-          date: cardDate,
         });
       }
+    } catch {
+      // Ignore direct fetch failure
+    }
 
-      return results;
-    })()`);
-
-    console.log(`📸 DOM & Vue Scraper extracted ${domSightings.length} card detections.`);
+    console.log(`📸 Total DOM detections across all days: ${domSightings.length}`);
+    console.log(`🌐 Total Network Intercepted detections: ${interceptedDetections.length}`);
 
     // 6. Combine Intercepted + DOM Sightings
     const combinedDetections: ExtractedVisit[] = [...interceptedDetections];
@@ -779,25 +934,25 @@ async function runScraperAgent() {
       console.log(`✅ Completed weather backfill for existing sightings.`);
     }
 
-function normalizeTime(t?: string): string {
-  if (!t) return '12:00 PM';
-  const clean = t.trim();
-  const m = clean.match(/^(\d{1,2}):(\d{2})(\s*(?:AM|PM|am|pm))?/i);
-  if (m) {
-    const hh = m[1].padStart(2, '0');
-    const mm = m[2];
-    const ampm = m[3] ? ` ${m[3].trim().toUpperCase()}` : '';
-    return `${hh}:${mm}${ampm}`;
-  }
-  return clean.toUpperCase();
-}
+    function normalizeTime(t?: string): string {
+      if (!t) return '12:00 PM';
+      const clean = t.trim();
+      const m = clean.match(/^(\d{1,2}):(\d{2})(\s*(?:AM|PM|am|pm))?/i);
+      if (m) {
+        const hh = m[1].padStart(2, '0');
+        const mm = m[2];
+        const ampm = m[3] ? ` ${m[3].trim().toUpperCase()}` : '';
+        return `${hh}:${mm}${ampm}`;
+      }
+      return clean.toUpperCase();
+    }
 
-function getSightingKey(s: { speciesName?: string; date?: string; time?: string }): string {
-  const sp = (s.speciesName || '').toLowerCase().trim();
-  const dt = (s.date || '').trim();
-  const tm = normalizeTime(s.time);
-  return `${sp}__${dt}__${tm}`;
-}
+    function getSightingKey(s: { speciesName?: string; date?: string; time?: string }): string {
+      const sp = (s.speciesName || '').toLowerCase().trim();
+      const dt = (s.date || '').trim();
+      const tm = normalizeTime(s.time);
+      return `${sp}__${dt}__${tm}`;
+    }
 
     // Deduplicate against existing strictly by bird species + date + time
     const seen = new Set<string>();
@@ -855,4 +1010,3 @@ runScraperAgent().catch((err) => {
   console.error('Fatal Scraper Agent Execution Error:', err);
   process.exit(1);
 });
-
