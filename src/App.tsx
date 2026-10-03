@@ -408,7 +408,8 @@ export default function App() {
       {/* FOOTER */}
       <Footer
         onTabChange={handleTabChange}
-        onOpenLogModal={() => setIsLogModalOpen(true)}
+        onOpenBirdfyInfo={() => setIsBirdfyFeederModalOpen(true)}
+        birdfyDevice={birdfyDevice}
       />
 
       {/* MANUAL LOG SIGHTING MODAL */}

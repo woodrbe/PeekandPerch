@@ -181,17 +181,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
                 <span>Birdfy Smart Feeder Sightings Log</span>
               </div>
-              {onOpenBirdfyInfo && (
-                <button
-                  onClick={onOpenBirdfyInfo}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-stone-50 text-stone-800 text-xs font-pixar-sub font-bold border-2 border-amber-300 shadow-xs transition cursor-pointer hover:scale-102 active:scale-95"
-                  title="Open Birdfy Feeder Status & Controls"
-                >
-                  <Camera className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Feeder Info ({birdfyDevice?.batteryPercent || 96}%)</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
-                </button>
-              )}
             </div>
             <h2 className="font-pixar-title text-3xl sm:text-4xl text-stone-900 tracking-wide drop-shadow-xs">
               WHO DROPPED BY 📷

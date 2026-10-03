@@ -1,13 +1,15 @@
 import React from 'react';
-import { Feather, Heart, Plus } from 'lucide-react';
+import { Feather, Heart, Camera } from 'lucide-react';
+import { BirdfyDevice } from '../types';
 import logoImg from '../assets/images/cardinal_logo_1785078694540.jpg';
 
 interface FooterProps {
   onTabChange: (tab: 'home' | 'gallery' | 'species' | 'analytics') => void;
-  onOpenLogModal: () => void;
+  onOpenBirdfyInfo?: () => void;
+  birdfyDevice?: BirdfyDevice;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenLogModal }) => {
+export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBirdfyInfo, birdfyDevice }) => {
   return (
     <footer className="bg-stone-950 text-stone-400 py-12 text-xs border-t-2 border-stone-800 font-pixar-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -32,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenLogModal }) =
             </div>
           </div>
 
-          {/* Quick Nav Links */}
+          {/* Quick Nav Links & Feeder Info */}
           <div className="flex flex-wrap items-center gap-6 text-stone-300 font-pixar-sub font-bold text-xs">
             <button onClick={() => onTabChange('gallery')} className="hover:text-amber-400 transition cursor-pointer">
               Who Dropped By
@@ -43,13 +45,17 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenLogModal }) =
             <button onClick={() => onTabChange('analytics')} className="hover:text-amber-400 transition cursor-pointer">
               Flock Trends
             </button>
-            <button
-              onClick={onOpenLogModal}
-              className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:translate-y-0.5 text-stone-950 font-pixar-title text-xs uppercase tracking-wider flex items-center gap-2 shadow-md shadow-amber-500/30 transition-all border-b-2 border-amber-700 cursor-pointer hover:scale-105"
-            >
-              <Plus className="w-3.5 h-3.5 stroke-[3]" />
-              <span>Log Sighting</span>
-            </button>
+            {onOpenBirdfyInfo && (
+              <button
+                onClick={onOpenBirdfyInfo}
+                className="px-4 py-2 rounded-full bg-stone-900 hover:bg-stone-800 text-stone-200 hover:text-white font-pixar-sub font-bold text-xs flex items-center gap-2 border border-stone-700 shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95"
+                title="Open Birdfy Feeder Status & Controls"
+              >
+                <Camera className="w-3.5 h-3.5 text-amber-400" />
+                <span>Feeder Info ({birdfyDevice?.batteryPercent || 96}%)</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </button>
+            )}
           </div>
 
         </div>
