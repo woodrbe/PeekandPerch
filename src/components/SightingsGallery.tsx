@@ -3,7 +3,7 @@ import { BirdSighting, BirdfyDevice } from '../types';
 import { BirdfyService, formatCentralDate } from '../services/birdfyService';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
-  Sun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
+  Sun, CloudSun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
   BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock
 } from 'lucide-react';
 
@@ -725,14 +725,9 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs font-pixar-sub font-bold text-stone-500">
-                        <span>Behavior: <strong className="text-stone-800">{s.behavior}</strong></span>
-                        {s.temperature && (
-                          <>
-                            <span>•</span>
-                            <span className="text-sky-700 font-extrabold">{s.temperature}</span>
-                          </>
-                        )}
+                      <div className="flex items-center gap-1.5 text-xs font-pixar-sub font-bold text-stone-500">
+                        <CloudSun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span>Weather: <strong className="text-sky-700 font-extrabold">{s.weather || s.temperature || 'Sunny & Pleasant'}</strong></span>
                       </div>
 
                       <p className="text-xs font-pixar-body font-semibold text-stone-600 line-clamp-2 leading-relaxed pt-1">
