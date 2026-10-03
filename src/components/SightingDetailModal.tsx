@@ -1,5 +1,6 @@
 import React from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
+import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   X, Star, Calendar, Trash2, ChevronLeft, 
   ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
@@ -51,7 +52,17 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
         {/* LEFT / TOP: High Res Photo View */}
         <div className="relative md:w-1/2 bg-stone-950 flex items-center justify-center overflow-hidden group">
           <img
-            src={sighting.imageUrl}
+            src={
+              sighting.imageUrl && sighting.imageUrl.trim() !== ''
+                ? sighting.imageUrl
+                : speciesObj?.imageUrl ||
+                  BACKYARD_SPECIES.find((sp) => {
+                    const clean = (sighting.speciesName || '').toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+                    const spClean = sp.name.toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+                    return spClean === clean || clean.includes(spClean) || spClean.includes(clean);
+                  })?.imageUrl ||
+                  BACKYARD_SPECIES[0].imageUrl
+            }
             alt={sighting.speciesName}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover max-h-80 md:max-h-full"

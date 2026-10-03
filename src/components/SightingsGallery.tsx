@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BirdSighting, BirdfyDevice } from '../types';
 import { BirdfyService, formatCentralDate } from '../services/birdfyService';
+import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
   Sun, CloudSun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
@@ -610,7 +611,15 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                     {/* Real Bird Photograph Container */}
                     <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-900 border-2 border-stone-100">
                       <img
-                        src={s.imageUrl}
+                        src={
+                          s.imageUrl && s.imageUrl.trim() !== ''
+                            ? s.imageUrl
+                            : BACKYARD_SPECIES.find((sp) => {
+                                const clean = (s.speciesName || '').toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+                                const spClean = sp.name.toLowerCase().replace(/\s*\(.*\)$/, '').trim();
+                                return spClean === clean || clean.includes(spClean) || spClean.includes(clean);
+                              })?.imageUrl || BACKYARD_SPECIES[0].imageUrl
+                        }
                         alt={s.speciesName}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"

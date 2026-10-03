@@ -2,10 +2,11 @@
  * Autonomous Headless Playwright Scraper Agent for my.birdfy.com
  * 
  * Logs into the Birdfy web portal, navigates to your feeder camera,
- * extracts high-resolution bird visit events, photos, and species tags,
+ * extracts bird visit events, species tags, and timestamps,
  * and automatically updates public/data/sightings.json.
  * 
- * Supports single-day (default) or multi-day deep historical backfilling (e.g., --days 30 or --last-30-days).
+ * Configured to NOT pull back videos or camera thumbnails for each card,
+ * keeping the dataset lightweight, fast, and using the high-quality local catalog imagery.
  */
 
 import { chromium, Browser, Page } from 'playwright';
@@ -70,10 +71,9 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
 
 interface ExtractedVisit {
   speciesName: string;
-  imageUrl: string;
   date: string;
   time: string;
-  videoUrl?: string;
+  timestamp: number;
   confidence?: number;
   notes?: string;
 }
@@ -363,6 +363,7 @@ async function runScraperAgent() {
   console.log(`👤 User: ${email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}`);
   console.log(`🖥️ Mode: ${headed ? 'Visible Browser (Headed)' : 'Headless (Background)'}`);
   console.log(`📅 Date Scope: Last ${days} day(s) ${days >= 30 ? '(Deep 30-day historical range)' : ''}`);
+  console.log(`🚫 Media Mode: Thumbnail & Video downloads disabled (Lightweight Metadata Mode)`);
   if (deviceId) {
     console.log(`🎯 Target Device ID: ${deviceId}`);
   }
@@ -378,6 +379,22 @@ async function runScraperAgent() {
   });
 
   const page: Page = await context.newPage();
+
+  // Block media and heavy thumbnail downloads to keep scraper lightweight and fast
+  await page.route('**/*', (route) => {
+    const url = route.request().url();
+    const type = route.request().resourceType();
+    if (
+      type === 'media' ||
+      (type === 'image' && !url.includes('.svg') && !url.includes('moment-calendar') && !url.includes('navi')) ||
+      /\.(mp4|webm|avi|mov|mkv|flv|ts|m3u8)(\?.*)?$/i.test(url) ||
+      (/(\/v1\/thumbnail|\/nvs-pic-|\.jpeg|\.jpg|\.png|\.webp)/i.test(url) && !url.includes('.svg') && !url.includes('moment-calendar'))
+    ) {
+      route.abort();
+    } else {
+      route.continue();
+    }
+  });
 
   const interceptedDetections: ExtractedVisit[] = [];
 
@@ -427,25 +444,14 @@ async function runScraperAgent() {
 
               const speciesName = cleanSpeciesName(rawSpecies);
 
-              // Ignore Feeder Visitor, generic motion, dates, and junk
+              // Ignore generic motion, dates, and junk
               if (!speciesName || isGenericOrJunkSpecies(speciesName)) {
                 return;
               }
 
-              const img =
-                ev.fileUrl ||
-                ev.coverKey ||
-                ev.pic ||
-                ev.largeUrl ||
-                ev.images?.[0]?.largeUrl ||
-                ev.images?.[0]?.listUrl ||
-                ev.images?.[0]?.url ||
-                '';
-
-              if (!img) return;
-
               let timestamp = 0;
-              const nvcMatch = img.match(/nvc_(\d{13})_/);
+              const imgUrl = ev.fileUrl || ev.coverKey || ev.pic || ev.largeUrl || ev.images?.[0]?.largeUrl || '';
+              const nvcMatch = imgUrl.match(/nvc_(\d{13})_/);
               if (nvcMatch) {
                 timestamp = Number(nvcMatch[1]);
               }
@@ -458,20 +464,20 @@ async function runScraperAgent() {
                 }
               }
 
-              let date = formatCentralDate(new Date());
-              let time = '12:00 PM';
-              if (timestamp > 0) {
-                date = formatCentralDate(timestamp);
-                time = formatCentralTime(timestamp);
+              if (!timestamp) {
+                timestamp = Date.now();
               }
 
-              if (!interceptedDetections.some((x) => x.imageUrl === img)) {
+              const date = formatCentralDate(timestamp);
+              const time = formatCentralTime(timestamp);
+
+              const key = `${speciesName}__${date}__${time}__${timestamp}`;
+              if (!interceptedDetections.some((x) => `${x.speciesName}__${x.date}__${x.time}__${x.timestamp}` === key)) {
                 interceptedDetections.push({
                   speciesName,
-                  imageUrl: img,
                   date,
                   time,
-                  videoUrl: ev.videoUrl || (ev.fileUrl?.endsWith('.mp4') ? ev.fileUrl : undefined),
+                  timestamp,
                   confidence: 99.2,
                   notes: ev.title || `Live Birdfy detection: ${speciesName} on feeder perch.`,
                 });
@@ -641,13 +647,14 @@ async function runScraperAgent() {
         };
 
         var results = [];
-        var seenImgs = new Set();
+        var seenKeys = new Set();
 
         var formatToCentral = function(ts) {
           var d = new Date(Number(ts) < 1e11 ? Number(ts) * 1000 : Number(ts));
           return {
             date: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
-            time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true })
+            time: d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true }),
+            timestamp: d.getTime()
           };
         };
 
@@ -665,37 +672,41 @@ async function runScraperAgent() {
 
               if (!species || isJunk(species)) return;
 
+              var tm = '12:00 PM';
+              var d = assignedFallbackDate;
+              var ts = 0;
+
               var img =
                 (media && media.images && media.images[0] && (media.images[0].largeUrl || media.images[0].listUrl || media.images[0].url)) ||
                 ev.pic ||
                 ev.fileUrl ||
                 '';
 
-              if (!img || seenImgs.has(img)) return;
-              seenImgs.add(img);
-
-              var tm = '12:00 PM';
-              var d = assignedFallbackDate;
-
               var nvcMatch = img.match(/nvc_(\\d{13})_/);
               if (nvcMatch) {
                 var f = formatToCentral(Number(nvcMatch[1]));
                 tm = f.time;
                 d = f.date;
+                ts = f.timestamp;
               } else {
                 var alertTime = ev.alertTime || ev.createTime || ev.time;
                 if (alertTime) {
                   var formatted = formatToCentral(alertTime);
                   tm = formatted.time;
                   d = formatted.date;
+                  ts = formatted.timestamp;
                 }
               }
 
+              var key = species + '__' + d + '__' + tm + '__' + ts;
+              if (seenKeys.has(key)) return;
+              seenKeys.add(key);
+
               results.push({
                 speciesName: species,
-                imageUrl: img,
                 time: tm,
                 date: d,
+                timestamp: ts || Date.now(),
               });
             });
           }
@@ -716,18 +727,6 @@ async function runScraperAgent() {
         for (var k = 0; k < cards.length; k++) {
           var card = cards[k];
           var vue = card.__vue__;
-          var imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
-          var url =
-            (vue && (vue.mainCoverUrl || vue.firstImageUrl)) ||
-            (imgEl && (imgEl.dataset.mediaUrl || imgEl.currentSrc || imgEl.src || imgEl.getAttribute('src'))) ||
-            '';
-
-          if (!url || url.indexOf('data:image/svg') === 0 || url.indexOf('avatar') !== -1 || url.indexOf('spin') !== -1 || url.indexOf('icon') !== -1 || url.indexOf('logo') !== -1) {
-            var thumb = card.querySelector('.moment-card__thumb img');
-            url = (thumb && (thumb.currentSrc || thumb.src)) || '';
-          }
-
-          if (!url || seenImgs.has(url)) continue;
 
           // Only accept species from explicit tag button or Vue display tag
           var rawSpecies =
@@ -740,16 +739,22 @@ async function runScraperAgent() {
           // Strictly skip if no genuine species tag was present
           if (!species || isJunk(species)) continue;
 
-          seenImgs.add(url);
-
           var timeStr = '12:00 PM';
           var cardDate = assignedFallbackDate;
+          var ts = 0;
+
+          var imgEl = card.querySelector('img[data-media-url], .moment-card__main-image, .device-event-card__image, img');
+          var url =
+            (vue && (vue.mainCoverUrl || vue.firstImageUrl)) ||
+            (imgEl && (imgEl.dataset.mediaUrl || imgEl.currentSrc || imgEl.src || imgEl.getAttribute('src'))) ||
+            '';
 
           var nvcM = url.match(/nvc_(\\d{13})_/);
           if (nvcM) {
             var fc = formatToCentral(Number(nvcM[1]));
             timeStr = fc.time;
             cardDate = fc.date;
+            ts = fc.timestamp;
           } else {
             var rawTimeText =
               (vue && vue.formatTime && vue.event && vue.event.alertTime ? vue.formatTime(vue.event.alertTime) : '') ||
@@ -759,11 +764,15 @@ async function runScraperAgent() {
             if (mMatch) timeStr = mMatch[0];
           }
 
+          var key = species + '__' + cardDate + '__' + timeStr + '__' + ts;
+          if (seenKeys.has(key)) continue;
+          seenKeys.add(key);
+
           results.push({
             speciesName: species,
-            imageUrl: url,
             time: timeStr,
             date: cardDate,
+            timestamp: ts || Date.now(),
           });
         }
 
@@ -824,7 +833,8 @@ async function runScraperAgent() {
     // 6. Combine Intercepted + DOM Sightings
     const combinedDetections: ExtractedVisit[] = [...interceptedDetections];
     domSightings.forEach((ds) => {
-      if (!combinedDetections.some((cd) => cd.imageUrl === ds.imageUrl)) {
+      const key = `${ds.speciesName}__${ds.date}__${ds.time}__${ds.timestamp}`;
+      if (!combinedDetections.some((cd) => `${cd.speciesName}__${cd.date}__${cd.time}__${cd.timestamp}` === key)) {
         combinedDetections.push(ds);
       }
     });
@@ -854,11 +864,12 @@ async function runScraperAgent() {
       }
     }
 
-    // Filter existing sightings from junk as well
+    // Filter existing sightings from junk as well and strip camera image/video URLs
     existingSightings = existingSightings
       .map((s) => ({
         ...s,
         speciesName: cleanSpeciesName(s?.speciesName),
+        imageUrl: '', // Strip camera thumbnail URLs
       }))
       .filter((s) => !isGenericOrJunkSpecies(s?.speciesName));
 
@@ -868,11 +879,7 @@ async function runScraperAgent() {
     const newSightingsFormatted: any[] = await Promise.all(
       filteredDetections.map(async (d, index) => {
         const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        let timestamp = Date.now() - index * 60000;
-        const nvcMatch = d.imageUrl.match(/nvc_(\d{13})_/);
-        if (nvcMatch) {
-          timestamp = Number(nvcMatch[1]);
-        }
+        let timestamp = d.timestamp || Date.now() - index * 60000;
 
         let weatherString = 'Sunny & Pleasant, 72°F';
         let tempString = '72°F';
@@ -894,7 +901,7 @@ async function runScraperAgent() {
           id: `birdfy-scrape-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
           speciesId: spId || 'custom',
           speciesName: d.speciesName,
-          imageUrl: d.imageUrl,
+          imageUrl: '', // No thumbnails stored
           date: d.date,
           time: d.time,
           location: 'Tube Feeder',
@@ -913,7 +920,6 @@ async function runScraperAgent() {
             aiDetectedSpecies: d.speciesName,
             triggerType: 'AI Bird Detected',
             resolution: '1080p Full HD',
-            videoUrl: d.videoUrl,
             batteryLevel: 96,
             isSolarCharging: true,
             wifiSignal: 'Excellent',
@@ -958,20 +964,15 @@ async function runScraperAgent() {
       return clean.toUpperCase();
     }
 
-    function getSightingKey(s: { speciesName?: string; date?: string; time?: string; imageUrl?: string }): string {
-      if (s.imageUrl) {
-        const nvcMatch = s.imageUrl.match(/nvc_(\d{13})_/);
-        if (nvcMatch) {
-          return `img_ts_${nvcMatch[1]}`;
-        }
-      }
+    function getSightingKey(s: { speciesName?: string; date?: string; time?: string; birdfy?: any }): string {
       const sp = (s.speciesName || '').toLowerCase().trim();
       const dt = (s.date || '').trim();
       const tm = normalizeTime(s.time);
-      return `${sp}__${dt}__${tm}`;
+      const pir = s.birdfy?.rawPIRTimestamp ? new Date(s.birdfy.rawPIRTimestamp).getTime() : '';
+      return pir ? `${sp}__${pir}` : `${sp}__${dt}__${tm}`;
     }
 
-    // Deduplicate against existing strictly by unique capture timestamp or species + date + time
+    // Deduplicate against existing strictly by timestamp or species + date + time
     const seen = new Set<string>();
     const finalMerged: any[] = [];
 
