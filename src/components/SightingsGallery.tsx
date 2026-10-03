@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { BirdSighting, BirdfyDevice } from '../types';
-import { BirdfyService } from '../services/birdfyService';
+import { BirdfyService, formatCentralDate } from '../services/birdfyService';
 import { 
   Search, Filter, Heart, Eye, MapPin, Calendar, Plus, Sparkles, Star, 
   Sun, Trash2, Check, ChevronDown, ChevronUp, Camera, RefreshCw, 
-  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck
+  BatteryCharging, Wifi, UploadCloud, Settings, Zap, ShieldCheck, Clock
 } from 'lucide-react';
+
+export type DateFilterPreset = 'today' | 'yesterday' | 'week' | 'month' | 'all' | 'custom';
 
 interface SightingsGalleryProps {
   sightings: BirdSighting[];
@@ -51,12 +53,33 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'count' | 'confidence'>('newest');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
+  // Date Filtering State (defaults to 'today')
+  const [dateFilter, setDateFilter] = useState<DateFilterPreset>('today');
+  const [customStartDate, setCustomStartDate] = useState<string>('');
+  const [customEndDate, setCustomEndDate] = useState<string>('');
+
+  // Calculate reference dates in Central Time (America/Chicago)
+  const now = new Date();
+  const todayStr = formatCentralDate(now);
+  const yesterdayStr = formatCentralDate(new Date(now.getTime() - 86400000));
+  const sevenDaysAgoStr = formatCentralDate(new Date(now.getTime() - 6 * 86400000));
+  const thirtyDaysAgoStr = formatCentralDate(new Date(now.getTime() - 29 * 86400000));
+
+  // Compute counts for each timeframe preset
+  const countToday = sightings.filter((s) => s?.date === todayStr).length;
+  const countYesterday = sightings.filter((s) => s?.date === yesterdayStr).length;
+  const countWeek = sightings.filter((s) => s?.date && s.date >= sevenDaysAgoStr && s.date <= todayStr).length;
+  const countMonth = sightings.filter((s) => s?.date && s.date >= thirtyDaysAgoStr && s.date <= todayStr).length;
+  const countAll = sightings.length;
+
   const activeFilterCount = 
     (searchQuery ? 1 : 0) + 
     (selectedLocation !== 'All' ? 1 : 0) + 
     (selectedBehavior !== 'All' ? 1 : 0) + 
     (selectedSource !== 'all' ? 1 : 0) + 
-    (onlyFavorites ? 1 : 0);
+    (onlyFavorites ? 1 : 0) +
+    (dateFilter !== 'today' ? 1 : 0) +
+    (dateFilter === 'custom' && (customStartDate || customEndDate) ? 1 : 0);
 
   const locations = ['All', 'Tube Feeder', 'Birdbath', 'Berry Bush', 'Suet Station', 'Lawn & Patio', 'Oak Branch'];
   const behaviors = ['All', 'Feeder Snack', 'Water Bathing', 'Perched & Singing', 'Foraging on Ground', 'Preening Feathers'];
@@ -64,7 +87,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
   // Count birdfy captures
   const birdfyCapturesCount = sightings.filter((s) => s.birdfy?.isBirdfyCapture).length;
 
-  // Filter logic with safe null/undefined handling
+  // Filter logic with safe null/undefined handling and date matching
   const filteredSightings = sightings.filter((s) => {
     if (!s) return false;
     const query = (searchQuery || '').trim().toLowerCase();
@@ -89,7 +112,32 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
       (selectedSource === 'birdfy' && isBirdfy) ||
       (selectedSource === 'manual' && !isBirdfy);
 
-    return matchesSearch && matchesLoc && matchesBeh && matchesFav && matchesSource;
+    const matchesDate = (() => {
+      if (!s.date) return dateFilter === 'all';
+      if (dateFilter === 'today') {
+        return s.date === todayStr;
+      }
+      if (dateFilter === 'yesterday') {
+        return s.date === yesterdayStr;
+      }
+      if (dateFilter === 'week') {
+        return s.date >= sevenDaysAgoStr && s.date <= todayStr;
+      }
+      if (dateFilter === 'month') {
+        return s.date >= thirtyDaysAgoStr && s.date <= todayStr;
+      }
+      if (dateFilter === 'custom') {
+        if (customStartDate && s.date < customStartDate) return false;
+        if (customEndDate && s.date > customEndDate) return false;
+        return true;
+      }
+      if (dateFilter === 'all') {
+        return true;
+      }
+      return true;
+    })();
+
+    return matchesSearch && matchesLoc && matchesBeh && matchesFav && matchesSource && matchesDate;
   }).sort((a, b) => {
     if (sortBy === 'newest') {
       const timeB = new Date(`${b.date} ${b.time || '12:00 PM'}`).getTime() || 0;
@@ -297,8 +345,199 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
               </div>
             </div>
 
+            {/* Bird Behavior Filter Pills */}
+            <div className="space-y-2 pt-3 border-t-2 border-stone-100">
+              <span className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider block">
+                BIRD ACTIVITY:
+              </span>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                {behaviors.map((beh) => (
+                  <button
+                    key={beh}
+                    onClick={() => setSelectedBehavior(beh)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      selectedBehavior === beh
+                        ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30 scale-102 border-b-2 border-sky-700'
+                        : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200 hover:scale-102'
+                    }`}
+                  >
+                    {beh}
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
+
+        {/* PROMINENT TIMEFRAME & DATE FILTER BAR */}
+        <div className="bg-white rounded-3xl p-3 sm:p-4 border-2 border-sky-100 shadow-xs space-y-3">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            
+            {/* Timeframe Selection Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 text-sky-900 text-xs font-pixar-sub font-bold mr-1 shrink-0">
+                <Calendar className="w-3.5 h-3.5 text-sky-600" />
+                <span>Date:</span>
+              </div>
+
+              {/* Today (Default) */}
+              <button
+                onClick={() => setDateFilter('today')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'today'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <span>Today</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${dateFilter === 'today' ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'}`}>
+                  {countToday}
+                </span>
+              </button>
+
+              {/* Yesterday */}
+              <button
+                onClick={() => setDateFilter('yesterday')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'yesterday'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <span>Yesterday</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${dateFilter === 'yesterday' ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'}`}>
+                  {countYesterday}
+                </span>
+              </button>
+
+              {/* Past 7 Days */}
+              <button
+                onClick={() => setDateFilter('week')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'week'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <span>Past 7 Days</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${dateFilter === 'week' ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'}`}>
+                  {countWeek}
+                </span>
+              </button>
+
+              {/* Past 30 Days */}
+              <button
+                onClick={() => setDateFilter('month')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'month'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <span>Past 30 Days</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${dateFilter === 'month' ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'}`}>
+                  {countMonth}
+                </span>
+              </button>
+
+              {/* All Time */}
+              <button
+                onClick={() => setDateFilter('all')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'all'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/25 scale-102 border-b-2 border-sky-700'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <span>All Time</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${dateFilter === 'all' ? 'bg-sky-700 text-white' : 'bg-stone-200 text-stone-700'}`}>
+                  {countAll}
+                </span>
+              </button>
+
+              {/* Custom Date Range */}
+              <button
+                onClick={() => setDateFilter('custom')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-pixar-sub font-bold transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  dateFilter === 'custom'
+                    ? 'bg-amber-400 text-stone-950 shadow-md shadow-amber-400/25 scale-102 border-b-2 border-amber-600 font-extrabold'
+                    : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5 text-amber-700" />
+                <span>Custom Range</span>
+              </button>
+            </div>
+
+            {/* Showing Count Indicator & Quick View All Link */}
+            <div className="text-xs font-pixar-sub font-bold text-stone-500 flex items-center gap-2 self-end lg:self-center">
+              <span>
+                Showing: <strong className="text-sky-700 text-sm font-pixar-title">{filteredSightings.length}</strong> of {sightings.length} detections
+              </span>
+              {dateFilter !== 'all' && (
+                <button
+                  onClick={() => {
+                    setDateFilter('all');
+                    setCustomStartDate('');
+                    setCustomEndDate('');
+                  }}
+                  className="text-[11px] text-sky-600 hover:text-sky-800 underline font-semibold cursor-pointer"
+                >
+                  View All Time
+                </button>
+              )}
+            </div>
+
+          </div>
+
+          {/* Custom Date Range Picker Accordion */}
+          {dateFilter === 'custom' && (
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-amber-200/60 bg-amber-50/60 p-3 rounded-2xl animate-fade-in">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-pixar-sub font-bold text-stone-700">From Date:</span>
+                <input
+                  type="date"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="bg-white border-2 border-amber-300 text-stone-900 rounded-xl px-3 py-1.5 text-xs font-pixar-sub font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-xs"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-pixar-sub font-bold text-stone-700">To Date:</span>
+                <input
+                  type="date"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  className="bg-white border-2 border-amber-300 text-stone-900 rounded-xl px-3 py-1.5 text-xs font-pixar-sub font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-xs"
+                />
+              </div>
+
+              {(customStartDate || customEndDate) && (
+                <button
+                  onClick={() => {
+                    setCustomStartDate('');
+                    setCustomEndDate('');
+                  }}
+                  className="px-3 py-1.5 rounded-full bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 transition text-xs font-pixar-sub font-bold cursor-pointer shadow-xs"
+                >
+                  Clear Dates
+                </button>
+              )}
+
+              <span className="text-xs font-pixar-sub text-stone-500 italic">
+                {customStartDate && customEndDate 
+                  ? `Showing detections from ${customStartDate} through ${customEndDate}` 
+                  : customStartDate 
+                  ? `Showing detections from ${customStartDate} onwards`
+                  : customEndDate 
+                  ? `Showing detections up to ${customEndDate}` 
+                  : 'Pick start and end dates to filter your bird log.'}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* BIRD SIGHTINGS PHOTO GRID */}
         {filteredSightings.length === 0 ? (
@@ -306,12 +545,20 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
             <div className="text-5xl animate-bounce">🪶</div>
             <div className="space-y-1">
               <h3 className="text-xl sm:text-2xl font-pixar-title text-stone-900">
-                {sightings.length === 0 ? 'NO FEEDER DETECTIONS YET' : 'NO SIGHTINGS MATCH YOUR FILTERS'}
+                {sightings.length === 0
+                  ? 'NO FEEDER DETECTIONS YET'
+                  : dateFilter === 'today' && countToday === 0
+                  ? "NO BIRDS SPOTTED TODAY YET"
+                  : dateFilter === 'yesterday' && countYesterday === 0
+                  ? 'NO DETECTIONS LOGGED YESTERDAY'
+                  : 'NO SIGHTINGS MATCH YOUR FILTERS'}
               </h3>
               <p className="text-xs sm:text-sm font-semibold text-stone-500 max-w-lg mx-auto">
                 {sightings.length === 0
                   ? `Your feeder (SN: ${birdfyDevice.highlightUuid || '447G561042901276'}) is paired! Use the 1-click Web Scraper to pull events from my.birdfy.com, or preview sample feeder visits below.`
-                  : 'Try adjusting your search query or reset your filters to see all sightings.'}
+                  : dateFilter === 'today' && countToday === 0
+                  ? `No feeder visits recorded so far for today (${todayStr}). You have ${countWeek} detections in the past 7 days and ${sightings.length} total across all time.`
+                  : 'Try expanding your timeframe or resetting active filters to view all captured bird visits.'}
               </p>
             </div>
 
@@ -337,16 +584,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 )}
 
                 <button
-                  onClick={onSyncBirdfy}
-                  disabled={true}
-                  className="px-5 py-3 rounded-full bg-stone-100 text-stone-400 font-pixar-title text-xs uppercase tracking-wider transition border border-stone-200 cursor-not-allowed opacity-60 flex items-center gap-1.5"
-                  title="Direct sync is turned off. Use Scrape / Import instead."
-                >
-                  <RefreshCw className="w-3.5 h-3.5 text-stone-400" />
-                  <span>⚡ Sync (Turned Off)</span>
-                </button>
-
-                <button
                   onClick={onOpenBirdfySettings}
                   className="px-4 py-3 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-pixar-title text-xs uppercase tracking-wider transition cursor-pointer border border-stone-300"
                 >
@@ -354,7 +591,27 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                {dateFilter === 'today' && countWeek > 0 && (
+                  <button
+                    onClick={() => setDateFilter('week')}
+                    className="px-5 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-pixar-title uppercase tracking-wider transition cursor-pointer shadow-md flex items-center gap-1.5 hover:scale-102"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Show Past 7 Days ({countWeek})</span>
+                  </button>
+                )}
+
+                {dateFilter !== 'all' && (
+                  <button
+                    onClick={() => setDateFilter('all')}
+                    className="px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-pixar-title uppercase tracking-wider transition cursor-pointer shadow-md flex items-center gap-1.5 hover:scale-102"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Show All Time ({sightings.length})</span>
+                  </button>
+                )}
+
                 {activeFilterCount > 0 && (
                   <button
                     onClick={() => {
@@ -362,27 +619,16 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                       setSelectedBehavior('All');
                       setSelectedSource('all');
                       setOnlyFavorites(false);
+                      setDateFilter('all');
+                      setCustomStartDate('');
+                      setCustomEndDate('');
                       onSearchChange('');
                     }}
                     className="px-5 py-2.5 rounded-full bg-stone-100 text-stone-800 text-xs font-pixar-title hover:bg-stone-200 transition cursor-pointer border border-stone-300"
                   >
-                    Reset Filters
+                    Reset All Filters
                   </button>
                 )}
-                <button
-                  onClick={onSyncBirdfy}
-                  disabled={isSyncingBirdfy}
-                  className="px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-pixar-title transition cursor-pointer shadow-md flex items-center gap-1.5"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isSyncingBirdfy ? 'animate-spin' : ''}`} />
-                  <span>{isSyncingBirdfy ? 'Syncing...' : '⚡ Sync Birdfy Feeder'}</span>
-                </button>
-                <button
-                  onClick={onOpenBirdfySettings}
-                  className="px-5 py-2.5 rounded-full bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-pixar-title transition cursor-pointer border border-sky-200"
-                >
-                  ⚙️ Feeder Settings
-                </button>
               </div>
             )}
           </div>
