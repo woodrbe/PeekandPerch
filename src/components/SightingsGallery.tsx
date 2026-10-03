@@ -720,9 +720,6 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                         <h3 className="font-pixar-title text-xl text-stone-900 group-hover:text-sky-600 transition-colors">
                           {s.speciesName}
                         </h3>
-                        <span className="text-[11px] font-pixar-title uppercase tracking-wide text-amber-950 bg-gradient-to-r from-amber-200 to-amber-300 px-3 py-1 rounded-full border border-amber-400/60 shadow-2xs shrink-0">
-                          x{s.count} {s.count === 1 ? 'bird' : 'birds'}
-                        </span>
                         {s.count > 1 && (
                           <span className="text-[11px] font-pixar-title uppercase tracking-wide text-amber-950 bg-gradient-to-r from-amber-200 to-amber-300 px-3 py-1 rounded-full border border-amber-400/60 shadow-2xs shrink-0">
                             x{s.count} birds
