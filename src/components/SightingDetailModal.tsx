@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
+import { deriveVideoUrlFromImageUrl } from '../services/birdfyService';
 import { 
   X, Star, Calendar, Trash2, ChevronLeft, 
   ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
@@ -38,7 +39,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   if (!sighting) return null;
 
   const isBirdfy = sighting.birdfy?.isBirdfyCapture;
-  const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl;
+  const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl || deriveVideoUrlFromImageUrl(sighting.imageUrl);
   const catalogFallback = speciesObj?.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === sighting.speciesName.toLowerCase())?.imageUrl;
 
   // Build media collection (video + all distinct snapshots)

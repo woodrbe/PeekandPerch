@@ -68,6 +68,35 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
   }).format(new Date(ms));
 }
 
+export function deriveVideoUrlFromImageUrl(imgUrl?: string): string | undefined {
+  if (!imgUrl) return undefined;
+  if (imgUrl.includes('.mp4')) return imgUrl;
+
+  if (imgUrl.includes('url=')) {
+    try {
+      const match = imgUrl.match(/url=([^&]+)/);
+      if (match) {
+        const decoded = decodeURIComponent(match[1]);
+        return decoded
+          .replace('nvs-pic-', 'nvs-video-')
+          .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+          .replace(/\.jpg(\?|$)/i, '.mp4$1');
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  if (imgUrl.includes('nvs-pic-') || imgUrl.includes('.blob.core.windows.net') || imgUrl.includes('nvts.co') || imgUrl.includes('birdfy')) {
+    return imgUrl
+      .replace('nvs-pic-', 'nvs-video-')
+      .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+      .replace(/\.jpg(\?|$)/i, '.mp4$1');
+  }
+
+  return undefined;
+}
+
 interface ExtractedVisit {
   speciesName: string;
   imageUrl: string;
@@ -451,10 +480,8 @@ async function runScraperAgent() {
                 ev.playUrl ||
                 (ev.fileUrl && (ev.fileUrl.includes('.mp4') || ev.fileUrl.includes('video')) ? ev.fileUrl : undefined);
 
-              // If img is an mp4 and vid is not set, swap
-              if (img && (img.includes('.mp4') || img.includes('video'))) {
-                if (!vid) vid = img;
-                img = ev.coverKey || ev.pic || ev.thumbnail || (ev.images && ev.images[0] && (ev.images[0].largeUrl || ev.images[0].url)) || '';
+              if (!vid && img) {
+                vid = deriveVideoUrlFromImageUrl(img);
               }
 
               if (!img && !vid) return;
@@ -685,6 +712,30 @@ async function runScraperAgent() {
           };
         };
 
+        var deriveVid = function(imgUrl) {
+          if (!imgUrl) return undefined;
+          if (imgUrl.indexOf('.mp4') !== -1) return imgUrl;
+          if (imgUrl.indexOf('url=') !== -1) {
+            try {
+              var m = imgUrl.match(/url=([^&]+)/);
+              if (m) {
+                var decoded = decodeURIComponent(m[1]);
+                return decoded
+                  .replace('nvs-pic-', 'nvs-video-')
+                  .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+                  .replace(/\.jpg(\?|$)/i, '.mp4$1');
+              }
+            } catch (e) {}
+          }
+          if (imgUrl.indexOf('nvs-pic-') !== -1 || imgUrl.indexOf('.blob.core.windows.net') !== -1 || imgUrl.indexOf('nvts.co') !== -1 || imgUrl.indexOf('birdfy') !== -1) {
+            return imgUrl
+              .replace('nvs-pic-', 'nvs-video-')
+              .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+              .replace(/\.jpg(\?|$)/i, '.mp4$1');
+          }
+          return undefined;
+        };
+
         // Method A: Check Vue component instances
         var allElements = Array.from(document.querySelectorAll('*'));
         for (var j = 0; j < allElements.length; j++) {
@@ -723,6 +774,10 @@ async function runScraperAgent() {
                 } else {
                   img = ev.fileUrl;
                 }
+              }
+
+              if (!video && img) {
+                video = deriveVid(img);
               }
 
               if (!img && !video) return;
@@ -819,6 +874,10 @@ async function runScraperAgent() {
             (card.querySelector('video source, video') && (card.querySelector('video source')?.src || card.querySelector('video')?.src)) ||
             (card.getAttribute('data-video-url') || card.querySelector('[data-video-url]')?.getAttribute('data-video-url')) ||
             '';
+
+          if (!video && url) {
+            video = deriveVid(url);
+          }
 
           var cardImages = [url];
           var extraImgs = Array.from(card.querySelectorAll('img')).map(function(im) {
@@ -952,12 +1011,17 @@ async function runScraperAgent() {
       }
     }
 
-    // Filter existing sightings from junk as well
+    // Filter existing sightings from junk as well and ensure videoUrl is populated
     existingSightings = existingSightings
-      .map((s) => ({
-        ...s,
-        speciesName: cleanSpeciesName(s?.speciesName),
-      }))
+      .map((s) => {
+        const vid = s.videoUrl || s.birdfy?.videoUrl || deriveVideoUrlFromImageUrl(s.imageUrl);
+        return {
+          ...s,
+          speciesName: cleanSpeciesName(s?.speciesName),
+          videoUrl: vid,
+          birdfy: s.birdfy ? { ...s.birdfy, videoUrl: vid } : (vid ? { isBirdfyCapture: true, videoUrl: vid } : undefined),
+        };
+      })
       .filter((s) => !isGenericOrJunkSpecies(s?.speciesName));
 
     console.log(`📂 Current public/data/sightings.json count: ${existingSightings.length}`);
@@ -967,7 +1031,8 @@ async function runScraperAgent() {
       filteredDetections.map(async (d, index) => {
         const spId = d.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '_');
         let timestamp = Date.now() - index * 60000;
-        const nvcMatch = (d.imageUrl || d.videoUrl || '').match(/nvc_(\d{13})_/);
+        const finalVideoUrl = d.videoUrl || deriveVideoUrlFromImageUrl(d.imageUrl);
+        const nvcMatch = (d.imageUrl || finalVideoUrl || '').match(/nvc_(\d{13})_/);
         if (nvcMatch) {
           timestamp = Number(nvcMatch[1]);
         }
@@ -994,7 +1059,7 @@ async function runScraperAgent() {
           speciesName: d.speciesName,
           imageUrl: d.imageUrl,
           images: d.images,
-          videoUrl: d.videoUrl,
+          videoUrl: finalVideoUrl,
           date: d.date,
           time: d.time,
           location: 'Tube Feeder',
@@ -1013,7 +1078,7 @@ async function runScraperAgent() {
             aiDetectedSpecies: d.speciesName,
             triggerType: 'AI Bird Detected',
             resolution: '1080p Full HD',
-            videoUrl: d.videoUrl,
+            videoUrl: finalVideoUrl,
             images: d.images,
             batteryLevel: 96,
             isSolarCharging: true,

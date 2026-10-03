@@ -37,8 +37,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:43:19.404Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:43:19.404Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003224319/nvc_1791067399404_1791067399804_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=EqoRkv6Tr%2BBiDyauO66ZSo0JKOSwXAqFrJ%2BKhcs7DpQ%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003224319/nvc_1791067399404_1791067399804_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=EqoRkv6Tr%2BBiDyauO66ZSo0JKOSwXAqFrJ%2BKhcs7DpQ%3D"
   },
   {
     "id": "birdfy-scrape-1791067208889-g45i",
@@ -78,8 +80,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:40:08.889Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:40:08.889Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003224008/nvc_1791067208889_1791067209689_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=blHIiDJacKZNfdAlCjvSUHnIazSY%2BGjCIsEhLqZFvBQ%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003224008/nvc_1791067208889_1791067209689_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=blHIiDJacKZNfdAlCjvSUHnIazSY%2BGjCIsEhLqZFvBQ%3D"
   },
   {
     "id": "birdfy-scrape-1791067051825-64ki",
@@ -119,8 +123,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:37:31.825Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:37:31.825Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003223731/nvc_1791067051825_1791067052891_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=NnLSarL3BCeVga4UyEta7bvjBCg7Rwvn6fAhYkHeqiI%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003223731/nvc_1791067051825_1791067052891_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=NnLSarL3BCeVga4UyEta7bvjBCg7Rwvn6fAhYkHeqiI%3D"
   },
   {
     "id": "birdfy-scrape-1791066576666-6w8b",
@@ -160,8 +166,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:29:36.666Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:29:36.666Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222936/nvc_1791066576666_1791066577332_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=ZVK3rclzZkspQik1sS00PXE%2FYr8DDwcR%2BklGS3Fe3tU%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222936/nvc_1791066576666_1791066577332_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=ZVK3rclzZkspQik1sS00PXE%2FYr8DDwcR%2BklGS3Fe3tU%3D"
   },
   {
     "id": "birdfy-scrape-1791066357775-xf3d",
@@ -201,8 +209,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:25:57.775Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:25:57.775Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222557/nvc_1791066357775_1791066358441_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=p71uI%2B9Z1SbxdpZmdJdZK7y95WM30%2B4u%2FzdHZSLi0t0%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222557/nvc_1791066357775_1791066358441_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=p71uI%2B9Z1SbxdpZmdJdZK7y95WM30%2B4u%2FzdHZSLi0t0%3D"
   },
   {
     "id": "birdfy-scrape-1791066141288-gynq",
@@ -242,8 +252,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:22:21.288Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:22:21.288Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222221/nvc_1791066141288_1791066141821_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=%2FukSWlXVRC%2BnfPjR7Z69VybRw%2F6PnLza4G7111Y2fes%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003222221/nvc_1791066141288_1791066141821_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=%2FukSWlXVRC%2BnfPjR7Z69VybRw%2F6PnLza4G7111Y2fes%3D"
   },
   {
     "id": "birdfy-scrape-1791065278685-8jkx",
@@ -283,8 +295,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T22:07:58.685Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T22:07:58.685Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003220758/nvc_1791065278685_1791065279885_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=4VWji%2B136MAQLlNikewJzLRrhWHYaOCPem3fvuB0zgM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003220758/nvc_1791065278685_1791065279885_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A45Z&se=2026-10-06T23%3A38%3A45Z&sv=2024-11-04&sr=b&sig=4VWji%2B136MAQLlNikewJzLRrhWHYaOCPem3fvuB0zgM%3D"
   },
   {
     "id": "birdfy-scrape-1791061567242-z7s0",
@@ -324,8 +338,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T21:06:07.242Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T21:06:07.242Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210607/nvc_1791061567242_1791061567908_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=Qxharbly2NjUPXFz1o%2FZOvLFHJleZrszjpBResALrCA%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210607/nvc_1791061567242_1791061567908_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=Qxharbly2NjUPXFz1o%2FZOvLFHJleZrszjpBResALrCA%3D"
   },
   {
     "id": "birdfy-scrape-1791061407822-jype",
@@ -365,8 +381,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T21:03:27.822Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T21:03:27.822Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210327/nvc_1791061407822_1791061408488_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=%2Bh82Dn%2B9YNdiVySEnLOlUqa%2F1INbbwXLQscvvPCFY2w%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210327/nvc_1791061407822_1791061408488_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=%2Bh82Dn%2B9YNdiVySEnLOlUqa%2F1INbbwXLQscvvPCFY2w%3D"
   },
   {
     "id": "birdfy-scrape-1791061219411-2yyc",
@@ -410,8 +428,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T21:00:19.411Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T21:00:19.411Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210019/nvc_1791061219411_1791061219477_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=p73uQ2pKuczk8udKdEV4Rwh%2Fn4TpQPWA8LovJuWEjq4%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003210019/nvc_1791061219411_1791061219477_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=p73uQ2pKuczk8udKdEV4Rwh%2Fn4TpQPWA8LovJuWEjq4%3D"
   },
   {
     "id": "birdfy-scrape-1791061035776-s62r",
@@ -451,8 +471,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:57:15.776Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:57:15.776Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003205715/nvc_1791061035776_1791061036176_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=vr3o3CbbP9grYT8vpLWkbXxOr4fENTk9ZFxKQZG1yCM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003205715/nvc_1791061035776_1791061036176_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=vr3o3CbbP9grYT8vpLWkbXxOr4fENTk9ZFxKQZG1yCM%3D"
   },
   {
     "id": "birdfy-scrape-1791060693724-xa6n",
@@ -492,8 +514,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:51:33.724Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:51:33.724Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003205133/nvc_1791060693724_1791060694324_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=J96FqwWna4cVE4cWis4YFhyuuL0yTk9xx%2BGp3PKjl%2F8%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003205133/nvc_1791060693724_1791060694324_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=J96FqwWna4cVE4cWis4YFhyuuL0yTk9xx%2BGp3PKjl%2F8%3D"
   },
   {
     "id": "birdfy-scrape-1791060471314-02a7",
@@ -533,8 +557,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:47:51.314Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:47:51.314Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003204751/nvc_1791060471314_1791060471514_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=p2J2Q1qiuwN3Cn56Ui3xKJhS9PWtNaa26%2FfVpQj25XM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003204751/nvc_1791060471314_1791060471514_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=p2J2Q1qiuwN3Cn56Ui3xKJhS9PWtNaa26%2FfVpQj25XM%3D"
   },
   {
     "id": "birdfy-scrape-1791059002208-ahyz",
@@ -574,8 +600,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:23:22.208Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:23:22.208Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003202322/nvc_1791059002208_1791059002408_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=1Asp%2FUGkDPY3AOSSYcfw5TZdbhwtfF8eWFcw60GicvM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003202322/nvc_1791059002208_1791059002408_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=1Asp%2FUGkDPY3AOSSYcfw5TZdbhwtfF8eWFcw60GicvM%3D"
   },
   {
     "id": "birdfy-scrape-1791058822575-g3xa",
@@ -615,8 +643,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:20:22.575Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:20:22.575Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003202022/nvc_1791058822575_1791058823508_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=XOC0PfpGYIgZ9gWw3g3WSQwt%2Bj742bnhvmOjSSfIFhg%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003202022/nvc_1791058822575_1791058823508_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A48Z&se=2026-10-06T23%3A38%3A48Z&sv=2024-11-04&sr=b&sig=XOC0PfpGYIgZ9gWw3g3WSQwt%2Bj742bnhvmOjSSfIFhg%3D"
   },
   {
     "id": "birdfy-scrape-1791058445055-qg06",
@@ -654,8 +684,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:14:05.055Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:14:05.055Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003201405/nvc_1791058445055_1791058445255_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=6uhtWZVe2s7o1JyDFnDMH2TIvy9B0SMEkvt7mU%2F5IjM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003201405/nvc_1791058445055_1791058445255_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=6uhtWZVe2s7o1JyDFnDMH2TIvy9B0SMEkvt7mU%2F5IjM%3D"
   },
   {
     "id": "birdfy-scrape-1791058280315-bdih",
@@ -695,8 +727,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:11:20.315Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:11:20.315Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003201120/nvc_1791058280315_1791058280315_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=sDAAv65W%2FUKtR4STRslepnFeJAkRY6Tr%2BNwXqzwkdS8%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003201120/nvc_1791058280315_1791058280315_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=sDAAv65W%2FUKtR4STRslepnFeJAkRY6Tr%2BNwXqzwkdS8%3D"
   },
   {
     "id": "birdfy-scrape-1791058110921-f0vd",
@@ -736,8 +770,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:08:30.921Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:08:30.921Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003200830/nvc_1791058110921_1791058111121_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=hHz%2FQ24WiyP6t%2FF7XtU29lJlvyEdEcZpEe6I2JxBX9o%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003200830/nvc_1791058110921_1791058111121_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=hHz%2FQ24WiyP6t%2FF7XtU29lJlvyEdEcZpEe6I2JxBX9o%3D"
   },
   {
     "id": "birdfy-scrape-1791057945461-9vhm",
@@ -777,8 +813,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T20:05:45.461Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T20:05:45.461Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003200545/nvc_1791057945461_1791057945927_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=bVP5P3aMAR0aHKB4pBYs7Fgy%2Fj3FBaBXzJPscTa0hH0%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003200545/nvc_1791057945461_1791057945927_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=bVP5P3aMAR0aHKB4pBYs7Fgy%2Fj3FBaBXzJPscTa0hH0%3D"
   },
   {
     "id": "birdfy-scrape-1791057363163-s38r",
@@ -818,8 +856,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T19:56:03.163Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T19:56:03.163Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003195603/nvc_1791057363163_1791057363363_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=%2B4WjS6joohoroXQOVbthFDdoAs6hVRA8H%2F0zGRgn3wE%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003195603/nvc_1791057363163_1791057363363_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=%2B4WjS6joohoroXQOVbthFDdoAs6hVRA8H%2F0zGRgn3wE%3D"
   },
   {
     "id": "birdfy-scrape-1791057183852-a80c",
@@ -859,8 +899,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T19:53:03.852Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T19:53:03.852Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003195303/nvc_1791057183852_1791057183852_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=Smt0fx%2BWxQ%2FDOp9%2Fr5UMwl28IBo%2BAYtEXFOePOUiVl0%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003195303/nvc_1791057183852_1791057183852_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=Smt0fx%2BWxQ%2FDOp9%2Fr5UMwl28IBo%2BAYtEXFOePOUiVl0%3D"
   },
   {
     "id": "birdfy-scrape-1791056933766-dpwh",
@@ -900,8 +942,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T19:48:53.766Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T19:48:53.766Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003194853/nvc_1791056933766_1791056934099_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=S127OZX0NRVf6FHCeip5Nun4wo%2FrIQ%2FibRoKpYTMa2g%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003194853/nvc_1791056933766_1791056934099_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=S127OZX0NRVf6FHCeip5Nun4wo%2FrIQ%2FibRoKpYTMa2g%3D"
   },
   {
     "id": "birdfy-scrape-1791056625531-vgtb",
@@ -941,8 +985,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T19:43:45.531Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T19:43:45.531Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003194345/nvc_1791056625531_1791056625597_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=CxLGc4AgHmh6kJsdJEOWrQigJ5mmz7O0kJZldN0yzkk%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003194345/nvc_1791056625531_1791056625597_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=CxLGc4AgHmh6kJsdJEOWrQigJ5mmz7O0kJZldN0yzkk%3D"
   },
   {
     "id": "birdfy-scrape-1791054013157-w8ju",
@@ -982,8 +1028,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T19:00:13.157Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T19:00:13.157Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003190013/nvc_1791054013157_1791054013957_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=YCP8lqDS89u6RVhbHhDALuhp66hMiW0tguXP84VLqjo%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003190013/nvc_1791054013157_1791054013957_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=YCP8lqDS89u6RVhbHhDALuhp66hMiW0tguXP84VLqjo%3D"
   },
   {
     "id": "birdfy-scrape-1791053855513-t2oy",
@@ -1023,8 +1071,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:57:35.513Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:57:35.513Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185735/nvc_1791053855513_1791053856179_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=mdh4OcKxADWfoQyH9NJY%2FP1UQdiTXb8FchK1ECzXFiM%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185735/nvc_1791053855513_1791053856179_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=mdh4OcKxADWfoQyH9NJY%2FP1UQdiTXb8FchK1ECzXFiM%3D"
   },
   {
     "id": "birdfy-scrape-1791053704122-1fu5",
@@ -1064,8 +1114,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:55:04.122Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:55:04.122Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185504/nvc_1791053704122_1791053704988_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=vsDETwxjgckDpetduws0DJeSsGHFooAeN0YVekA6u38%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185504/nvc_1791053704122_1791053704988_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=vsDETwxjgckDpetduws0DJeSsGHFooAeN0YVekA6u38%3D"
   },
   {
     "id": "birdfy-scrape-1791053552470-nfda",
@@ -1105,8 +1157,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:52:32.470Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:52:32.470Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185232/nvc_1791053552470_1791053553270_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=cSRlvcIS1BT7aXDfdXA%2FzeU6SDfKNOymVmyMBzmqIpI%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003185232/nvc_1791053552470_1791053553270_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=cSRlvcIS1BT7aXDfdXA%2FzeU6SDfKNOymVmyMBzmqIpI%3D"
   },
   {
     "id": "birdfy-scrape-1791052895710-3u66",
@@ -1146,8 +1200,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:41:35.710Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:41:35.710Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003184135/nvc_1791052895710_1791052895910_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=S6FgKYWBfqoxEwZozZTnXVH2FT%2BSW23DkscHEcdTodc%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003184135/nvc_1791052895710_1791052895910_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=S6FgKYWBfqoxEwZozZTnXVH2FT%2BSW23DkscHEcdTodc%3D"
   },
   {
     "id": "birdfy-scrape-1791052717914-pdu7",
@@ -1187,8 +1243,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:38:37.914Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:38:37.914Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003183837/nvc_1791052717914_1791052718114_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=trQDkESoq1m1UCoqW4lnuC%2FxfjAiOgBfwYeoW%2Fp2pJY%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003183837/nvc_1791052717914_1791052718114_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=trQDkESoq1m1UCoqW4lnuC%2FxfjAiOgBfwYeoW%2Fp2pJY%3D"
   },
   {
     "id": "birdfy-scrape-1791051616412-nv3h",
@@ -1228,8 +1286,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T18:20:16.412Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T18:20:16.412Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003182016/nvc_1791051616412_1791051617212_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=BEZfq6ypqLUjCkvHMjUKXwSkY6wpK53xusBfyigqmWs%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003182016/nvc_1791051616412_1791051617212_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=BEZfq6ypqLUjCkvHMjUKXwSkY6wpK53xusBfyigqmWs%3D"
   },
   {
     "id": "birdfy-scrape-1791049255890-0nyu",
@@ -1269,8 +1329,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T17:40:55.890Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T17:40:55.890Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003174055/nvc_1791049255890_1791049256223_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=W4%2F95GKsCrQcX%2BjQoFZbrllydwHJed6%2F2fo%2Bt1MR8NE%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003174055/nvc_1791049255890_1791049256223_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=W4%2F95GKsCrQcX%2BjQoFZbrllydwHJed6%2F2fo%2Bt1MR8NE%3D"
   },
   {
     "id": "birdfy-scrape-1791049092405-tkir",
@@ -1310,8 +1372,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T17:38:12.405Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T17:38:12.405Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003173812/nvc_1791049092405_1791049092871_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=0PghaLwA4C%2BPgwC16PILQNBc1CjmDw8rNPMHrN8FkZQ%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003173812/nvc_1791049092405_1791049092871_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=0PghaLwA4C%2BPgwC16PILQNBc1CjmDw8rNPMHrN8FkZQ%3D"
   },
   {
     "id": "birdfy-scrape-1791048028054-2vxj",
@@ -1351,8 +1415,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T17:20:28.054Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T17:20:28.054Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003172028/nvc_1791048028054_1791048031987_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=HogTvGcVhrUceFf0jFd6jTVgdjKiMD0JwSM9jHdJXH4%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003172028/nvc_1791048028054_1791048031987_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=HogTvGcVhrUceFf0jFd6jTVgdjKiMD0JwSM9jHdJXH4%3D"
   },
   {
     "id": "birdfy-scrape-1791046968827-u8d2",
@@ -1392,8 +1458,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T17:02:48.827Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T17:02:48.827Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003170248/nvc_1791046968827_1791046969160_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=HiSlBWvHA68MKAQPpahHGWFbZJ0sd6ErJ457sLXmJV8%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003170248/nvc_1791046968827_1791046969160_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=HiSlBWvHA68MKAQPpahHGWFbZJ0sd6ErJ457sLXmJV8%3D"
   },
   {
     "id": "birdfy-scrape-1791046560722-52ud",
@@ -1433,8 +1501,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:56:00.722Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:56:00.722Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003165600/nvc_1791046560722_1791046561455_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=GRdN7tXUkAMtHuElIXelgEZY1YkTjmXAzzlSPlMYsmg%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003165600/nvc_1791046560722_1791046561455_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=GRdN7tXUkAMtHuElIXelgEZY1YkTjmXAzzlSPlMYsmg%3D"
   },
   {
     "id": "birdfy-scrape-1791046153592-t65q",
@@ -1474,8 +1544,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:49:13.592Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:49:13.592Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164913/nvc_1791046153592_1791046153592_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=T2PoW3JduaAy%2FscHHjc0pMGiG%2BdsI6uAiI2qRXhqeVU%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164913/nvc_1791046153592_1791046153592_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=T2PoW3JduaAy%2FscHHjc0pMGiG%2BdsI6uAiI2qRXhqeVU%3D"
   },
   {
     "id": "birdfy-scrape-1791045981765-oghj",
@@ -1515,8 +1587,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:46:21.765Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:46:21.765Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164621/nvc_1791045981765_1791045982231_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=kDiaGbrpCQ1sM6E8c8mlQ6acvhPNMGuSt2RiLguyOok%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164621/nvc_1791045981765_1791045982231_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=kDiaGbrpCQ1sM6E8c8mlQ6acvhPNMGuSt2RiLguyOok%3D"
   },
   {
     "id": "birdfy-scrape-1791045707780-ppg4",
@@ -1556,8 +1630,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:41:47.780Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:41:47.780Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164147/nvc_1791045707780_1791045707780_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=0DAbehVsuIOGtJ9Oa%2B7GXLetal2UVQZNaVLnNsEcGgc%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003164147/nvc_1791045707780_1791045707780_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=0DAbehVsuIOGtJ9Oa%2B7GXLetal2UVQZNaVLnNsEcGgc%3D"
   },
   {
     "id": "birdfy-scrape-1791044537486-ym9s",
@@ -1597,8 +1673,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:22:17.486Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:22:17.486Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003162217/nvc_1791044537486_1791044537486_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=xMS7uywLyakaognpyEPIIOa1Spt0jntdTrJTDSJ%2F9ak%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003162217/nvc_1791044537486_1791044537486_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A49Z&se=2026-10-06T23%3A38%3A49Z&sv=2024-11-04&sr=b&sig=xMS7uywLyakaognpyEPIIOa1Spt0jntdTrJTDSJ%2F9ak%3D"
   },
   {
     "id": "birdfy-scrape-1791044336756-y3j3",
@@ -1638,8 +1716,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:18:56.756Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:18:56.756Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161856/nvc_1791044336756_1791044336956_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=0erXUnpeYUEcLCBJn%2B17bhnci66rlOcJ5CrywvxCs24%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161856/nvc_1791044336756_1791044336956_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=0erXUnpeYUEcLCBJn%2B17bhnci66rlOcJ5CrywvxCs24%3D"
   },
   {
     "id": "birdfy-scrape-1791044182013-erjy",
@@ -1679,8 +1759,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:16:22.013Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:16:22.013Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161622/nvc_1791044182013_1791044182013_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=OO4OV2bv2KX7txrGXh%2F5w6TQjM92uobj5Uz6SbepypE%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161622/nvc_1791044182013_1791044182013_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=OO4OV2bv2KX7txrGXh%2F5w6TQjM92uobj5Uz6SbepypE%3D"
   },
   {
     "id": "birdfy-scrape-1791044028475-em4x",
@@ -1720,8 +1802,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:13:48.475Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:13:48.475Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161348/nvc_1791044028475_1791044038675_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=dHcZDvdTa94ob1xANMV9sxQGT%2BFzmRP3PmOmqw6NIoY%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003161348/nvc_1791044028475_1791044038675_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=dHcZDvdTa94ob1xANMV9sxQGT%2BFzmRP3PmOmqw6NIoY%3D"
   },
   {
     "id": "birdfy-scrape-1791043534312-y3dw",
@@ -1761,8 +1845,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:05:34.312Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:05:34.312Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003160534/nvc_1791043534312_1791043535178_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=B51ktbvqAurCq24bfQj%2BnDkzq8zHUuWZvJfOay54O8w%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003160534/nvc_1791043534312_1791043535178_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=B51ktbvqAurCq24bfQj%2BnDkzq8zHUuWZvJfOay54O8w%3D"
   },
   {
     "id": "birdfy-scrape-1791043370081-wswm",
@@ -1802,8 +1888,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T16:02:50.081Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T16:02:50.081Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003160250/nvc_1791043370081_1791043370347_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=JkwYIhpH%2BSQfQpgg%2FvH5q%2B1RxaueOQDqvyuzufTiszw%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003160250/nvc_1791043370081_1791043370347_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=JkwYIhpH%2BSQfQpgg%2FvH5q%2B1RxaueOQDqvyuzufTiszw%3D"
   },
   {
     "id": "birdfy-scrape-1791037574645-uprm",
@@ -1843,8 +1931,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T14:26:14.645Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T14:26:14.645Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003142614/nvc_1791037574645_1791037575711_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=mShs0b9DiIOFR4O5lB2nrg6fuP0GAL0IjJ6V8ehunsw%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003142614/nvc_1791037574645_1791037575711_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=mShs0b9DiIOFR4O5lB2nrg6fuP0GAL0IjJ6V8ehunsw%3D"
   },
   {
     "id": "birdfy-scrape-1791037405605-3se7",
@@ -1884,8 +1974,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T14:23:25.605Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T14:23:25.605Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003142325/nvc_1791037405605_1791037406805_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=nvZ%2FZ2iMxCGWs776B2XekPyevbCZAaRAbnUgkxbQvig%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003142325/nvc_1791037405605_1791037406805_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=nvZ%2FZ2iMxCGWs776B2XekPyevbCZAaRAbnUgkxbQvig%3D"
   },
   {
     "id": "birdfy-scrape-1791036906560-qfaf",
@@ -1925,8 +2017,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T14:15:06.560Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T14:15:06.560Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003141506/nvc_1791036906560_1791036907226_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=qwu1gRh29qaSCX2PgxXcvCH7nXSZkTJSUTDSUOyJ%2BlQ%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003141506/nvc_1791036906560_1791036907226_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=qwu1gRh29qaSCX2PgxXcvCH7nXSZkTJSUTDSUOyJ%2BlQ%3D"
   },
   {
     "id": "birdfy-scrape-1791036681157-7o49",
@@ -1966,8 +2060,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T14:11:21.157Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T14:11:21.157Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003141121/nvc_1791036681157_1791036681290_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=twiVYiHHF1IcSga28U3%2FeSpuRYIuNQiFD4b9TqK14UQ%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003141121/nvc_1791036681157_1791036681290_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=twiVYiHHF1IcSga28U3%2FeSpuRYIuNQiFD4b9TqK14UQ%3D"
   },
   {
     "id": "birdfy-scrape-1791033184978-4cpp",
@@ -2007,8 +2103,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T13:13:04.978Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T13:13:04.978Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003131304/nvc_1791033184978_1791033184978_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=R%2BCjOiAiD8evFQGXMW0qEt2pm0%2FnFqdsH3zBdxdGXqk%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003131304/nvc_1791033184978_1791033184978_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=R%2BCjOiAiD8evFQGXMW0qEt2pm0%2FnFqdsH3zBdxdGXqk%3D"
   },
   {
     "id": "birdfy-scrape-1791033002789-116g",
@@ -2048,8 +2146,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T13:10:02.789Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T13:10:02.789Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003131002/nvc_1791033002789_1791033002789_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=tjihK8xbQ%2BR4wtZZRCYOADxh46TZy7TVy34U6%2FqBI2Y%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003131002/nvc_1791033002789_1791033002789_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=tjihK8xbQ%2BR4wtZZRCYOADxh46TZy7TVy34U6%2FqBI2Y%3D"
   },
   {
     "id": "birdfy-scrape-1791031583034-2n0e",
@@ -2089,8 +2189,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:46:23.034Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:46:23.034Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124623/nvc_1791031583034_1791031583767_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=afPggZaNjxiSW%2BOdlYk47RsfvnDJsXXO9%2Fp6yvMdljk%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124623/nvc_1791031583034_1791031583767_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=afPggZaNjxiSW%2BOdlYk47RsfvnDJsXXO9%2Fp6yvMdljk%3D"
   },
   {
     "id": "birdfy-scrape-1791031424008-pirp",
@@ -2130,8 +2232,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:43:44.008Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:43:44.008Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124344/nvc_1791031424008_1791031424008_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=qa1deQUmNu9KGZkJX1%2Bd88df70o9LPBooRk8qcLkn5A%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124344/nvc_1791031424008_1791031424008_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=qa1deQUmNu9KGZkJX1%2Bd88df70o9LPBooRk8qcLkn5A%3D"
   },
   {
     "id": "birdfy-scrape-1791031254814-fz4i",
@@ -2171,8 +2275,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:40:54.814Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:40:54.814Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124054/nvc_1791031254814_1791031257947_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=biZrV6Xp%2FJKKt3Xkfn%2Fx2kzEz%2FXNQ1sHhuP5JAV8XU0%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003124054/nvc_1791031254814_1791031257947_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=biZrV6Xp%2FJKKt3Xkfn%2Fx2kzEz%2FXNQ1sHhuP5JAV8XU0%3D"
   },
   {
     "id": "birdfy-scrape-1791031070846-p7c0",
@@ -2212,8 +2318,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:37:50.846Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:37:50.846Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123750/nvc_1791031070846_1791031071712_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=yFh9PZkoqel4U21CU%2FbK1mQwG7ip2Q%2BbngG2yDPIgA8%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123750/nvc_1791031070846_1791031071712_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=yFh9PZkoqel4U21CU%2FbK1mQwG7ip2Q%2BbngG2yDPIgA8%3D"
   },
   {
     "id": "birdfy-scrape-1791030825608-30y1",
@@ -2253,8 +2361,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:33:45.608Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:33:45.608Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123345/nvc_1791030825608_1791030826474_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=tf%2FkIWZ7jdlyaj8Tqg240TEYf6VLu0isTj8u7vpi1ic%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123345/nvc_1791030825608_1791030826474_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=tf%2FkIWZ7jdlyaj8Tqg240TEYf6VLu0isTj8u7vpi1ic%3D"
   },
   {
     "id": "birdfy-scrape-1791030643964-l4cq",
@@ -2294,8 +2404,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:30:43.964Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:30:43.964Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123043/nvc_1791030643964_1791030644030_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=9oi%2B6U6KvwYEaP7LEu%2FfOv09UwkrbMbHa1vAYNrkt2Y%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003123043/nvc_1791030643964_1791030644030_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A50Z&se=2026-10-06T23%3A38%3A50Z&sv=2024-11-04&sr=b&sig=9oi%2B6U6KvwYEaP7LEu%2FfOv09UwkrbMbHa1vAYNrkt2Y%3D"
   },
   {
     "id": "birdfy-scrape-1791030148586-hb1g",
@@ -2335,8 +2447,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:22:28.586Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:22:28.586Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003122228/nvc_1791030148586_1791030148652_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=xBkZ%2BzY0PK%2FR0yTDkMWofwyM%2BGF4g6yNezs0JAYEALY%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003122228/nvc_1791030148586_1791030148652_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=xBkZ%2BzY0PK%2FR0yTDkMWofwyM%2BGF4g6yNezs0JAYEALY%3D"
   },
   {
     "id": "birdfy-scrape-1791029985845-c120",
@@ -2376,8 +2490,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:19:45.845Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:19:45.845Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003121945/nvc_1791029985845_1791029986511_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=fU3VDaDPueIq9UGsmjU%2BZH%2BgMWb2blS%2F4OXc99IHiJA%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003121945/nvc_1791029985845_1791029986511_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=fU3VDaDPueIq9UGsmjU%2BZH%2BgMWb2blS%2F4OXc99IHiJA%3D"
   },
   {
     "id": "birdfy-scrape-1791029820566-ufgu",
@@ -2417,8 +2533,10 @@
       "batteryLevel": 96,
       "isSolarCharging": true,
       "wifiSignal": "Excellent",
-      "rawPIRTimestamp": "2026-10-03T12:17:00.566Z"
-    }
+      "rawPIRTimestamp": "2026-10-03T12:17:00.566Z",
+      "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003121700/nvc_1791029820566_1791029821499_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=yFbDSl%2B5OnzCPfQVWgrAkXrh5COyMpWDK34WDlF9hXc%3D"
+    },
+    "videoUrl": "https://nvs0storage0scus.blob.core.windows.net/nvs-video-30-southcentralus-ue1/09b2ed07c6704af5/447G561042901276/20261003121700/nvc_1791029820566_1791029821499_1920_1080_0.mp4sp=r&st=2026-10-03T23%3A38%3A51Z&se=2026-10-06T23%3A38%3A51Z&sv=2024-11-04&sr=b&sig=yFbDSl%2B5OnzCPfQVWgrAkXrh5COyMpWDK34WDlF9hXc%3D"
   },
   {
     "id": "birdfy-scrape-1790983282583-2fbl",

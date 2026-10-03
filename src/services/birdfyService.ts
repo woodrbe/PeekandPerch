@@ -137,6 +137,38 @@ export function formatCentralTime(dateOrTs: Date | number | string): string {
   }).format(new Date(ms));
 }
 
+/**
+ * Derives the direct 1080p MP4 video URL from a Birdfy camera snapshot/thumbnail URL.
+ */
+export function deriveVideoUrlFromImageUrl(imgUrl?: string): string | undefined {
+  if (!imgUrl) return undefined;
+  if (imgUrl.includes('.mp4')) return imgUrl;
+
+  if (imgUrl.includes('url=')) {
+    try {
+      const match = imgUrl.match(/url=([^&]+)/);
+      if (match) {
+        const decoded = decodeURIComponent(match[1]);
+        return decoded
+          .replace('nvs-pic-', 'nvs-video-')
+          .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+          .replace(/\.jpg(\?|$)/i, '.mp4$1');
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  if (imgUrl.includes('nvs-pic-') || imgUrl.includes('.blob.core.windows.net') || imgUrl.includes('nvts.co') || imgUrl.includes('birdfy')) {
+    return imgUrl
+      .replace('nvs-pic-', 'nvs-video-')
+      .replace(/\.jpeg(\?|$)/i, '.mp4$1')
+      .replace(/\.jpg(\?|$)/i, '.mp4$1');
+  }
+
+  return undefined;
+}
+
 // Fallback pool for offline / demo mode
 const BIRDFY_EVENT_POOL = [
   {
