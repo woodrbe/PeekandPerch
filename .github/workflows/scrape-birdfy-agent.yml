@@ -2,8 +2,8 @@ name: Autonomous Birdfy Web Scraper Agent
 
 on:
   schedule:
-    # Runs twice daily at 12:00 UTC and 18:00 UTC (7:00 AM & 1:00 PM CST)
-    - cron: '0 12,18 * * *'
+    # Runs hourly at the top of every hour
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       device_id:
