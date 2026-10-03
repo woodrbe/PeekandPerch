@@ -68,6 +68,7 @@ jobs:
             echo "✨ New bird detections found by Scraper Agent! Committing to main..."
             git add public/data/sightings.json
             git commit -m "chore(data): automated Birdfy web scraper agent sync [skip ci]"
+            git pull --rebase origin main || true
             git push origin main
           else
             echo "✓ Dataset is already up to date with latest feeder captures."
