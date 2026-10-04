@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
-  X, Star, Calendar, Trash2, 
+  X, Star, Calendar, 
   Sun, Camera, Sparkles, BatteryCharging, 
-  Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink,
+  Wifi, Zap, ShieldCheck, Video, Play, Pause, Volume2, VolumeX, RotateCcw, Image as ImageIcon, ExternalLink,
   Download, Maximize2, AlertCircle
 } from 'lucide-react';
 
@@ -12,7 +12,7 @@ interface SightingDetailModalProps {
   sighting: BirdSighting | null;
   speciesObj?: BirdSpecies;
   onClose: () => void;
-  onDeleteSighting: (id: string) => void;
+  onDeleteSighting?: (id: string) => void;
   onToggleFavorite: (id: string) => void;
   onNextSighting?: () => void;
   onPrevSighting?: () => void;
@@ -30,7 +30,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   sighting,
   speciesObj,
   onClose,
-  onDeleteSighting,
+  onDeleteSighting: _onDeleteSighting,
   onToggleFavorite,
   onNextSighting,
   onPrevSighting,
@@ -97,13 +97,91 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   const [selectedMediaId, setSelectedMediaId] = useState<string>(mediaList[0]?.id || 'photo-0');
   const [videoError, setVideoError] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showControls, setShowControls] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setVideoError(false);
     setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setShowControls(true);
     setSelectedMediaId(mediaList[0]?.id || 'photo-0');
   }, [sighting.id]);
+
+  const handleUserActivity = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    if (isPlaying) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 2500);
+    }
+  };
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setShowControls(true);
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    } else {
+      handleUserActivity();
+    }
+    return () => {
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
+  }, [isPlaying]);
+
+  const togglePlay = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.paused || vid.ended) {
+      vid.play().catch(() => {});
+    } else {
+      vid.pause();
+    }
+  };
+
+  const toggleMute = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const toggleFullscreen = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.requestFullscreen) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      } else {
+        vid.requestFullscreen().catch(() => {});
+      }
+    } else if ((vid as any).webkitEnterFullscreen) {
+      (vid as any).webkitEnterFullscreen();
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime);
+    if (videoRef.current) {
+      videoRef.current.currentTime = newTime;
+    }
+  };
+
+  const formatVideoTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -117,13 +195,6 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   }, [onClose, onNextSighting, onPrevSighting]);
 
   const currentMedia = mediaList.find((m) => m.id === selectedMediaId) || mediaList[0];
-
-  const handleDelete = () => {
-    if (confirm(`Delete the "${sighting.speciesName}" sighting record from your garden log?`)) {
-      onDeleteSighting(sighting.id);
-      onClose();
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/85 backdrop-blur-md animate-fade-in font-pixar-body">
@@ -142,7 +213,11 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
         <div className="md:w-3/5 bg-stone-950 flex flex-col justify-between overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-stone-800">
           
           {/* Main Media Viewport */}
-          <div className="relative flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[460px] flex items-center justify-center bg-black overflow-hidden group">
+          <div 
+            className="relative flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[460px] flex items-center justify-center bg-black overflow-hidden group select-none"
+            onMouseMove={handleUserActivity}
+            onTouchStart={handleUserActivity}
+          >
             
             {currentMedia?.type === 'video' ? (
               videoError ? (
@@ -175,25 +250,95 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                     key={currentMedia.url}
                     src={currentMedia.url}
                     poster={bestThumbnail}
-                    controls
                     preload="metadata"
                     playsInline
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                    onEnded={() => setIsPlaying(false)}
+                    onClick={togglePlay}
+                    onPlay={() => {
+                      setIsPlaying(true);
+                      handleUserActivity();
+                    }}
+                    onPause={() => {
+                      setIsPlaying(false);
+                      setShowControls(true);
+                    }}
+                    onEnded={() => {
+                      setIsPlaying(false);
+                      setShowControls(true);
+                    }}
+                    onTimeUpdate={() => {
+                      if (videoRef.current) {
+                        setCurrentTime(videoRef.current.currentTime);
+                      }
+                    }}
+                    onLoadedMetadata={() => {
+                      if (videoRef.current) {
+                        setDuration(videoRef.current.duration);
+                      }
+                    }}
                     onError={() => setVideoError(true)}
-                    className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
+                    className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black cursor-pointer"
                   />
-                  {!isPlaying && (
-                    <button
-                      type="button"
-                      onClick={() => videoRef.current?.play()}
-                      className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-rose-600/90 hover:bg-rose-500 text-white shadow-2xl flex items-center justify-center cursor-pointer transition-all hover:scale-110 z-10 border-2 border-white/80"
-                      title="Play 1080p Video Clip"
-                    >
-                      <Play className="w-8 h-8 fill-white translate-x-0.5" />
-                    </button>
-                  )}
+
+                  {/* Custom Bottom Video Control Bar (PC & Mobile iPad/iPhone unified at the bottom) */}
+                  <div
+                    className={`absolute bottom-0 inset-x-0 z-20 px-4 py-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-opacity duration-300 flex flex-col gap-1.5 ${
+                      showControls || !isPlaying ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Progress Bar / Scrubber */}
+                    <div className="w-full flex items-center">
+                      <input
+                        type="range"
+                        min={0}
+                        max={duration || 100}
+                        step="0.1"
+                        value={currentTime}
+                        onChange={handleSeek}
+                        className="w-full h-1.5 bg-stone-700/80 rounded-lg appearance-none cursor-pointer accent-rose-500 hover:h-2 transition-all"
+                      />
+                    </div>
+
+                    {/* Bottom Controls Row */}
+                    <div className="flex items-center justify-between text-white text-xs font-pixar-sub">
+                      {/* Left: Play/Pause/Replay + Time readout */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={togglePlay}
+                          className="p-1.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white shadow-md transition cursor-pointer hover:scale-105 active:scale-95"
+                          title={isPlaying ? 'Pause' : 'Play'}
+                        >
+                          {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white translate-x-0.5" />}
+                        </button>
+
+                        <span className="font-mono text-xs text-stone-300 tracking-wider">
+                          {formatVideoTime(currentTime)} / {formatVideoTime(duration)}
+                        </span>
+                      </div>
+
+                      {/* Right: Audio Mute & Fullscreen */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={toggleMute}
+                          className="p-1.5 rounded-full bg-stone-800/80 hover:bg-stone-700 text-stone-300 hover:text-white transition cursor-pointer"
+                          title={isMuted ? 'Unmute' : 'Mute'}
+                        >
+                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={toggleFullscreen}
+                          className="p-1.5 rounded-full bg-stone-800/80 hover:bg-stone-700 text-stone-300 hover:text-white transition cursor-pointer"
+                          title="Fullscreen"
+                        >
+                          <Maximize2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )
             ) : (
@@ -216,19 +361,11 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
               {currentMedia?.type === 'video' && !videoError ? (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (videoRef.current) {
-                      if (isPlaying) {
-                        videoRef.current.pause();
-                      } else {
-                        videoRef.current.play();
-                      }
-                    }
-                  }}
+                  onClick={togglePlay}
                   className="px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40 cursor-pointer transition hover:scale-105"
                   title={isPlaying ? "Pause 1080p Video Clip" : "Play 1080p Video Clip"}
                 >
-                  <Play className="w-3 h-3 fill-white" />
+                  {isPlaying ? <Pause className="w-3 h-3 fill-white" /> : <Play className="w-3 h-3 fill-white" />}
                   <span>{isPlaying ? 'Playing 1080p Video' : 'Click to Play 1080p Video'}</span>
                 </button>
               ) : isBirdfy ? (
@@ -451,24 +588,6 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
               </div>
             )}
 
-          </div>
-
-          {/* Action Footer */}
-          <div className="pt-4 border-t-2 border-stone-100 flex items-center justify-between font-pixar-sub">
-            <button
-              onClick={handleDelete}
-              className="px-3.5 py-2 rounded-full text-xs font-bold text-rose-600 hover:bg-rose-50 transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Delete Record</span>
-            </button>
-
-            <button
-              onClick={onClose}
-              className="px-6 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-pixar-title text-xs transition cursor-pointer shadow-md hover:scale-102"
-            >
-              Close Lightbox
-            </button>
           </div>
 
         </div>
