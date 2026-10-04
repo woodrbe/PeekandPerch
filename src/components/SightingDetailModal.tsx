@@ -205,6 +205,22 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                   <span>Birdfy 1080p Snapshot</span>
                 </div>
               ) : null}
+
+              {/* Quick Switch to Video Button when viewing photos */}
+              {currentMedia?.type !== 'video' && mediaList.some((m) => m.type === 'video') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const vidItem = mediaList.find((m) => m.type === 'video');
+                    if (vidItem) setSelectedMediaId(vidItem.id);
+                  }}
+                  className="px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40 cursor-pointer transition hover:scale-105"
+                  title="Switch back to HD Video Clip"
+                >
+                  <Play className="w-3 h-3 fill-white" />
+                  <span>Watch Video Clip</span>
+                </button>
+              )}
             </div>
 
             {/* Quick Sighting Navigation (Prev / Next Record) */}
@@ -278,14 +294,16 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                     )}
 
                     {item.type === 'video' ? (
-                      <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/20 flex items-center justify-center transition-colors pointer-events-none">
-                        <div className="p-1 rounded-full bg-stone-900/80 text-amber-400 shadow-md">
-                          <Play className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <div className="absolute inset-0 bg-black/40 group-hover/thumb:bg-black/20 flex flex-col items-center justify-center transition-colors pointer-events-none">
+                        <div className="p-1.5 rounded-full bg-rose-600/95 text-white shadow-md scale-95 group-hover/thumb:scale-105 transition-transform">
+                          <Play className="w-3 h-3 fill-white text-white" />
                         </div>
                       </div>
                     ) : null}
 
-                    <span className="absolute bottom-0 inset-x-0 bg-stone-950/85 text-[9px] font-pixar-sub font-bold text-white text-center truncate py-0.5 px-1 pointer-events-none">
+                    <span className={`absolute bottom-0 inset-x-0 text-[9px] font-pixar-sub font-bold text-center truncate py-0.5 px-1 pointer-events-none ${
+                      item.type === 'video' ? 'bg-rose-950/90 text-rose-200 border-t border-rose-800/40' : 'bg-stone-950/85 text-white'
+                    }`}>
                       {item.label}
                     </span>
                   </button>
