@@ -3,7 +3,7 @@ import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
   X, Star, Calendar, Trash2, 
-  User, Sun, Camera, Sparkles, BatteryCharging, 
+  Sun, Camera, Sparkles, BatteryCharging, 
   Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink,
   Download, Maximize2, AlertCircle
 } from 'lucide-react';
@@ -362,21 +362,13 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
               )}
             </div>
 
-            {/* Time & Observer Metadata */}
-            <div className="bg-stone-50 p-4 rounded-2xl border-2 border-stone-200 space-y-2 text-xs font-pixar-sub font-semibold">
+            {/* Time & Conditions Metadata */}
+            <div className="bg-stone-50 p-4 rounded-2xl border-2 border-stone-200 text-xs font-pixar-sub font-semibold">
               <div className="flex items-center justify-between text-stone-700">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-amber-600" />
                   {sighting.date} at {sighting.time}
                 </span>
-                <span className="flex items-center gap-1 font-bold text-stone-900">
-                  <User className="w-3.5 h-3.5 text-stone-400" />
-                  {sighting.spottedBy}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between text-stone-600 border-t-2 border-stone-200/60 pt-2">
-                <span className="text-stone-700 font-semibold">Conditions &amp; Environment</span>
                 <span className="text-sky-700 font-bold flex items-center gap-1.5">
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
                   {sighting.weather}
@@ -443,16 +435,6 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 )}
               </div>
             )}
-
-            {/* Field Observation Notes */}
-            <div className="space-y-1">
-              <h4 className="text-[11px] font-pixar-title text-stone-500 uppercase tracking-wider">
-                FIELD OBSERVATION NOTES
-              </h4>
-              <p className="text-xs font-pixar-body font-semibold text-stone-800 bg-amber-50/80 p-3.5 rounded-2xl border-2 border-amber-200/80 leading-relaxed italic">
-                "{sighting.notes}"
-              </p>
-            </div>
 
             {/* Species Favorite Treat & Call */}
             {speciesObj && (

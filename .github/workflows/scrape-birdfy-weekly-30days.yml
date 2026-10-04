@@ -1,16 +1,16 @@
-name: Birdfy Daytime Scraper (Hourly)
+name: Birdfy Weekly 30-Day Deep Scraper
 
 on:
   schedule:
-    # Runs hourly from 6:00 AM to 7:00 PM Central Time (11:00 UTC to 00:00 UTC daily)
-    - cron: '0 11-23,0 * * *'
+    # Runs weekly on Sunday at 12:00 AM Central Time (05:00 UTC Sunday)
+    - cron: '0 5 * * 0'
   workflow_dispatch:
     inputs:
       days:
-        description: 'Number of past days to scrape (default: 1)'
+        description: 'Number of past days to scrape (default: 30)'
         required: false
         type: string
-        default: '1'
+        default: '30'
       device_id:
         description: 'Target Feeder Device ID (optional, overrides secret)'
         required: false
@@ -24,9 +24,10 @@ permissions:
   contents: write
 
 jobs:
-  scrape:
-    name: Scrape my.birdfy.com Detections
+  scrape-30days:
+    name: Scrape Last 30 Days from my.birdfy.com
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout Repository
@@ -46,7 +47,7 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run Autonomous Scraper Agent
+      - name: Run Autonomous 30-Day Scraper Agent
         env:
           TZ: "America/Chicago"
           BIRDFY_EMAIL: ${{ secrets.BIRDFY_EMAIL }}
@@ -58,12 +59,12 @@ jobs:
           FEEDER_ZIP: ${{ secrets.FEEDER_ZIP || vars.FEEDER_ZIP }}
           HEADLESS: "true"
         run: |
-          CLI_ARGS=""
+          CLI_ARGS="--days 30"
+          if [ -n "${{ inputs.days }}" ]; then
+            CLI_ARGS="--days \"${{ inputs.days }}\""
+          fi
           if [ -n "${{ inputs.max_events }}" ]; then
             CLI_ARGS="$CLI_ARGS --max \"${{ inputs.max_events }}\""
-          fi
-          if [ -n "${{ inputs.days }}" ]; then
-            CLI_ARGS="$CLI_ARGS --days \"${{ inputs.days }}\""
           fi
           eval "npx tsx scripts/scrape-birdfy-agent.ts $CLI_ARGS"
 
@@ -73,11 +74,12 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           if [[ -n $(git status --porcelain public/data/sightings.json) ]]; then
-            echo "✨ New bird detections found by Scraper Agent! Committing to main..."
+            echo "✨ New bird detections found by Weekly 30-Day Scraper! Committing to main..."
             git add public/data/sightings.json
-            git commit -m "chore(data): automated Birdfy web scraper agent sync [skip ci]"
+            git commit -m "chore(data): weekly 30-day Birdfy historical sync [skip ci]"
             git pull --rebase origin main || true
             git push origin main
           else
             echo "✓ Dataset is already up to date with latest feeder captures."
           fi
+
