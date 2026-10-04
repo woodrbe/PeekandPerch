@@ -41,6 +41,14 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   const videoUrl = sighting.videoUrl || sighting.birdfy?.videoUrl;
   const catalogFallback = speciesObj?.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === sighting.speciesName.toLowerCase())?.imageUrl;
 
+  // Resolve the best available preview snapshot for the video thumbnail / poster
+  const bestThumbnail =
+    sighting.imageUrl ||
+    (Array.isArray(sighting.images) && sighting.images.find((img) => !!img)) ||
+    (Array.isArray(sighting.birdfy?.images) && sighting.birdfy.images.find((img) => !!img)) ||
+    catalogFallback ||
+    '';
+
   // Build media collection (video + all distinct snapshots)
   const mediaList: MediaItem[] = [];
 
@@ -49,7 +57,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
       id: 'video-main',
       type: 'video',
       url: videoUrl,
-      thumbnailUrl: sighting.imageUrl || catalogFallback || '',
+      thumbnailUrl: bestThumbnail,
       label: 'HD Video Clip',
     });
   }
@@ -161,8 +169,9 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 <video
                   key={currentMedia.url}
                   src={currentMedia.url}
+                  poster={bestThumbnail}
                   controls
-                  autoPlay
+                  preload="metadata"
                   playsInline
                   onError={() => setVideoError(true)}
                   className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
@@ -188,7 +197,7 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
               {currentMedia?.type === 'video' && !videoError ? (
                 <div className="px-3 py-1 rounded-full bg-rose-600/90 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40">
                   <Play className="w-3 h-3 fill-white" />
-                  <span>1080p Video Playing</span>
+                  <span>1080p Video Clip</span>
                 </div>
               ) : isBirdfy ? (
                 <div className="px-3 py-1 rounded-full bg-stone-900/90 text-amber-300 text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-amber-400/40">
@@ -239,32 +248,44 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 return (
                   <button
                     key={item.id}
+                    type="button"
                     onClick={() => setSelectedMediaId(item.id)}
-                    className={`relative rounded-xl overflow-hidden shrink-0 w-20 h-14 border-2 transition-all cursor-pointer group/thumb ${
+                    className={`relative rounded-xl overflow-hidden shrink-0 w-20 h-14 border-2 transition-all cursor-pointer group/thumb bg-stone-950 flex items-center justify-center ${
                       isSelected
                         ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105 shadow-md shadow-amber-400/20'
-                        : 'border-stone-700 opacity-60 hover:opacity-100 hover:border-stone-400'
+                        : 'border-stone-700 opacity-70 hover:opacity-100 hover:border-stone-400'
                     }`}
+                    title={item.label}
                   >
-                    <img
-                      src={item.thumbnailUrl}
-                      alt={item.label}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        if (catalogFallback && e.currentTarget.src !== catalogFallback) {
-                          e.currentTarget.src = catalogFallback;
-                        }
-                      }}
-                    />
+                    {item.thumbnailUrl ? (
+                      <img
+                        src={item.thumbnailUrl}
+                        alt={item.label}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          if (catalogFallback && e.currentTarget.src !== catalogFallback) {
+                            e.currentTarget.src = catalogFallback;
+                          } else {
+                            e.currentTarget.style.display = 'none';
+                          }
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-stone-800 to-stone-950 text-stone-400">
+                        {item.type === 'video' ? <Video className="w-5 h-5 text-amber-400" /> : <Camera className="w-5 h-5 text-sky-400" />}
+                      </div>
+                    )}
 
                     {item.type === 'video' ? (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <Play className="w-4 h-4 fill-amber-400 text-amber-400 drop-shadow-md" />
+                      <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/20 flex items-center justify-center transition-colors pointer-events-none">
+                        <div className="p-1 rounded-full bg-stone-900/80 text-amber-400 shadow-md">
+                          <Play className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        </div>
                       </div>
                     ) : null}
 
-                    <span className="absolute bottom-0 inset-x-0 bg-stone-950/85 text-[9px] font-pixar-sub font-bold text-white text-center truncate py-0.5 px-1">
+                    <span className="absolute bottom-0 inset-x-0 bg-stone-950/85 text-[9px] font-pixar-sub font-bold text-white text-center truncate py-0.5 px-1 pointer-events-none">
                       {item.label}
                     </span>
                   </button>

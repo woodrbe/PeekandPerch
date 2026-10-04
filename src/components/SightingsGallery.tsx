@@ -612,7 +612,7 @@ export const SightingsGallery: React.FC<SightingsGalleryProps> = ({
                     {/* Real Bird Photograph Container */}
                     <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-stone-900 border-2 border-stone-100">
                       <img
-                        src={s.imageUrl || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === s.speciesName.toLowerCase())?.imageUrl}
+                        src={s.imageUrl || (Array.isArray(s.images) && s.images.find(Boolean)) || (Array.isArray(s.birdfy?.images) && s.birdfy.images.find(Boolean)) || BACKYARD_SPECIES.find(b => b.name.toLowerCase() === s.speciesName.toLowerCase())?.imageUrl}
                         alt={s.speciesName}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
