@@ -197,8 +197,8 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
   const currentMedia = mediaList.find((m) => m.id === selectedMediaId) || mediaList[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/85 backdrop-blur-md animate-fade-in font-pixar-body">
-      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[94vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/85 backdrop-blur-md animate-fade-in font-pixar-body">
+      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-y-auto md:overflow-hidden border-2 border-sky-100 flex flex-col md:flex-row max-h-[94vh]">
         
         {/* CLOSE BUTTON */}
         <button
@@ -210,11 +210,11 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
         </button>
 
         {/* LEFT / TOP: High Res Photo / Video Player & Carousel Column */}
-        <div className="md:w-3/5 bg-stone-950 flex flex-col justify-between overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-stone-800">
+        <div className="md:w-3/5 bg-stone-950 flex flex-col justify-between overflow-hidden border-b-2 md:border-b-0 md:border-r-2 border-stone-800 shrink-0 md:shrink">
           
           {/* Main Media Viewport */}
           <div 
-            className="relative flex-1 min-h-[280px] sm:min-h-[360px] md:min-h-[460px] flex items-center justify-center bg-black overflow-hidden group select-none"
+            className="relative flex-1 min-h-[240px] sm:min-h-[320px] md:min-h-[440px] flex items-center justify-center bg-black overflow-hidden group select-none"
             onMouseMove={handleUserActivity}
             onTouchStart={handleUserActivity}
           >
@@ -407,9 +407,9 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
             </button>
           </div>
 
-          {/* Bottom Thumbnail Strip (Just like Birdfy modal) */}
+          {/* Bottom Thumbnail Strip */}
           {mediaList.length > 1 && (
-            <div className="p-3 bg-stone-900/95 border-t border-stone-800 flex items-center justify-center gap-2.5 overflow-x-auto scrollbar-thin">
+            <div className="p-3 sm:p-3.5 bg-stone-900/95 border-t border-stone-800 flex items-center justify-start sm:justify-center gap-3 overflow-x-auto scrollbar-thin shrink-0 overscroll-x-contain">
               {mediaList.map((item) => {
                 const isSelected = item.id === (currentMedia?.id || mediaList[0].id);
                 return (
@@ -417,10 +417,10 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                     key={item.id}
                     type="button"
                     onClick={() => setSelectedMediaId(item.id)}
-                    className={`relative rounded-xl overflow-hidden shrink-0 w-20 h-14 border-2 transition-all cursor-pointer group/thumb bg-stone-950 flex items-center justify-center ${
+                    className={`relative rounded-2xl overflow-hidden shrink-0 w-24 sm:w-28 h-16 sm:h-18 border-2 transition-all cursor-pointer group/thumb bg-stone-950 flex items-center justify-center ${
                       isSelected
                         ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105 shadow-md shadow-amber-400/20'
-                        : 'border-stone-700 opacity-70 hover:opacity-100 hover:border-stone-400'
+                        : 'border-stone-700 opacity-75 hover:opacity-100 hover:border-stone-400'
                     }`}
                     title={item.label}
                   >
@@ -440,19 +440,19 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-stone-800 to-stone-950 text-stone-400">
-                        {item.type === 'video' ? <Video className="w-5 h-5 text-amber-400" /> : <Camera className="w-5 h-5 text-sky-400" />}
+                        {item.type === 'video' ? <Video className="w-6 h-6 text-amber-400" /> : <Camera className="w-6 h-6 text-sky-400" />}
                       </div>
                     )}
 
                     {item.type === 'video' ? (
                       <div className="absolute inset-0 bg-black/40 group-hover/thumb:bg-black/20 flex flex-col items-center justify-center transition-colors pointer-events-none">
                         <div className="p-1.5 rounded-full bg-rose-600/95 text-white shadow-md scale-95 group-hover/thumb:scale-105 transition-transform">
-                          <Play className="w-3 h-3 fill-white text-white" />
+                          <Play className="w-3.5 h-3.5 fill-white text-white translate-x-0.5" />
                         </div>
                       </div>
                     ) : null}
 
-                    <span className={`absolute bottom-0 inset-x-0 text-[9px] font-pixar-sub font-bold text-center truncate py-0.5 px-1 pointer-events-none ${
+                    <span className={`absolute bottom-0 inset-x-0 text-[10px] sm:text-[11px] font-pixar-sub font-bold text-center truncate py-1 px-1.5 pointer-events-none ${
                       item.type === 'video' ? 'bg-rose-950/90 text-rose-200 border-t border-rose-800/40' : 'bg-stone-950/85 text-white'
                     }`}>
                       {item.label}
