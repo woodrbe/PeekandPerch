@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
-  X, Star, Calendar, Trash2, ChevronLeft, 
-  ChevronRight, User, Sun, Camera, Sparkles, BatteryCharging, 
+  X, Star, Calendar, Trash2, 
+  User, Sun, Camera, Sparkles, BatteryCharging, 
   Wifi, Zap, ShieldCheck, Video, Play, Image as ImageIcon, ExternalLink,
   Download, Maximize2, AlertCircle
 } from 'lucide-react';
@@ -257,27 +257,6 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                 </button>
               )}
             </div>
-
-            {/* Quick Sighting Navigation (Prev / Next Record) */}
-            {onPrevSighting && (
-              <button
-                onClick={onPrevSighting}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-stone-900/75 hover:bg-stone-900 text-white backdrop-blur-md transition cursor-pointer hover:scale-110 shadow-lg border border-stone-700"
-                title="Previous sighting (Left Arrow)"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-            )}
-
-            {onNextSighting && (
-              <button
-                onClick={onNextSighting}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-stone-900/75 hover:bg-stone-900 text-white backdrop-blur-md transition cursor-pointer hover:scale-110 shadow-lg border border-stone-700"
-                title="Next sighting (Right Arrow)"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            )}
 
             {/* Star Favorite Button */}
             <button
