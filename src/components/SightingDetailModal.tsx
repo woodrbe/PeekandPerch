@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BirdSighting, BirdSpecies } from '../types';
 import { BACKYARD_SPECIES } from '../data/birdsData';
 import { 
@@ -96,9 +96,12 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
 
   const [selectedMediaId, setSelectedMediaId] = useState<string>(mediaList[0]?.id || 'photo-0');
   const [videoError, setVideoError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setVideoError(false);
+    setIsPlaying(false);
     setSelectedMediaId(mediaList[0]?.id || 'photo-0');
   }, [sighting.id]);
 
@@ -166,16 +169,32 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                   )}
                 </div>
               ) : (
-                <video
-                  key={currentMedia.url}
-                  src={currentMedia.url}
-                  poster={bestThumbnail}
-                  controls
-                  preload="metadata"
-                  playsInline
-                  onError={() => setVideoError(true)}
-                  className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
-                />
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <video
+                    ref={videoRef}
+                    key={currentMedia.url}
+                    src={currentMedia.url}
+                    poster={bestThumbnail}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    onEnded={() => setIsPlaying(false)}
+                    onError={() => setVideoError(true)}
+                    className="w-full h-full object-contain max-h-[380px] md:max-h-[520px] bg-black"
+                  />
+                  {!isPlaying && (
+                    <button
+                      type="button"
+                      onClick={() => videoRef.current?.play()}
+                      className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-rose-600/90 hover:bg-rose-500 text-white shadow-2xl flex items-center justify-center cursor-pointer transition-all hover:scale-110 z-10 border-2 border-white/80"
+                      title="Play 1080p Video Clip"
+                    >
+                      <Play className="w-8 h-8 fill-white translate-x-0.5" />
+                    </button>
+                  )}
+                </div>
               )
             ) : (
               <img
@@ -195,10 +214,23 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
             {/* Media Overlay Badges */}
             <div className="absolute top-4 left-16 z-20 flex items-center gap-2">
               {currentMedia?.type === 'video' && !videoError ? (
-                <div className="px-3 py-1 rounded-full bg-rose-600/90 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (videoRef.current) {
+                      if (isPlaying) {
+                        videoRef.current.pause();
+                      } else {
+                        videoRef.current.play();
+                      }
+                    }
+                  }}
+                  className="px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40 cursor-pointer transition hover:scale-105"
+                  title={isPlaying ? "Pause 1080p Video Clip" : "Play 1080p Video Clip"}
+                >
                   <Play className="w-3 h-3 fill-white" />
-                  <span>1080p Video Clip</span>
-                </div>
+                  <span>{isPlaying ? 'Playing 1080p Video' : 'Click to Play 1080p Video'}</span>
+                </button>
               ) : isBirdfy ? (
                 <div className="px-3 py-1 rounded-full bg-stone-900/90 text-amber-300 text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-amber-400/40">
                   <Camera className="w-3.5 h-3.5 text-sky-400" />
@@ -212,10 +244,13 @@ export const SightingDetailModal: React.FC<SightingDetailModalProps> = ({
                   type="button"
                   onClick={() => {
                     const vidItem = mediaList.find((m) => m.type === 'video');
-                    if (vidItem) setSelectedMediaId(vidItem.id);
+                    if (vidItem) {
+                      setSelectedMediaId(vidItem.id);
+                      setTimeout(() => videoRef.current?.play(), 100);
+                    }
                   }}
                   className="px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-pixar-sub font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg border border-rose-400/40 cursor-pointer transition hover:scale-105"
-                  title="Switch back to HD Video Clip"
+                  title="Switch back and play HD Video Clip"
                 >
                   <Play className="w-3 h-3 fill-white" />
                   <span>Watch Video Clip</span>
