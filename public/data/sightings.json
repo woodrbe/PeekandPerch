@@ -573,7 +573,7 @@
     ],
     "videoUrl": "https://cdn-nvs-us-east-1-videomotion.nvts.co/09b2ed07c6704af5/447G561042901276/20261008143905/nvc_1791470345437_1791470364291.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiMDliMmVkMDdjNjcwNGFmNSIsInMiOiI0NDdHNTYxMDQyOTAxMjc2IiwiZXhwIjoxNzkxNzM5MjcwfQ==.KmD1et0QI8RMJsDw0yvyAgpO+i814xORTW3gi/oa7bs=",
     "date": "2026-10-08",
-    "time": "9:39 AM",
+    "time": "11:59 AM",
     "location": "Tube Feeder",
     "behavior": "Feeder Snack",
     "weather": "Sunny, 68°F",
@@ -7697,7 +7697,7 @@
     "notes": "Scraped from Birdfy Feeder: House Finch (Male) visit recorded.",
     "isFavorite": false,
     "spottedBy": "Birdfy Scraper Agent (Backyard Birdfy Feeder)",
-    "temperature": "70°F",
+    "temperature": "78°F",
     "birdfy": {
       "isBirdfyCapture": true,
       "feederName": "Backyard Birdfy Feeder",
@@ -20279,7 +20279,7 @@
     "notes": "Scraped from Birdfy Feeder: Tufted Titmouse visit recorded.",
     "isFavorite": false,
     "spottedBy": "Birdfy Scraper Agent (Backyard Birdfy Feeder)",
-    "temperature": "62°F",
+    "temperature": "59°F",
     "birdfy": {
       "isBirdfyCapture": true,
       "feederName": "Backyard Birdfy Feeder",
@@ -26258,7 +26258,7 @@
     "notes": "Scraped from Birdfy Feeder: House Finch (Female) visit recorded.",
     "isFavorite": false,
     "spottedBy": "Birdfy Scraper Agent (Backyard Birdfy Feeder)",
-    "temperature": "62°F",
+    "temperature": "59°F",
     "birdfy": {
       "isBirdfyCapture": true,
       "feederName": "Backyard Birdfy Feeder",
@@ -30523,7 +30523,7 @@
     "notes": "Scraped from Birdfy Feeder: Tufted Titmouse visit recorded.",
     "isFavorite": false,
     "spottedBy": "Birdfy Scraper Agent (Backyard Birdfy Feeder)",
-    "temperature": "58°F",
+    "temperature": "56°F",
     "birdfy": {
       "isBirdfyCapture": true,
       "feederName": "Backyard Birdfy Feeder",
