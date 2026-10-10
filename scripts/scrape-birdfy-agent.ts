@@ -1130,26 +1130,35 @@ async function runScraperAgent() {
     // Automatically archive media to Cloudflare R2 and sync to Cloudflare D1
     if (newSightingsFormatted.length > 0) {
       if (process.env.R2_SECRET_ACCESS_KEY && process.env.R2_ACCESS_KEY_ID) {
-        console.log(`\n☁️ [Cloudflare R2] Archiving media for ${newSightingsFormatted.length} newly discovered visits...`);
+        console.log(`\n☁️ [Cloudflare R2] Archiving media for ${newSightingsFormatted.length} newly discovered visits (Concurrency: 5)...`);
         let archivedCount = 0;
-        for (let i = 0; i < newSightingsFormatted.length; i++) {
-          const s = newSightingsFormatted[i];
-          try {
-            const res = await archiveSightingMedia(s);
-            if (res.archived) {
-              s.videoUrl = res.videoUrl;
-              s.imageUrl = res.imageUrl;
-              if (res.images) s.images = res.images;
-              if (s.birdfy) {
-                s.birdfy.videoUrl = res.videoUrl;
-                s.birdfy.images = res.images;
+        let nextIdx = 0;
+        const CONCURRENCY = 5;
+
+        async function archiverWorker() {
+          while (nextIdx < newSightingsFormatted.length) {
+            const i = nextIdx++;
+            const s = newSightingsFormatted[i];
+            try {
+              const res = await archiveSightingMedia(s);
+              if (res.archived) {
+                s.videoUrl = res.videoUrl;
+                s.imageUrl = res.imageUrl;
+                if (res.images) s.images = res.images;
+                if (s.birdfy) {
+                  s.birdfy.videoUrl = res.videoUrl;
+                  s.birdfy.images = res.images;
+                }
+                archivedCount++;
               }
-              archivedCount++;
+            } catch (err: any) {
+              console.warn(`   ⚠️ Warning: failed to archive media for sighting ${s.id}: ${err.message}`);
             }
-          } catch (err: any) {
-            console.warn(`   ⚠️ Warning: failed to archive media for sighting ${s.id}: ${err.message}`);
           }
         }
+
+        const workers = Array.from({ length: CONCURRENCY }, () => archiverWorker());
+        await Promise.all(workers);
         console.log(`✅ [Cloudflare R2] Media archiving complete (${archivedCount} visits stored permanently).`);
       }
 

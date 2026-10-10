@@ -69,13 +69,13 @@ def is_daylight_in_columbia_tn(buffer_minutes: int = 15) -> tuple[bool, str]:
         msg = f"🌙 Outside daylight hours in Columbia, TN (Sunrise: {sunrise_str}, Sunset: {sunset_str})."
         return False, msg
 
-# Build container image with Node.js 20 and Chromium dependencies
+# Build container image with Node.js 22 LTS and Chromium dependencies
 scraper_image = (
     modal.Image.debian_slim(python_version="3.11")
     .env({"TZ": "America/Chicago"})
     .apt_install("curl", "git", "ca-certificates", "tzdata")
     .run_commands(
-        "curl -fsSL https://deb.nodesource.com/setup_20.x | bash -",
+        "curl -fsSL https://deb.nodesource.com/setup_22.x | bash -",
         "apt-get install -y nodejs",
     )
     .add_local_file("package.json", remote_path="/app/package.json", copy=True)
@@ -97,7 +97,7 @@ scraper_image = (
     image=scraper_image,
     schedule=modal.Cron("*/30 5-21 * * *", timezone="America/Chicago"),
     secrets=[modal.Secret.from_dotenv()],
-    timeout=600,
+    timeout=900,
 )
 def run_scraper(force: bool = False):
     is_daylight, status = is_daylight_in_columbia_tn()
