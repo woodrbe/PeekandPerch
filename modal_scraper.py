@@ -25,17 +25,17 @@ scraper_image = (
         "curl -fsSL https://deb.nodesource.com/setup_20.x | bash -",
         "apt-get install -y nodejs",
     )
-    .add_local_file("package.json", remote_path="/app/package.json")
-    .add_local_file("package-lock.json", remote_path="/app/package-lock.json")
-    .add_local_file("tsconfig.json", remote_path="/app/tsconfig.json")
+    .add_local_file("package.json", remote_path="/app/package.json", copy=True)
+    .add_local_file("package-lock.json", remote_path="/app/package-lock.json", copy=True)
+    .add_local_file("tsconfig.json", remote_path="/app/tsconfig.json", copy=True)
     .workdir("/app")
     .run_commands(
         "npm ci",
         "npx playwright install --with-deps chromium",
     )
-    .add_local_dir("scripts", remote_path="/app/scripts")
-    .add_local_dir("src", remote_path="/app/src")
-    .add_local_dir("public", remote_path="/app/public")
+    .add_local_dir("scripts", remote_path="/app/scripts", copy=True)
+    .add_local_dir("src", remote_path="/app/src", copy=True)
+    .add_local_dir("public", remote_path="/app/public", copy=True)
 )
 
 # Runs every 30 minutes from 6:00 AM to 8:30 PM Central Time (active bird feeder hours)

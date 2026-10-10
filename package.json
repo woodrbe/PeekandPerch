@@ -16,8 +16,8 @@
     "migrate:d1": "tsx scripts/migrate-to-cloudflare.ts",
     "migrate:r2": "tsx scripts/migrate-to-cloudflare.ts --archive-media",
     "migrate:cloudflare:all": "tsx scripts/migrate-to-cloudflare.ts --archive-media",
-    "modal:run": "python -m modal run modal_scraper.py",
-    "modal:deploy": "python -m modal deploy modal_scraper.py",
+    "modal:run": "python -X utf8 -m modal run modal_scraper.py",
+    "modal:deploy": "python -X utf8 -m modal deploy modal_scraper.py",
     "deploy:vercel": "vercel --prod"
   },
   "dependencies": {
