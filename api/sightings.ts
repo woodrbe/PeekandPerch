@@ -42,14 +42,12 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // Default to 250 most recent records to prevent Vercel 4.5MB payload limit & timeout
+    // Return all records (up to 2000)
     const requestedLimit = req.query?.limit;
-    let limit = 250;
-    if (requestedLimit === 'all') {
-      limit = 1000;
-    } else if (requestedLimit) {
+    let limit = 2000;
+    if (requestedLimit && requestedLimit !== 'all') {
       const parsed = parseInt(String(requestedLimit), 10);
-      if (!isNaN(parsed) && parsed > 0) limit = Math.min(parsed, 1000);
+      if (!isNaN(parsed) && parsed > 0) limit = Math.min(parsed, 2000);
     }
 
     const url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/query`;
@@ -87,7 +85,12 @@ export default async function handler(req: any, res: any) {
         // ignore
       }
       try {
-        if (row.birdfy) birdfy = JSON.parse(row.birdfy);
+        if (row.birdfy) {
+          birdfy = typeof row.birdfy === 'string' ? JSON.parse(row.birdfy) : row.birdfy;
+          // Strip duplicated videoUrl & images inside birdfy object to save ~2 MB bandwidth
+          delete birdfy.videoUrl;
+          delete birdfy.images;
+        }
       } catch {
         // ignore
       }

@@ -46,7 +46,11 @@ export const onRequestGet = async (context: { env: Env; request: Request }) => {
         // ignore
       }
       try {
-        if (row.birdfy) birdfy = JSON.parse(row.birdfy);
+        if (row.birdfy) {
+          birdfy = typeof row.birdfy === 'string' ? JSON.parse(row.birdfy) : row.birdfy;
+          delete birdfy.videoUrl;
+          delete birdfy.images;
+        }
       } catch {
         // ignore
       }
