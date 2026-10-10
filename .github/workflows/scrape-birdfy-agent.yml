@@ -1,9 +1,6 @@
-name: Birdfy Daytime Scraper (Hourly)
+name: Birdfy Daytime Scraper
 
 on:
-  schedule:
-    # Runs hourly from 6:00 AM to 7:00 PM Central Time (11:00 UTC to 00:00 UTC daily)
-    - cron: '0 11-23,0 * * *'
   workflow_dispatch:
     inputs:
       days:

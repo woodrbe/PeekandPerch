@@ -110,7 +110,9 @@ export async function archiveUrlToR2(
     });
 
     if (!response.ok) {
-      console.warn(`[R2 Archiver] Failed to fetch source media: ${sourceUrl} (${response.status} ${response.statusText})`);
+      if (response.status !== 403 && response.status !== 404) {
+        console.warn(`[R2 Archiver] Failed to fetch source media: ${sourceUrl.slice(0, 70)}... (${response.status} ${response.statusText})`);
+      }
       return null;
     }
 
