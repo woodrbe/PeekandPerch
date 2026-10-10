@@ -14,6 +14,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { WeatherService, DEFAULT_FEEDER_COORDINATES } from '../src/services/weatherService.js';
+import { archiveSightingMedia } from './r2-storage.js';
+import { upsertSightingsToD1 } from './d1-database.js';
 
 // Load local .env if present
 dotenv.config();
@@ -1123,6 +1125,43 @@ async function runScraperAgent() {
         };
       })
     );
+
+    // Automatically archive media to Cloudflare R2 and sync to Cloudflare D1
+    if (newSightingsFormatted.length > 0) {
+      if (process.env.R2_SECRET_ACCESS_KEY && process.env.R2_ACCESS_KEY_ID) {
+        console.log(`\n☁️ [Cloudflare R2] Archiving media for ${newSightingsFormatted.length} newly discovered visits...`);
+        let archivedCount = 0;
+        for (let i = 0; i < newSightingsFormatted.length; i++) {
+          const s = newSightingsFormatted[i];
+          try {
+            const res = await archiveSightingMedia(s);
+            if (res.archived) {
+              s.videoUrl = res.videoUrl;
+              s.imageUrl = res.imageUrl;
+              if (res.images) s.images = res.images;
+              if (s.birdfy) {
+                s.birdfy.videoUrl = res.videoUrl;
+                s.birdfy.images = res.images;
+              }
+              archivedCount++;
+            }
+          } catch (err: any) {
+            console.warn(`   ⚠️ Warning: failed to archive media for sighting ${s.id}: ${err.message}`);
+          }
+        }
+        console.log(`✅ [Cloudflare R2] Media archiving complete (${archivedCount} visits stored permanently).`);
+      }
+
+      if (process.env.CLOUDFLARE_D1_DATABASE_ID && (process.env.CLOUDFLARE_D1_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN)) {
+        console.log(`\n🗄️ [Cloudflare D1] Upserting ${newSightingsFormatted.length} sightings to D1 database...`);
+        try {
+          const { inserted, errors } = await upsertSightingsToD1(newSightingsFormatted);
+          console.log(`✅ [Cloudflare D1] Synced ${inserted} sightings to D1 (${errors} errors).`);
+        } catch (err: any) {
+          console.warn(`   ⚠️ Warning: failed to upsert sightings to D1: ${err.message}`);
+        }
+      }
+    }
 
     if (cliArgs.backfillWeather && existingSightings.length > 0) {
       console.log(`🔄 Backfilling dynamic weather for ${existingSightings.length} existing sightings...`);

@@ -1072,20 +1072,19 @@ export class BirdfyService {
    * Fetches the globally shared sightings from /api/sightings (local dev) or public/data/sightings.json (production)
    */
   public static async fetchSharedSightings(): Promise<BirdSighting[]> {
-    if (BirdfyService.isLocalDev()) {
-      try {
-        const res = await fetch('/api/sightings', {
-          headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json)) {
-            return json;
-          }
+    // 1. Try serverless API endpoint (/api/sightings)
+    try {
+      const res = await fetch('/api/sightings', {
+        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json) && json.length > 0) {
+          return json;
         }
-      } catch {
-        // fallback to static file if local api middleware fails
       }
+    } catch {
+      // API unavailable, proceed to static JSON fallback
     }
 
     try {

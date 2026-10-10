@@ -12,9 +12,12 @@
     "agent:scrape": "tsx scripts/scrape-birdfy-agent.ts",
     "agent:scrape:30days": "tsx scripts/scrape-birdfy-agent.ts --days 30",
     "agent:scrape:7days": "tsx scripts/scrape-birdfy-agent.ts --days 7",
-    "clear:sightings": "tsx scripts/clear-sightings.ts"
+    "clear:sightings": "tsx scripts/clear-sightings.ts",
+    "migrate:d1": "tsx scripts/migrate-to-cloudflare.ts",
+    "migrate:cloudflare:all": "tsx scripts/migrate-to-cloudflare.ts --archive-media"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1149.0",
     "@google/genai": "^2.4.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
