@@ -6,6 +6,17 @@
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || 'd5104a85bd311a004b05349e1937b6dd';
 const DATABASE_ID = process.env.CLOUDFLARE_D1_DATABASE_ID || '3897e058-22db-4b49-a761-ea9e7d98d1c5';
 const API_TOKEN = process.env.CLOUDFLARE_D1_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL;
+
+function toPublicUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  // If user configured a public R2 domain (e.g. pub-xxx.r2.dev or media.peep-and-perch.com), rewrite private S3 URLs
+  if (R2_PUBLIC_URL && !R2_PUBLIC_URL.includes('r2.cloudflarestorage.com')) {
+    const cleanBase = R2_PUBLIC_URL.replace(/\/+$/, '');
+    return url.replace(/https:\/\/[^/]+\.r2\.cloudflarestorage\.com\/[^/]+/, cleanBase);
+  }
+  return url;
+}
 
 export default async function handler(req: any, res: any) {
   // Enable CORS & caching headers
@@ -26,12 +37,21 @@ export default async function handler(req: any, res: any) {
   }
 
   if (!API_TOKEN || !DATABASE_ID || !ACCOUNT_ID) {
-    // If credentials are not present in Vercel environment, return empty array (app will fallback to static json)
     res.status(200).json([]);
     return;
   }
 
   try {
+    // Default to 250 most recent records to prevent Vercel 4.5MB payload limit & timeout
+    const requestedLimit = req.query?.limit;
+    let limit = 250;
+    if (requestedLimit === 'all') {
+      limit = 1000;
+    } else if (requestedLimit) {
+      const parsed = parseInt(String(requestedLimit), 10);
+      if (!isNaN(parsed) && parsed > 0) limit = Math.min(parsed, 1000);
+    }
+
     const url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/query`;
     const response = await fetch(url, {
       method: 'POST',
@@ -40,8 +60,8 @@ export default async function handler(req: any, res: any) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sql: 'SELECT * FROM sightings ORDER BY date DESC, time DESC LIMIT 2000;',
-        params: [],
+        sql: 'SELECT * FROM sightings ORDER BY date DESC, time DESC LIMIT ?;',
+        params: [limit],
       }),
     });
 
@@ -57,7 +77,12 @@ export default async function handler(req: any, res: any) {
       let images = undefined;
       let birdfy = undefined;
       try {
-        if (row.images) images = JSON.parse(row.images);
+        if (row.images) {
+          const parsedImgs = JSON.parse(row.images);
+          if (Array.isArray(parsedImgs)) {
+            images = parsedImgs.map((img: string) => toPublicUrl(img) || img);
+          }
+        }
       } catch {
         // ignore
       }
@@ -69,6 +94,8 @@ export default async function handler(req: any, res: any) {
 
       return {
         ...row,
+        imageUrl: toPublicUrl(row.imageUrl) || row.imageUrl,
+        videoUrl: toPublicUrl(row.videoUrl) || row.videoUrl,
         images,
         birdfy,
         isFavorite: Boolean(row.isFavorite),
@@ -81,4 +108,3 @@ export default async function handler(req: any, res: any) {
     res.status(500).json({ error: err.message });
   }
 }
-
