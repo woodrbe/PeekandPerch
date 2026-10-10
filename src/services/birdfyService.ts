@@ -1074,7 +1074,7 @@ export class BirdfyService {
   public static async fetchSharedSightings(): Promise<BirdSighting[]> {
     // 1. Try serverless API endpoint (/api/sightings)
     try {
-      const res = await fetch('/api/sightings', {
+      const res = await fetch('/api/sightings?t=' + Date.now(), {
         headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' },
       });
       if (res.ok) {
