@@ -628,8 +628,8 @@ async function runScraperAgent() {
     await page.goto(targetEventsUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(3500);
 
-    // Deep scroll function
-    const deepScrollTimeline = async (maxSteps = 25) => {
+    // Deep scroll function (scrolls up to 60 steps to capture 100+ events per day)
+    const deepScrollTimeline = async (maxSteps = 60) => {
       let lastCardsFound = 0;
       let stagnantCount = 0;
 
@@ -1090,8 +1090,9 @@ async function runScraperAgent() {
           console.warn(`⚠️ Weather fetch failed for ${d.date} ${d.time}:`, e);
         }
 
+        const captureTs = (d.imageUrl && d.imageUrl.match(/nvc_(\d{13})_/)?.[1]) || timestamp;
         return {
-          id: `birdfy-scrape-${timestamp}-${Math.random().toString(36).substring(2, 6)}`,
+          id: `birdfy-scrape-${captureTs}`,
           speciesId: spId || 'custom',
           speciesName: d.speciesName,
           imageUrl: d.imageUrl,
