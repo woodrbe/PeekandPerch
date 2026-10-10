@@ -17,7 +17,8 @@
     "migrate:r2": "tsx scripts/migrate-to-cloudflare.ts --archive-media",
     "migrate:cloudflare:all": "tsx scripts/migrate-to-cloudflare.ts --archive-media",
     "modal:run": "python -m modal run modal_scraper.py",
-    "modal:deploy": "python -m modal deploy modal_scraper.py"
+    "modal:deploy": "python -m modal deploy modal_scraper.py",
+    "deploy:vercel": "vercel --prod"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1149.0",
